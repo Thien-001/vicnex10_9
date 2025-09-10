@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Boxicons -->
+	<link href="https://unpkg.com/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+	<!-- My CSS -->
+	<link rel="stylesheet" href="style.css">
+
+	<title>Admin Vicnex</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- SIDEBAR -->
+	<section id="sidebar">
+	<a href="#" class="brand">
+		<i class='bx'>
+			<img src="https://img.icons8.com/?size=100&id=UUr7TPbn4dvp&format=png&color=000000" alt="">
+		</i>
+		<span class="text">Vicnex</span>
+	</a>
+
+	<ul class="side-menu top">
+		<li>
+			<a href="#">
+				<i class='bx bxs-dashboard'></i>
+				<span class="text">Dashboard</span>
+			</a>
+		</li>
+
+		<!-- Danh mục sản phẩm có submenu -->
+		<li class="has-submenu">
+			<a href="#" class="toggle-submenu">
+				<i class='bx bxs-shopping-bag-alt'></i>
+				<span class="text">Danh mục sản phẩm</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i>  
+						<span class="text">Danh sách danh mục</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class='bx bx-plus'></i>
+						<span class="text">Thêm danh mục</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="has-submenu">
+			<a href="#">
+				<i class='bx bx-package'></i>
+				<span class="text">Sản phẩm</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i> 
+						<span class="text">Danh sách sản phẩm</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class='bx bx-plus'></i> 
+						<span class="text">Thêm sản phẩm</span>
+					</a>
+				</li>
+				
+				<li>
+					<a href="#">
+						<i class='bx bx-bar-chart'></i> 
+						<span class="text">Thống kê sản phẩm</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<!-- <li class="has-submenu">
+			<a href="#">
+				<i class='bx bxs-discount'></i>
+				<span class="text">Mã giảm giá</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i>
+						<span class="text">Danh sách Mã giảm giá</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class='bx bx-plus'></i>
+						<span class="text">Thêm Mã giảm giá</span>
+					</a>
+				</li>
+			</ul>
+		</li> -->
+
+		<li class="has-submenu">
+			<a href="#">
+				<i class='bx bx-envelope'></i>
+				<span class="text">Bài viết</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i>
+						<span class="text">Danh sách bài viết</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class='bx bx-plus'></i>
+						<span class="text">Thêm bài viết</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="has-submenu">
+			<a href="#">
+				<i class='bx bxs-group'></i>
+				<span class="text">Tài khoản</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i>
+						<span class="text">Danh sách tài khoản</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="#">
+						<i class='bx bx-plus'></i>
+						<span class="text">Thêm tài khoản</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="has-submenu active">
+			<a href="#">
+				<i class='bx bx-cart'></i>
+				<span class="text">Đơn hàng</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i>
+						<span class="text">Danh sách đơn hàng</span>
+					</a>
+				</li>
+				<li>
+					<a href="#" class="active1">
+						<i class='bx bx-bar-chart'></i> 
+						<span class="text">Thống kê đơn hàng</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="has-submenu">
+			<a href="#">
+				<i class='bx  bx-calendar-alt'></i> 
+				<span class="text">Quản lí sân</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i>
+						<span class="text">Danh sách sân</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class='bx  bx-stopwatch'></i> 
+						<span class="text">Lịch đặt sân</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class='bx bx-plus'></i>
+						<span class="text">Thêm sân</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="has-submenu">
+			<a href="#">
+				<i class='bx bxs-message-dots'></i>
+				<span class="text">Bình luận</span>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i>
+						<span class="text">Bình luận bài viết</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class='bx bx-list-ul'></i> 
+						<span class="text">Bình luận sản phẩm</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</section>
+
+	<!-- SIDEBAR -->
+    <!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu' ></i>
+			<a href="#" class="nav-link">Categories</a>
+			<form action="#">
+				<div class="form-input">
+					<input type="search" placeholder="Search...">
+					<button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
+				</div>
+			</form>
+			<input type="checkbox" id="switch-mode" hidden>
+			<label for="switch-mode" class="switch-mode"></label>
+			<a href="#" class="notification">
+				<i class='bx bxs-bell' ></i>
+				<span class="num">0</span>
+			</a>
+			<ul class="side-menu">
+				<li>
+					<a href="#">
+						<i class='bx bxs-cog'></i>
+						<!-- <span class="text">Settings</span> -->
+					</a>
+				</li>
+				
+			</ul>
+			<a href="#" class="profile">
+				<img src="img/people.png">
+			</a>
+			<ul class="side-menu">
+				<li>
+					<a href="#" class="logout">
+						<i class='bx bx-log-out'></i>
+						<span class="text">Logout</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+		<!-- NAVBAR -->
+
+		<!-- MAIN -->
+		<main>
+			<!-- <div class="head-title">
+				<div class="left">
+					<h1>Dashboard</h1>
+					<ul class="breadcrumb">
+						<li>
+							<a href="#">Dashboard</a>
+						</li>
+						<li><i class='bx bx-chevron-right' ></i></li>
+						<li>
+							<a class="active" href="#">Home</a>
+						</li>
+					</ul>
+				</div>
+				<a href="#" class="btn-download">
+					<i class='bx bxs-cloud-download' ></i>
+					<span class="text">Download PDF</span>
+				</a>
+			</div> -->
+           <h3 class="thongke left">Thống Kê Số Đơn Hàng Hằng Tuần</h3>
+<div class="gant-chart" style="width:100%;max-width:1200px;margin:32px auto;">
+    <canvas id="weeklyOrderChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('weeklyOrderChart').getContext('2d');
+
+const weeklyOrderChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4', 'Tuần 5', 'Tuần 6'],
+        datasets: [{
+            label: 'Số đơn hàng',
+            data: [120, 150, 100, 180, 100, 63], // Thay số liệu thật vào đây
+            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            borderRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Số đơn hàng (lần)'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+
+			
+	</section>
+	<!-- CONTENT -->
+     <script src="script.js"></script>
+</body>
+</html>

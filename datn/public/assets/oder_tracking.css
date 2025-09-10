@@ -1,0 +1,320 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+}
+.header {
+  background-color: #0056b3; /* màu xanh đậm */
+  color: white;
+}
+.container {
+  max-width: 1728px;
+  height: 100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+.logo {
+  width: 120px;
+  height: 60px;
+  background-color: black;
+}
+.nav-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 48px;
+  margin-left: 70px;
+}
+.nav-menu ul li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+}
+.nav-menu ul li a:hover {
+  text-decoration: underline;
+}
+.nav-menu ul li a i {
+  color: white; /* màu trắng cho icon */
+  margin-right: 6px; /* khoảng cách giữa icon và chữ */
+  font-size: 16px; /* kích thước icon */
+  vertical-align: middle; /* căn icon cho thẳng hàng với chữ */
+  transition: color 0.3s ease;
+}
+.nav-menu ul li a:hover i {
+  color: #ffd700; /* đổi màu vàng khi hover */
+}
+.search input {
+  padding: 5px 42px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  width: 250px;
+  height: 40px;
+  margin-left: 70px;
+}
+.search input::placeholder {
+  color: #0056b3; /* hoặc màu xanh khác bạn muốn */
+  opacity: 1; /* đảm bảo placeholder không bị mờ */
+  font-weight: bold;
+}
+.menu-header {
+  margin-left: 70px;
+  font-weight: bold;
+  right: 60px;
+}
+.menu-header i {
+  margin-right: 10px;
+}
+.menu-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  margin-left: 70px;
+}
+.menu-toggle img {
+  height: 20px;
+  width: 20px;
+}
+
+
+/* ===== SECTION HEADING ===== */
+.section-heading {
+  margin: 30px 127px;
+}
+
+.section-heading h2 {
+  font-size: 40px;
+  font-weight: bold;
+  color: var(--dark-text);
+}
+
+.section-heading p {
+  font-size: 20px;
+  color: var(--light-text);
+  margin-top: 8px;
+}
+
+
+.tracking-container {
+  display: flex;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.order-info {
+  flex: 1;
+}
+
+.order-info h1 {
+  font-size: 26px;
+  margin-bottom: 12px;
+  color: #000;
+}
+
+.order-info p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.order-info a {
+  color: #0051ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.status.processing {
+  color: orange;
+}
+
+.customer-details {
+  margin-top: 16px;
+}
+
+.info-box {
+  background: #e3f2fd;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.timeline li {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.nav-links a {
+  font-size: 14px;
+  color: #444;
+  text-decoration: none;
+}
+
+.order-summary {
+  width: 360px;
+  background: #f9fbff;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.order-summary h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.order-summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.product-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.product-img img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.product-info {
+  flex: 1;
+  font-size: 14px;
+}
+
+.product-info a {
+  color: #007bff;
+  text-decoration: none;
+  display: block;
+}
+
+.qty {
+  font-size: 13px;
+  color: #555;
+}
+
+.price {
+  color: red;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.continue-link {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.continue-link a {
+  font-size: 14px;
+  color: #0051ff;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .tracking-container {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .order-summary {
+    width: 100%;
+  }
+
+  .continue-link {
+    text-align: center;
+    margin-top: 16px;
+  }
+}
+/* ==== BẮT ĐẦU CSS FOOTER ==== */
+.footer {
+  background-color: #0066cc;
+  color: #fff;
+  padding: 40px 20px;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-col {
+  flex: 1;
+  min-width: 250px;
+}
+
+.footer-col h4 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.footer-col p,
+.footer-col li,
+.footer-col a {
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.6;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-col a {
+  text-decoration: underline;
+  color: #fff;
+}
+
+.footer-col input[type="email"] {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 4px;
+}
+
+.footer-col button {
+  padding: 8px 16px;
+  background-color: white;
+  color: #0066cc;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logo {
+  width: 60px;
+  margin-bottom: 10px;
+}
+/* ==== KẾT THÚC CSS FOOTER ==== */

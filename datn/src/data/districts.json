@@ -1,0 +1,277 @@
+{
+  "error": 0,
+  "error_text": "Lấy dữ liệu quận huyện thành công..!",
+  "data_name": "Thành phố Hà Nội",
+  "data": [
+    {
+      "id": "271",
+      "name": "Ba Vì",
+      "name_en": "Ba Vi",
+      "full_name": "Huyện Ba Vì",
+      "full_name_en": "Ba Vi District",
+      "latitude": "21.155976600000002",
+      "longitude": "105.37494274237581"
+    },
+    {
+      "id": "001",
+      "name": "Ba Đình",
+      "name_en": "Ba Dinh",
+      "full_name": "Quận Ba Đình",
+      "full_name_en": "Ba Dinh District",
+      "latitude": "21.0365377",
+      "longitude": "105.8285908"
+    },
+    {
+      "id": "021",
+      "name": "Bắc Từ Liêm",
+      "name_en": "Bac Tu Liem",
+      "full_name": "Quận Bắc Từ Liêm",
+      "full_name_en": "Bac Tu Liem District",
+      "latitude": "21.0712548",
+      "longitude": "105.7644855"
+    },
+    {
+      "id": "005",
+      "name": "Cầu Giấy",
+      "name_en": "Cau Giay",
+      "full_name": "Quận Cầu Giấy",
+      "full_name_en": "Cau Giay District",
+      "latitude": "21.0295015",
+      "longitude": "105.7914212"
+    },
+    {
+      "id": "277",
+      "name": "Chương Mỹ",
+      "name_en": "Chuong My",
+      "full_name": "Huyện Chương Mỹ",
+      "full_name_en": "Chuong My District",
+      "latitude": "20.87851585",
+      "longitude": "105.64923352491572"
+    },
+    {
+      "id": "018",
+      "name": "Gia Lâm",
+      "name_en": "Gia Lam",
+      "full_name": "Huyện Gia Lâm",
+      "full_name_en": "Gia Lam District",
+      "latitude": "21.0238721",
+      "longitude": "105.97050129109073"
+    },
+    {
+      "id": "268",
+      "name": "Hà Đông",
+      "name_en": "Ha Dong",
+      "full_name": "Quận Hà Đông",
+      "full_name_en": "Ha Dong District",
+      "latitude": "20.9551855",
+      "longitude": "105.758011"
+    },
+    {
+      "id": "007",
+      "name": "Hai Bà Trưng",
+      "name_en": "Hai Ba Trung",
+      "full_name": "Quận Hai Bà Trưng",
+      "full_name_en": "Hai Ba Trung District",
+      "latitude": "21.0064704",
+      "longitude": "105.8578519"
+    },
+    {
+      "id": "274",
+      "name": "Hoài Đức",
+      "name_en": "Hoai Duc",
+      "full_name": "Huyện Hoài Đức",
+      "full_name_en": "Hoai Duc District",
+      "latitude": "21.02292555",
+      "longitude": "105.70347943078642"
+    },
+    {
+      "id": "002",
+      "name": "Hoàn Kiếm",
+      "name_en": "Hoan Kiem",
+      "full_name": "Quận Hoàn Kiếm",
+      "full_name_en": "Hoan Kiem District",
+      "latitude": "21.0302237",
+      "longitude": "105.8523115"
+    },
+    {
+      "id": "008",
+      "name": "Hoàng Mai",
+      "name_en": "Hoang Mai",
+      "full_name": "Quận Hoàng Mai",
+      "full_name_en": "Hoang Mai District",
+      "latitude": "20.9757581",
+      "longitude": "105.8626556"
+    },
+    {
+      "id": "004",
+      "name": "Long Biên",
+      "name_en": "Long Bien",
+      "full_name": "Quận Long Biên",
+      "full_name_en": "Long Bien District",
+      "latitude": "21.0359662",
+      "longitude": "105.9021921"
+    },
+    {
+      "id": "250",
+      "name": "Mê Linh",
+      "name_en": "Me Linh",
+      "full_name": "Huyện Mê Linh",
+      "full_name_en": "Me Linh District",
+      "latitude": "21.18078845",
+      "longitude": "105.70725700576077"
+    },
+    {
+      "id": "282",
+      "name": "Mỹ Đức",
+      "name_en": "My Duc",
+      "full_name": "Huyện Mỹ Đức",
+      "full_name_en": "My Duc District",
+      "latitude": "20.697382599999997",
+      "longitude": "105.71577535499549"
+    },
+    {
+      "id": "019",
+      "name": "Nam Từ Liêm",
+      "name_en": "Nam Tu Liem",
+      "full_name": "Quận Nam Từ Liêm",
+      "full_name_en": "Nam Tu Liem District",
+      "latitude": "21.0173512",
+      "longitude": "105.7613329"
+    },
+    {
+      "id": "280",
+      "name": "Phú Xuyên",
+      "name_en": "Phu Xuyen",
+      "full_name": "Huyện Phú Xuyên",
+      "full_name_en": "Phu Xuyen District",
+      "latitude": "20.72904585",
+      "longitude": "105.91023981311886"
+    },
+    {
+      "id": "272",
+      "name": "Phúc Thọ",
+      "name_en": "Phuc Tho",
+      "full_name": "Huyện Phúc Thọ",
+      "full_name_en": "Phuc Tho District",
+      "latitude": "21.1096428",
+      "longitude": "105.57094469616789"
+    },
+    {
+      "id": "275",
+      "name": "Quốc Oai",
+      "name_en": "Quoc Oai",
+      "full_name": "Huyện Quốc Oai",
+      "full_name_en": "Quoc Oai District",
+      "latitude": "20.9779128",
+      "longitude": "105.62959219969346"
+    },
+    {
+      "id": "016",
+      "name": "Sóc Sơn",
+      "name_en": "Soc Son",
+      "full_name": "Huyện Sóc Sơn",
+      "full_name_en": "Soc Son District",
+      "latitude": "21.2808747",
+      "longitude": "105.82924029963563"
+    },
+    {
+      "id": "269",
+      "name": "Sơn Tây",
+      "name_en": "Son Tay",
+      "full_name": "Thị xã Sơn Tây",
+      "full_name_en": "Son Tay Town",
+      "latitude": "21.1386671",
+      "longitude": "105.5056335"
+    },
+    {
+      "id": "003",
+      "name": "Tây Hồ",
+      "name_en": "Tay Ho",
+      "full_name": "Quận Tây Hồ",
+      "full_name_en": "Tay Ho District",
+      "latitude": "21.0683576",
+      "longitude": "105.8240984"
+    },
+    {
+      "id": "276",
+      "name": "Thạch Thất",
+      "name_en": "Thach That",
+      "full_name": "Huyện Thạch Thất",
+      "full_name_en": "Thach That District",
+      "latitude": "21.0235566",
+      "longitude": "105.55373581804929"
+    },
+    {
+      "id": "278",
+      "name": "Thanh Oai",
+      "name_en": "Thanh Oai",
+      "full_name": "Huyện Thanh Oai",
+      "full_name_en": "Thanh Oai District",
+      "latitude": "20.8602693",
+      "longitude": "105.78016441102196"
+    },
+    {
+      "id": "020",
+      "name": "Thanh Trì",
+      "name_en": "Thanh Tri",
+      "full_name": "Huyện Thanh Trì",
+      "full_name_en": "Thanh Tri District",
+      "latitude": "20.9408967",
+      "longitude": "105.83650808063207"
+    },
+    {
+      "id": "009",
+      "name": "Thanh Xuân",
+      "name_en": "Thanh Xuan",
+      "full_name": "Quận Thanh Xuân",
+      "full_name_en": "Thanh Xuan District",
+      "latitude": "20.9944171",
+      "longitude": "105.8171316"
+    },
+    {
+      "id": "279",
+      "name": "Thường Tín",
+      "name_en": "Thuong Tin",
+      "full_name": "Huyện Thường Tín",
+      "full_name_en": "Thuong Tin District",
+      "latitude": "20.8319978",
+      "longitude": "105.87006434087073"
+    },
+    {
+      "id": "281",
+      "name": "Ứng Hòa",
+      "name_en": "Ung Hoa",
+      "full_name": "Huyện Ứng Hòa",
+      "full_name_en": "Ung Hoa District",
+      "latitude": "20.7110772",
+      "longitude": "105.81433035379561"
+    },
+    {
+      "id": "273",
+      "name": "Đan Phượng",
+      "name_en": "Dan Phuong",
+      "full_name": "Huyện Đan Phượng",
+      "full_name_en": "Dan Phuong District",
+      "latitude": "21.11962705",
+      "longitude": "105.67846820592845"
+    },
+    {
+      "id": "017",
+      "name": "Đông Anh",
+      "name_en": "Dong Anh",
+      "full_name": "Huyện Đông Anh",
+      "full_name_en": "Dong Anh District",
+      "latitude": "21.1367358",
+      "longitude": "105.84603245401874"
+    },
+    {
+      "id": "006",
+      "name": "Đống Đa",
+      "name_en": "Dong Da",
+      "full_name": "Quận Đống Đa",
+      "full_name_en": "Dong Da District",
+      "latitude": "21.0146852",
+      "longitude": "105.8235426"
+    }
+  ]
+}

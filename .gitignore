@@ -1,0 +1,18 @@
+# Laravel
+/vendor
+/.env
+.env.*
+/node_modules
+/public/storage
+/storage/*.key
+*.log
+
+# React (datn)
+/datn/node_modules
+/datn/.env
+/datn/build
+/datn/dist
+
+# Khác
+.vscode
+.DS_Store

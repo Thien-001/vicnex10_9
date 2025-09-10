@@ -1,0 +1,453 @@
+/* BookingPage specific styles - exclude header and footer */
+
+/* Container for the booking page content */
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Form styles */
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+
+.form input {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Court list grid */
+.courtList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* Individual court card */
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #fff;
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.card p {
+  margin: 4px 0;
+}
+
+.card button {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 6px 12px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background-color: #218838;
+}
+
+
+/* Tổng thể box chi tiết sân */
+.booking-detail-box {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px 0 rgba(1,84,185,0.08), 0 1.5px 8px 0 #e0e7ff;
+  padding: 40px 0 36px 0;         /* padding trái/phải = 0 để full width */
+  width: 100vw;                   /* full viewport width */
+  max-width: 100vw;               /* full viewport width */
+  margin: 0;                      /* bỏ margin auto */
+  font-size: 1.08rem;
+  color: #1a202c;
+  border: 1.5px solid #e0e7ff;
+  box-sizing: border-box;
+  transition: box-shadow 0.2s;
+}
+
+@media (min-width: 900px) {
+  .booking-detail-box {
+    max-width: 900px;
+    padding: 40px 48px 36px 48px;
+  }
+}
+
+/* Tiêu đề */
+.booking-detail-box h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 28px;
+  color: #0154b9;
+  letter-spacing: -1px;
+}
+
+/* Thông tin sân */
+.booking-detail-info {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.booking-detail-img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 2px solid #2563eb22;
+  background: #f3f4f6;
+  box-shadow: 0 2px 12px 0 #e0e7ff44;
+}
+
+.booking-detail-meta {
+  flex: 1;
+  font-size: 1.08rem;
+  color: #1a202c;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 10px;
+  line-height: 1.7;
+}
+.booking-detail-meta b {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.booking-detail-description {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: #444;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+  border-left: 3px solid #2563eb;
+}
+
+/* Chọn ngày */
+.booking-date-row {
+  margin: 24px 0 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.booking-date-label {
+  font-weight: 700;
+  color: #0154b9;
+  font-size: 1.08rem;
+}
+.booking-date-input {
+  border: 1.5px solid #e0e7ff;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 1.08rem;
+  outline: none;
+  transition: border 0.2s;
+  background: #f9fafb;
+  margin-left: 10px;
+}
+.booking-date-input:focus {
+  border: 1.5px solid #2563eb;
+}
+
+/* Khung giờ */
+.booking-slots-wrap {
+  margin: 24px 0 14px 0;
+}
+.booking-slots-wrap h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0154b9;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+.slot-box-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.slot-box-btn {
+  min-width: 110px;
+  padding: 9px 0;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  color: #0154b9;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 4px 0 #e0e7ff33;
+}
+.slot-box-btn.selected {
+  background: linear-gradient(90deg, #0154b9 60%, #2563eb 100%);
+  color: #fff;
+  border-color: #0154b9;
+  box-shadow: 0 2px 8px 0 #2563eb33;
+}
+.slot-box-btn.slot-past,
+.slot-box-btn.slot-booked {
+  background: #e5e7eb;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  opacity: 0.7;
+  box-shadow: none;
+}
+.slot-empty {
+  color: #888;
+  font-style: italic;
+  margin-left: 8px;
+}
+
+/* Ghi chú */
+.booking-note-wrap {
+  margin: 24px 0 14px 0;
+}
+.booking-note-wrap label {
+  font-weight: 700;
+  color: #0154b9;
+  font-size: 1.08rem;
+}
+.booking-note-wrap textarea {
+  background: #f9fafb;
+  border: 1.5px solid #e0e7ff;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  padding: 10px 12px;
+  margin-top: 6px;
+  resize: vertical;
+  transition: border 0.2s;
+  width: 100%;
+}
+.booking-note-wrap textarea:focus {
+  border: 1.5px solid #2563eb;
+}
+
+/* Nút đặt sân */
+.booking-action-row {
+  margin-top: 18px;
+  text-align: right;
+}
+.booking-submit-btn {
+  background: linear-gradient(90deg, #0154b9 60%, #2563eb 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.15rem;
+  border: none;
+  border-radius: 9px;
+  padding: 14px 38px;
+  cursor: pointer;
+  box-shadow: 0 2px 12px 0 #2563eb22;
+  transition: background 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+}
+.booking-submit-btn:disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Tiêu đề trang chi tiết sân nổi bật */
+.booking-title {
+  text-align: center;
+  margin: 40px 0 32px 0;
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  background: linear-gradient(90deg, #0154b9 40%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-shadow: 0 4px 24px #2563eb22, 0 1.5px 8px #0154b933;
+  line-height: 1.1;
+  transition: font-size 0.2s;
+}
+
+/* Bố cục tổng thể container */
+.booking-detail-container {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  max-width: 1700px;
+  margin: 0 auto 0px auto;
+  /* padding: 0 16px; */
+  flex-wrap: wrap;
+  background: none;
+}
+
+/* Ảnh bên trái */
+.booking-detail-image {
+  flex: 1 1 380px;
+  max-width: 440px;
+  min-width: 320px;
+  background: #f7fafd;
+  border-radius: 20px;
+  box-shadow: 0 2px 16px 0 #e0e7ff44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 18px;
+}
+.booking-detail-image img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 2px 12px 0 #e0e7ff44;
+}
+
+/* Thông tin bên phải */
+.booking-detail-info-box {
+  flex: 2 1 480px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 32px 0 rgba(1,84,185,0.10), 0 1.5px 8px 0 #e0e7ff;
+  padding: 40px 40px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 320px;
+  position: relative;
+}
+
+.booking-detail-info-box h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #0154b9;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 12px #2563eb11;
+}
+
+.booking-detail-meta {
+  font-size: 1.12rem;
+  color: #1a202c;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.booking-detail-meta b {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.booking-detail-description {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 16px 18px;
+  color: #444;
+  font-size: 1.08rem;
+  margin-bottom: 12px;
+  border-left: 3px solid #2563eb;
+  box-shadow: 0 1px 6px #e0e7ff22;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 900px) {
+  .booking-title {
+    font-size: 2rem;
+    margin: 24px 0 18px 0;
+  }
+  .booking-detail-container {
+    flex-direction: column;
+    gap: 24px;
+    margin: 0 0 24px 0;
+    padding: 0 4vw;
+  }
+  .booking-detail-image,
+  .booking-detail-info-box {
+    min-width: 0;
+    max-width: 100%;
+    padding: 18px 8px;
+  }
+  .booking-detail-info-box {
+    border-radius: 12px;
+    padding: 18px 8px;
+  }
+}
+
+/* Menu chính sách - sidebar và responsive */
+.policy-menu a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: color 0.2s;
+}
+.policy-menu a:hover {
+  color: #0154b9 !important;
+  text-decoration: underline;
+}
+.policy-menu h2 {
+  font-size: 1.15rem;
+  color: #0154b9;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.policy-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.policy-menu li {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 900px) {
+  .policy-page {
+    flex-direction: column !important;
+    padding: 8px !important;
+  }
+  .policy-menu {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 0 18px 0 !important;
+    min-width: 0 !important;
+  }
+}

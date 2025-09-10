@@ -1,0 +1,6 @@
+{
+    "require": {
+        "laravel/socialite": "^5.23",
+        "laravel/ui": "^4.6"
+    }
+}

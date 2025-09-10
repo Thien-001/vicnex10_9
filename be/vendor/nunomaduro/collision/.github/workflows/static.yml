@@ -1,0 +1,32 @@
+name: Static Analysis
+
+on: ['push', 'pull_request']
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    name: Static
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
+        tools: composer
+        coverage: none
+        
+    - name: Set Collision version
+      run: composer config version "8.x-dev"
+
+    - name: Install Dependencies
+      run: composer update --no-interaction --prefer-dist --no-progress --ansi
+
+    - name: Run Style Tests
+      run: composer test:lint
+
+    - name: Run Types Tests
+      run: composer test:types

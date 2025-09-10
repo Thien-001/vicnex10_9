@@ -1,0 +1,550 @@
+import React, { useState, useEffect } from "react";
+import LeafletMapPicker from "./LeafletMapPicker";
+
+function CheckoutLeft({ cartItems, form, setForm }) {
+  // Lấy user từ API (giống UserProfile)
+  const [user, setUser] = useState(null);
+
+  // Lấy user ID từ localStorage (giả sử đã lưu khi đăng nhập)
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return;
+    let userData;
+    try {
+      userData = JSON.parse(storedUser);
+    } catch (e) {
+      return;
+    }
+    if (!userData.ID) return;
+    fetch(`http://localhost:8000/api/users/${userData.ID}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setUser({
+          id: userData.ID,
+          name: data.Name || "",
+          email: data.Email || "",
+          phone: data.Phone || "",
+          address: data.Address || "",
+          province_code: data.province_code || "",
+          district_code: data.district_code || "",
+          ward_code: data.ward_code || "",
+          province: data.province || "",
+          district: data.district || "",
+          ward: data.ward || "",
+        });
+      });
+  }, []);
+
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  // Lấy tỉnh thành khi mount
+  useEffect(() => {
+    fetch("https://esgoo.net/api-tinhthanh/1/0.htm")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error === 0) setProvinces(data.data);
+        else setProvinces([]);
+      })
+      .catch(() => setProvinces([]));
+  }, []);
+
+  // Lấy quận huyện khi chọn tỉnh
+  useEffect(() => {
+    if (form.province_code) {
+      fetch(`https://esgoo.net/api-tinhthanh/2/${form.province_code}.htm`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error === 0) setDistricts(data.data);
+          else setDistricts([]);
+          setWards([]);
+        })
+        .catch(() => {
+          setDistricts([]);
+          setWards([]);
+        });
+    } else {
+      setDistricts([]);
+      setWards([]);
+    }
+  }, [form.province_code]);
+
+  // Lấy phường xã khi chọn huyện
+  useEffect(() => {
+    if (form.district_code) {
+      fetch(`https://esgoo.net/api-tinhthanh/3/${form.district_code}.htm`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error === 0) setWards(data.data);
+          else setWards([]);
+        })
+        .catch(() => setWards([]));
+    } else {
+      setWards([]);
+    }
+  }, [form.district_code]);
+
+  // Tự động điền các trường cơ bản (họ tên, sđt, email, địa chỉ)
+  useEffect(() => {
+    if (user && user.name && !form.full_name) {
+      setForm((prev) => ({
+        ...prev,
+        full_name: user.name || "",
+        phone: user.phone || "",
+        email: user.email || "",
+        address: user.address || "",
+      }));
+    }
+  }, [user]);
+
+  // Tự động điền province_code nếu có
+  useEffect(() => {
+    if (
+      user &&
+      user.province &&
+      provinces.length > 0 &&
+      !form.province_code
+    ) {
+      const provinceObj = provinces.find(
+        (p) => p.full_name.trim().toLowerCase() === user.province.trim().toLowerCase()
+      );
+      if (provinceObj) {
+        setForm((prev) => ({
+          ...prev,
+          province_code: provinceObj.id,
+        }));
+      }
+    }
+    // Nếu backend trả về code thì ưu tiên code
+    if (user && user.province_code && !form.province_code) {
+      setForm((prev) => ({
+        ...prev,
+        province_code: user.province_code,
+      }));
+    }
+  }, [user, provinces]);
+
+  // Tự động điền district_code nếu có
+  useEffect(() => {
+    if (
+      user &&
+      user.district &&
+      districts.length > 0 &&
+      !form.district_code
+    ) {
+      const districtObj = districts.find(
+        (d) => d.full_name.trim().toLowerCase() === user.district.trim().toLowerCase()
+      );
+      if (districtObj) {
+        setForm((prev) => ({
+          ...prev,
+          district_code: districtObj.id,
+        }));
+      }
+    }
+    if (user && user.district_code && !form.district_code) {
+      setForm((prev) => ({
+        ...prev,
+        district_code: user.district_code,
+      }));
+    }
+  }, [user, districts]);
+
+  // Tự động điền ward_code nếu có
+  useEffect(() => {
+    if (
+      user &&
+      user.ward &&
+      wards.length > 0 &&
+      !form.ward_code
+    ) {
+      const wardObj = wards.find(
+        (w) => w.full_name.trim().toLowerCase() === user.ward.trim().toLowerCase()
+      );
+      if (wardObj) {
+        setForm((prev) => ({
+          ...prev,
+          ward_code: wardObj.id,
+        }));
+      }
+    }
+    if (user && user.ward_code && !form.ward_code) {
+      setForm((prev) => ({
+        ...prev,
+        ward_code: user.ward_code,
+      }));
+    }
+  }, [user, wards]);
+
+  // Xử lý thay đổi form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "province_code") {
+      setForm({
+        ...form,
+        province_code: value,
+        district_code: "",
+        ward_code: "",
+      });
+    } else if (name === "district_code") {
+      setForm({
+        ...form,
+        district_code: value,
+        ward_code: "",
+      });
+    } else {
+      setForm({
+        ...form,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const total_price = Number(localStorage.getItem("cartTotal")) || 0;
+    const shipping_fee = 30000;
+    const voucher_id = null;
+
+    if (!form.province_code || !form.district_code || !form.ward_code || !form.address || cartItems.length === 0) {
+      alert("Vui lòng điền đầy đủ thông tin và chọn sản phẩm!");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          status: "pending",
+          total_price,
+          shipping_fee,
+          voucher_id,
+          cart: cartItems,
+        }),
+      });
+
+      const result = await res.text();
+      if (!res.ok) {
+        alert("Đặt hàng thất bại: " + (result || "Lỗi không xác định!"));
+      } else {
+        alert("Đặt hàng thành công!");
+      }
+    } catch (err) {
+      alert("Lỗi kết nối: " + err.message);
+    }
+  };
+
+  // Lấy vị trí hiện tại, zoom bản đồ, tự động điền địa chỉ
+  const handleGetLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setForm({ ...form, latitude: lat, longitude: lng });
+
+          // Gọi hàm zoom bản đồ nếu LeafletMapPicker hỗ trợ
+          if (window.zoomToMapLocation) {
+            window.zoomToMapLocation(lat, lng);
+          }
+
+          // Gọi Nominatim để lấy địa chỉ
+          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+          const res = await fetch(url);
+          const data = await res.json();
+
+          // Tìm tỉnh/huyện/xã trong danh sách dropdown
+          let provinceId = "";
+          let districtId = "";
+          let wardId = "";
+
+          if (data.address?.state) {
+            const foundProvince = provinces.find(
+              (p) => p.full_name === data.address.state
+            );
+            if (foundProvince) provinceId = foundProvince.id;
+          }
+          if (data.address?.county) {
+            const foundDistrict = districts.find(
+              (d) => d.full_name === data.address.county
+            );
+            if (foundDistrict) districtId = foundDistrict.id;
+          }
+          if (data.address?.suburb) {
+            const foundWard = wards.find(
+              (w) => w.full_name === data.address.suburb
+            );
+            if (foundWard) wardId = foundWard.id;
+          }
+
+          setForm((prev) => ({
+            ...prev,
+            address: data.display_name || "",
+            province_code: provinceId || prev.province_code,
+            district_code: districtId || prev.district_code,
+            ward_code: wardId || prev.ward_code,
+          }));
+        },
+        (err) => {
+          alert("Không thể lấy vị trí: " + err.message);
+        }
+      );
+    } else {
+      alert("Trình duyệt không hỗ trợ định vị!");
+    }
+  };
+
+  // Hàm tính phí ship (bạn có thể copy từ CheckoutRight hoặc dùng chung)
+  function calculateShippingFee(subtotal, area, distanceKm) {
+    if (subtotal >= 500000) return 0;
+    let areaFee = 40000;
+    if (area === "noithanh") areaFee = 20000;
+    else if (area === "ngoaithanh") areaFee = 40000;
+    else if (area === "tinhxa") areaFee = 60000;
+
+    let distanceFee = 40000;
+    if (distanceKm <= 5) distanceFee = 15000;
+    else if (distanceKm <= 10) distanceFee = 25000;
+
+    return Math.max(areaFee, distanceFee);
+  }
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Giả sử bạn xác định area và distanceKm từ form hoặc mặc định
+  const area = form.area || "ngoaithanh"; // hoặc map từ province_code
+  const distanceKm = form.distance_km || 10; // hoặc mặc định
+  const shippingFee = calculateShippingFee(subtotal, area, distanceKm);
+
+  const isBooking = cartItems.length === 1 && cartItems[0].Courts_ID;
+
+  return (
+    <div className="checkout-left">
+      <h3>Thông Tin Giao Hàng</h3>
+      {(!cartItems || cartItems.length === 0) ? (
+        <div
+          style={{
+            color: "#0154b9",
+            fontWeight: "bold",
+            marginBottom: 18,
+            background: "#e0e7ff",
+            borderRadius: 10,
+            padding: "18px 12px",
+            textAlign: "center",
+            boxShadow: "0 2px 8px rgba(1,84,185,0.08)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <span style={{ fontSize: 38, marginBottom: 8 }}>🛒</span>
+          <span style={{ fontSize: 17, fontWeight: 600 }}>
+            Giỏ hàng của bạn đang trống!
+          </span>
+          <span style={{ fontSize: 15, color: "#333", marginTop: 4 }}>
+            Hãy chọn sản phẩm yêu thích để tiếp tục mua sắm nhé 💙
+          </span>
+          <a
+            href="/"
+            style={{
+              marginTop: 14,
+              background: "#0154b9",
+              color: "#fff",
+              borderRadius: 8,
+              padding: "8px 22px",
+              fontWeight: 600,
+              textDecoration: "none",
+              boxShadow: "0 2px 8px rgba(1,84,185,0.08)",
+              display: "inline-block",
+            }}
+          >
+            Quay lại trang chủ
+          </a>
+        </div>
+      ) : isBooking ? (
+        // FORM ĐẶT SÂN (tùy ý bạn, ví dụ đơn giản bên dưới)
+        <form className="booking-form" onSubmit={handleSubmit}>
+          <input
+            name="full_name"
+            type="text"
+            placeholder="Họ và tên người đặt sân"
+            required
+            value={form.full_name}
+            onChange={handleChange}
+          />
+          <input
+            name="phone"
+            type="text"
+            placeholder="Số điện thoại liên hệ"
+            required
+            value={form.phone}
+            onChange={handleChange}
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            required
+            value={form.email}
+            onChange={handleChange}
+          />
+          <textarea
+            name="note"
+            placeholder="Ghi chú cho đặt sân (nếu có)"
+            value={form.note}
+            onChange={handleChange}
+          ></textarea>
+          
+        </form>
+      ) : (
+        // FORM MUA SẢN PHẨM (giữ nguyên như hiện tại)
+        <form className="shipping-form" onSubmit={handleSubmit}>
+          <input
+            name="full_name"
+            type="text"
+            placeholder="Họ và tên"
+            required
+            value={form.full_name}
+            onChange={handleChange}
+          />
+          <input
+            name="phone"
+            type="text"
+            placeholder="Số điện thoại"
+            required
+            value={form.phone}
+            onChange={handleChange}
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            required
+            value={form.email}
+            onChange={handleChange}
+          />
+
+          {/* Chọn tỉnh */}
+          <select
+            name="province_code"
+            required
+            value={form.province_code}
+            onChange={handleChange}
+          >
+            <option value="">Chọn tỉnh/thành phố</option>
+            {provinces.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.full_name}
+              </option>
+            ))}
+          </select>
+
+          {/* Chọn huyện */}
+          <select
+            name="district_code"
+            required
+            value={form.district_code}
+            onChange={handleChange}
+            disabled={!form.province_code}
+          >
+            <option value="">Chọn quận/huyện</option>
+            {districts.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.full_name}
+              </option>
+            ))}
+          </select>
+
+          {/* Chọn xã */}
+          <select
+            name="ward_code"
+            required
+            value={form.ward_code}
+            onChange={handleChange}
+            disabled={!form.district_code}
+          >
+            <option value="">Chọn phường/xã</option>
+            {wards.map((w) => (
+              <option key={w.id} value={w.id}>
+                {w.full_name}
+              </option>
+            ))}
+          </select>
+
+          <input
+            name="address"
+            type="text"
+            placeholder="Địa chỉ nhận hàng chi tiết"
+            value={form.address}
+            onChange={handleChange}
+          />
+          <textarea
+            name="note"
+            placeholder="Ghi chú cho đơn hàng"
+            value={form.note}
+            onChange={handleChange}
+          ></textarea>
+
+          {/* <div style={{ margin: "18px 0" }}>
+            <label style={{ fontWeight: 600, marginBottom: 8, display: "block" }}>
+              Chọn vị trí giao hàng trên bản đồ:
+            </label>
+            <LeafletMapPicker
+              latitude={form.latitude}
+              longitude={form.longitude}
+              setLocation={({ latitude, longitude }) =>
+                setForm({ ...form, latitude, longitude })
+              }
+              zoomToLocation={true} // Thêm props này
+            />
+          </div>
+
+          <button
+            type="button"
+            style={{
+              marginBottom: 12,
+              background: "#0154b9",
+              color: "#fff",
+              borderRadius: 8,
+              padding: "8px 22px",
+              fontWeight: 600,
+              border: "none",
+              cursor: "pointer"
+            }}
+            onClick={handleGetLocation}
+          >
+            📍 Lấy vị trí hiện tại
+          </button> */}
+
+          <div style={{ margin: "12px 0", fontWeight: 600, color: "#0154b9" }}>
+            Phí vận chuyển dự kiến: {shippingFee.toLocaleString()}₫
+          </div>
+
+          <div className="terms-box">
+            <p>Chính Sách & Điều Khoản</p>
+            <small>
+              Tôi đã đọc và đồng ý với{" "}
+              <a href="/#">Điều khoản Sử Dụng</a> &{" "}
+              <a href="/#">Chính Sách Bảo Mật</a>.
+            </small>
+          </div>
+
+          <div className="checkout-links">
+            <a href="/" className="back-link">
+              Quay lại trang chủ
+            </a>
+            <a href="/" className="continue-link">
+              Tiếp tục mua sắm
+            </a>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
+export default CheckoutLeft;

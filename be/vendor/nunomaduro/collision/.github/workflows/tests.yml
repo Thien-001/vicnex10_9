@@ -1,0 +1,122 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  pest_tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        php: ['8.2', '8.3', '8.4']
+        laravel: ['11.0', '12.0']
+        pest: ['3.7.2']
+        dependency-version: [prefer-lowest, prefer-stable]
+
+    name: PHP ${{ matrix.php }} - ${{ matrix.os }} - Pest ${{ matrix.pest }} - Laravel ${{ matrix.laravel }} - ${{ matrix.dependency-version }}
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: laravel
+        ports:
+          - 3306:3306
+        options:  --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached, gmp
+        tools: composer:v2
+        coverage: xdebug
+
+    - name: Setup Problem Matchers
+      run: |
+        echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+        echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+        
+    - name: Set Collision version
+      run: composer config version "8.x-dev"
+
+    - name: Set Laravel
+      run: composer require laravel/framework:^${{ matrix.laravel }} --dev --no-interaction --no-update
+
+    - name: Set Pest
+      run: composer require pestphp/pest:^${{ matrix.pest }} --dev --no-interaction --no-update
+
+    - name: Install PHP dependencies
+      run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist --no-progress --ansi
+
+    - name: Run Unit With Pest
+      run: composer test:unit:pest
+
+  
+  phpunit_tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        php: ['8.2', '8.3', '8.4']
+        laravel: ['11.9', '12.0']
+        phpunit: ['11.5.9', '12.0']
+        dependency-version: [prefer-stable]
+        exclude:
+          - phpunit: '12.0'
+            php: '8.2'
+
+    name: PHP ${{ matrix.php }} - ${{ matrix.os }} - PHPUnit ${{ matrix.phpunit }} - Laravel ${{ matrix.laravel }} - ${{ matrix.dependency-version }}
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: laravel
+        ports:
+          - 3306:3306
+        options:  --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached, gmp
+        tools: composer:v2
+        coverage: xdebug
+
+    - name: Setup Problem Matchers
+      run: |
+        echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+        echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+        
+    - name: Set Collision version
+      run: composer config version "8.x-dev"
+
+    - name: Set Laravel
+      run: composer require laravel/framework:^${{ matrix.laravel }} --dev --no-interaction --no-update
+
+    - name: Set PHPUnit
+      run: |
+        composer remove pestphp/pest --dev --no-interaction --no-update
+        composer require phpunit/phpunit:^${{ matrix.phpunit }} --dev --no-interaction --no-update
+
+    - name: Install PHP dependencies
+      run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist --no-progress --ansi
+
+    - name: Run Unit With PHPUnit
+      run: composer test:unit:phpunit

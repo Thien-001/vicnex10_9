@@ -1,0 +1,53 @@
+name: unit-tests
+
+on:
+  push:
+    branches:
+      - '*.x'
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ['8.1', '8.2', '8.3']
+        deps: [highest]
+
+        include:
+          - php: '8.1'
+            deps: lowest
+
+    name: PHP ${{ matrix.php }} / ${{ matrix.deps }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: ${{ matrix.deps }}
+
+      - name: Setup logs directory
+        run: mkdir -p build/logs
+
+      - name: Execute tests
+        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml --exclude-group flaky
+
+      - name: Store artifacts
+        if: ${{ matrix.php == '8.1' && matrix.deps == 'lowest' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: clover.xml
+          path: build/logs
