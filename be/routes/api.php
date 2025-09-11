@@ -154,3 +154,8 @@ Route::get('/contacts', [ContactMessageController::class, 'index']); // (tuỳ c
 
 // Expert Reviews
 Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiController::class, 'index']);
+
+// Bình luận bài viết
+Route::resource('comments', PostCommentApi::class);
+Route::get('posts/{post}/comments', [PostCommentApi::class, 'postComments']);
+Route::post('posts/{post}/comments', [PostCommentApi::class, 'storePostComment']);

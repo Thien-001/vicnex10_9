@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ProductRating({ productId, user }) {
   const [rating, setRating] = useState(0);
@@ -6,9 +7,11 @@ function ProductRating({ productId, user }) {
   const [message, setMessage] = useState("");
   const [avg, setAvg] = useState(0);
   const [count, setCount] = useState(0);
-  const [imageFiles, setImageFiles] = useState([]); // Thay đổi thành mảng để lưu nhiều ảnh
-  const [reviews, setReviews] = useState([]); // Thêm state lưu danh sách đánh giá
-  const [reviewText, setReviewText] = useState(""); // Thêm state lưu trữ đánh giá bằng văn bản
+  const [imageFiles, setImageFiles] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewText, setReviewText] = useState("");
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`http://localhost:8000/api/products/${productId}/ratings`)
@@ -16,9 +19,23 @@ function ProductRating({ productId, user }) {
       .then(data => {
         setAvg(Number(data.avg) || 0);
         setCount(Number(data.count) || 0);
-        setReviews(Array.isArray(data.reviews) ? data.reviews : []); // Lưu danh sách đánh giá
+        setReviews(Array.isArray(data.reviews) ? data.reviews : []);
       });
   }, [productId, message]);
+
+  useEffect(() => {
+    // Kiểm tra khách đã mua hàng chưa (giả sử có API kiểm tra)
+    if (user) {
+      fetch(`http://localhost:8000/api/orders/check-purchased?user_id=${user.ID}&product_id=${productId}`)
+        .then(res => res.json())
+        .then(data => {
+          setHasPurchased(!!data.purchased);
+        })
+        .catch(() => setHasPurchased(false));
+    } else {
+      setHasPurchased(false);
+    }
+  }, [user, productId]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -42,9 +59,9 @@ function ProductRating({ productId, user }) {
     const formData = new FormData();
     formData.append("User_ID", user.ID);
     formData.append("Rating", rating);
-    formData.append("text", reviewText); // Thêm trường đánh giá bằng văn bản
+    formData.append("text", reviewText);
     imageFiles.forEach((file) => {
-      formData.append("images[]", file); // ĐÚNG
+      formData.append("images[]", file);
     });
 
     fetch(`http://localhost:8000/api/products/${productId}/ratings`, {
@@ -59,7 +76,7 @@ function ProductRating({ productId, user }) {
         }
         setMessage("Cảm ơn bạn đã đánh giá!");
         setImageFiles([]);
-        setReviewText(""); // Xóa nội dung đánh giá sau khi gửi
+        setReviewText("");
       })
       .catch(() => {
         setMessage("Đánh giá thất bại!");
@@ -79,103 +96,126 @@ function ProductRating({ productId, user }) {
       marginRight: "auto"
     }}>
       <h3 style={{ color: "#0154b9", marginBottom: 12 }}>Đánh giá sản phẩm</h3>
-      <div style={{ fontSize: 22, marginBottom: 8 }}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <span
-            key={i}
+      {hasPurchased ? (
+        <>
+          <div style={{ fontSize: 22, marginBottom: 8 }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span
+                key={i}
+                style={{
+                  cursor: user ? "pointer" : "not-allowed",
+                  color: (hover || rating) > i ? "#FFD600" : "#ccc",
+                  transition: "color 0.2s"
+                }}
+                onMouseEnter={() => user && setHover(i + 1)}
+                onMouseLeave={() => user && setHover(0)}
+                onClick={() => user && setRating(i + 1)}
+              >★</span>
+            ))}
+          </div>
+          <label
+            htmlFor="rating-images"
             style={{
-              cursor: user ? "pointer" : "not-allowed",
-              color: (hover || rating) > i ? "#FFD600" : "#ccc",
-              transition: "color 0.2s"
+              display: "inline-block",
+              background: "#e3f0ff",
+              color: "#0154b9",
+              padding: "7px 18px",
+              borderRadius: 8,
+              fontWeight: 600,
+              cursor: "pointer",
+              marginBottom: 8,
+              border: "1.5px solid #b6d4fe",
+              fontSize: 15,
+              transition: "background 0.18s"
             }}
-            onMouseEnter={() => user && setHover(i + 1)}
-            onMouseLeave={() => user && setHover(0)}
-            onClick={() => user && setRating(i + 1)}
-          >★</span>
-        ))}
-      </div>
-      <label
-        htmlFor="rating-images"
-        style={{
-          display: "inline-block",
-          background: "#e3f0ff",
-          color: "#0154b9",
-          padding: "7px 18px",
-          borderRadius: 8,
-          fontWeight: 600,
-          cursor: "pointer",
-          marginBottom: 8,
-          border: "1.5px solid #b6d4fe",
-          fontSize: 15,
-          transition: "background 0.18s"
-        }}
-      >
-        📷 Chọn tối đa 5 ảnh
-      </label>
-      <input
-        id="rating-images"
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleImageChange}
-        style={{ display: "none" }}
-      />
-      {imageFiles.length > 0 && (
-        <div style={{ marginBottom: 8, display: "flex", gap: 8 }}>
-          {imageFiles.map((file, index) => (
-            <img
-              key={index}
-              src={URL.createObjectURL(file)}
-              alt={`preview-${index}`}
-              style={{ width: 120, borderRadius: 8, marginTop: 8, objectFit: "cover" }}
-            />
-          ))}
+          >
+            📷 Chọn tối đa 5 ảnh
+          </label>
+          <input
+            id="rating-images"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+          />
+          {imageFiles.length > 0 && (
+            <div style={{ marginBottom: 8, display: "flex", gap: 8 }}>
+              {imageFiles.map((file, index) => (
+                <img
+                  key={index}
+                  src={URL.createObjectURL(file)}
+                  alt={`preview-${index}`}
+                  style={{ width: 120, borderRadius: 8, marginTop: 8, objectFit: "cover" }}
+                />
+              ))}
+            </div>
+          )}
+          <textarea
+            value={reviewText}
+            onChange={e => setReviewText(e.target.value)}
+            placeholder="Nhập nội dung đánh giá..."
+            rows={3}
+            style={{
+              width: "100%",
+              borderRadius: 8,
+              border: "1.5px solid #b6d4fe",
+              padding: 10,
+              margin: "12px 0",
+              fontSize: 15,
+              resize: "vertical"
+            }}
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={!user || !rating}
+            style={{
+              background: "#0154b9",
+              color: "#fff",
+              border: "none",
+              borderRadius: 8,
+              padding: "8px 24px",
+              fontWeight: 600,
+              fontSize: "1rem",
+              cursor: (!user || !rating) ? "not-allowed" : "pointer",
+              marginBottom: 8
+            }}
+          >
+            Gửi đánh giá
+          </button>
+          {message && (
+            <div style={{
+              color: message.includes("thất bại") ? "#d32f2f" : "#388e3c",
+              marginTop: 8,
+              fontWeight: 500
+            }}>{message}</div>
+          )}
+        </>
+      ) : (
+        <div style={{textAlign: "center", margin: "24px 0"}}>
+          <p style={{fontWeight: 600, color: "#0154b9", marginBottom: 12}}>
+            Mua hàng ngay để trải nghiệm sản phẩm của chúng mình!
+          </p>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            style={{
+              background: "#0154b9",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              padding: "10px 24px",
+              fontWeight: 700,
+              fontSize: 16,
+              cursor: "pointer"
+            }}
+          >
+            Mua hàng ngay
+          </button>
         </div>
-      )}
-      <textarea
-        value={reviewText}
-        onChange={e => setReviewText(e.target.value)}
-        placeholder="Nhập nội dung đánh giá..."
-        rows={3}
-        style={{
-          width: "100%",
-          borderRadius: 8,
-          border: "1.5px solid #b6d4fe",
-          padding: 10,
-          margin: "12px 0",
-          fontSize: 15,
-          resize: "vertical"
-        }}
-      />
-      <button
-        onClick={handleSubmit}
-        disabled={!user || !rating}
-        style={{
-          background: "#0154b9",
-          color: "#fff",
-          border: "none",
-          borderRadius: 8,
-          padding: "8px 24px",
-          fontWeight: 600,
-          fontSize: "1rem",
-          cursor: (!user || !rating) ? "not-allowed" : "pointer",
-          marginBottom: 8
-        }}
-      >
-        Gửi đánh giá
-      </button>
-      {message && (
-        <div style={{
-          color: message.includes("thất bại") ? "#d32f2f" : "#388e3c",
-          marginTop: 8,
-          fontWeight: 500
-        }}>{message}</div>
       )}
       <div style={{ marginTop: 16, color: "#0154b9" }}>
         <b>Điểm trung bình:</b> {Number(avg).toFixed(1)} / 5 ({count} lượt đánh giá)
       </div>
-
-      {/* HIỂN THỊ DANH SÁCH ĐÁNH GIÁ PHÍA DƯỚI */}
       <div style={{ marginTop: 32 }}>
         <h4 style={{ color: "#0154b9", marginBottom: 12 }}>Các đánh giá gần đây</h4>
         {reviews.length === 0 && <div style={{ color: "#888" }}>Chưa có đánh giá nào.</div>}
@@ -193,7 +233,6 @@ function ProductRating({ productId, user }) {
                 </div>
               )}
             </div>
-            {/* HIỂN THỊ ẢNH ĐÁNH GIÁ */}
             {rv.images && rv.images.length > 0 && (
               <div style={{ display: "flex", gap: 8, marginLeft: 12 }}>
                 {rv.images.map((img, i) => (
