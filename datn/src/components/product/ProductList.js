@@ -1,10 +1,154 @@
 import React, { useEffect, useState } from "react";
 import { fetchProducts } from "../../api/productApi";
 import { useNavigate } from "react-router-dom";
+import ProductOptions from "../productdetail/ProductOptions";
+
+// Component popup chọn biến thể với option từng thuộc tính
+function VariantSelector({ product, onClose, onSelectVariant }) {
+  const [selectedVariant, setSelectedVariant] = useState(null);
+
+  if (!product.variants || product.variants.length === 0) return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.45)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 9999,
+      animation: "fadeIn 0.2s"
+    }}>
+      <div style={{
+        background: "#fff",
+        borderRadius: 16,
+        boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+        minWidth: 360,
+        maxWidth: 420,
+        padding: "32px 28px 24px 28px",
+        position: "relative",
+        animation: "popupScale 0.2s"
+      }}>
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            background: "transparent",
+            border: "none",
+            fontSize: 22,
+            color: "#888",
+            cursor: "pointer",
+            fontWeight: 700,
+          }}
+          aria-label="Đóng"
+        >
+          ×
+        </button>
+        <h2 style={{
+          marginBottom: 18,
+          fontWeight: 700,
+          fontSize: 22,
+          color: "#0154b9",
+          textAlign: "center"
+        }}>
+          Chọn biến thể cho <span style={{color: "#222"}}>{product.Name}</span>
+        </h2>
+        <ProductOptions
+          variants={product.variants}
+          onVariantChange={setSelectedVariant}
+        />
+        {selectedVariant && (
+          <div style={{
+            margin: "18px 0 10px 0",
+            padding: "12px",
+            background: "#f6f8fa",
+            borderRadius: 8,
+            fontSize: 15,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)"
+          }}>
+            <div style={{fontWeight: 600, fontSize: 16, marginBottom: 2}}>
+              {selectedVariant.Variant_name}
+            </div>
+            <div style={{color: "#0154b9", fontWeight: 500}}>
+              Giá: {Number(selectedVariant.Discount_price || selectedVariant.Price).toLocaleString("vi-VN")}₫
+            </div>
+            <div style={{color: "#666"}}>
+              Kho: {selectedVariant.Quantity}
+            </div>
+            {selectedVariant.Quantity < 1 && (
+              <div style={{color: "red", fontWeight: 600, marginTop: 8}}>
+                Sản phẩm đã hết
+              </div>
+            )}
+          </div>
+        )}
+        <button
+          onClick={() => {
+            if (selectedVariant && selectedVariant.Quantity > 0) onSelectVariant(selectedVariant);
+          }}
+          disabled={!selectedVariant || selectedVariant.Quantity < 1}
+          style={{
+            width: "100%",
+            background: selectedVariant && selectedVariant.Quantity > 0 ? "#0154b9" : "#ccc",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+            padding: "12px 0",
+            fontWeight: 700,
+            fontSize: 17,
+            cursor: selectedVariant && selectedVariant.Quantity > 0 ? "pointer" : "not-allowed",
+            marginBottom: 8,
+            transition: "background 0.15s"
+          }}
+        >
+          Thêm vào giỏ hàng
+        </button>
+      </div>
+      {/* Hiệu ứng CSS */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0 }
+            to { opacity: 1 }
+          }
+          @keyframes popupScale {
+            from { transform: scale(0.95); opacity: 0 }
+            to { transform: scale(1); opacity: 1 }
+          }
+          .options button {
+            margin: 0 6px 6px 0;
+            padding: 7px 16px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #f8fafd;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+          }
+          .options button.selected {
+            background: #0154b9;
+            color: #fff;
+            border-color: #0154b9;
+          }
+          .options p {
+            margin: 10px 0 6px 0;
+            font-weight: 600;
+            color: #0154b9;
+          }
+        `}
+      </style>
+    </div>
+  );
+}
 
 function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }) {
   const [products, setProducts] = useState([]);
   const [meta, setMeta] = useState({});
+  const [showVariantPopup, setShowVariantPopup] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,6 +251,41 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     return <p className="product-list-empty">Không tìm thấy sản phẩm phù hợp.</p>;
   }
 
+  // Hàm thêm vào giỏ hàng
+  const addToCart = (product, selectedVariant = null) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    let productToAdd = { ...product };
+    if (selectedVariant) productToAdd.selectedVariant = selectedVariant;
+    const exist = cart.find(
+      (item) =>
+        item.Product_ID === product.Product_ID &&
+        (!selectedVariant || JSON.stringify(item.selectedVariant) === JSON.stringify(selectedVariant))
+    );
+    let updated;
+    if (exist) {
+      updated = cart.map((item) =>
+        item.Product_ID === product.Product_ID &&
+        (!selectedVariant || JSON.stringify(item.selectedVariant) === JSON.stringify(selectedVariant))
+          ? { ...item, quantity: (item.quantity || 1) + 1 }
+          : item
+      );
+    } else {
+      updated = [...cart, { ...productToAdd, quantity: 1 }];
+    }
+    localStorage.setItem("cart", JSON.stringify(updated));
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  // Xử lý khi bấm nút thêm vào giỏ hàng
+  const handleAddToCart = (product) => {
+    if (product.variants && product.variants.length > 0) {
+      setSelectedProduct(product);
+      setShowVariantPopup(true);
+    } else {
+      addToCart(product);
+    }
+  };
+
   return (
     <main className="product-list-main">
       {sortedProducts.map((product) => (
@@ -176,24 +355,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                 className="product-list-cart-btn tooltip-parent"
                 onClick={(e) => {
                   e.stopPropagation();
-                  const cart = JSON.parse(
-                    localStorage.getItem("cart") || "[]"
-                  );
-                  const exist = cart.find(
-                    (item) => item.Product_ID === product.Product_ID
-                  );
-                  let updated;
-                  if (exist) {
-                    updated = cart.map((item) =>
-                      item.Product_ID === product.Product_ID
-                        ? { ...item, quantity: (item.quantity || 1) + 1 }
-                        : item
-                    );
-                  } else {
-                    updated = [...cart, { ...product, quantity: 1 }];
-                  }
-                  localStorage.setItem("cart", JSON.stringify(updated));
-                  window.dispatchEvent(new Event("cartUpdated"));
+                  handleAddToCart(product);
                 }}
                 disabled={!product.Status}
                 style={{
@@ -234,6 +396,16 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
           </div>
         </div>
       ))}
+      {showVariantPopup && selectedProduct && (
+        <VariantSelector
+          product={selectedProduct}
+          onClose={() => setShowVariantPopup(false)}
+          onSelectVariant={(variant) => {
+            addToCart(selectedProduct, variant);
+            setShowVariantPopup(false);
+          }}
+        />
+      )}
     </main>
   );
 }

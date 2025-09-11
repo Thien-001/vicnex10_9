@@ -4,58 +4,49 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Comment;
+use App\Models\PostComment;
 
 class PostCommentApi extends Controller
 {
     // GET /api/comments
     public function index()
     {
-        return response()->json(Comment::all(), 200);
+        return response()->json(PostComment::all(), 200);
     }
 
     // POST /api/comments
     public function store(Request $request)
-{
-    $data = $request->validate([
-        'Post_ID'  => 'required|exists:posts,Post_ID',
-        'User_ID'  => 'required|exists:user,ID',
-        'Content'  => 'required|string',
-        'Status'   => 'nullable|boolean',
-    ]);
+    {
+        $data = $request->validate([
+            'Post_ID'  => 'required|exists:posts,Post_ID',
+            'User_ID'  => 'required|exists:users,ID',
+            'text'     => 'required|string',
+        ]);
 
-    $data['Create_at'] = now();
+        $comment = PostComment::create($data);
 
-    $comment = Comment::create($data);
-
-    // Load thêm thông tin người dùng bình luận
-    $comment->load('user');
-
-    return response()->json([
-        'message' => 'Tạo bình luận thành công',
-        'data'    => $comment
-    ], 201);
-}
-
+        return response()->json([
+            'message' => 'Tạo bình luận thành công',
+            'data'    => $comment
+        ], 201);
+    }
 
     // GET /api/comments/{id}
     public function show($id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = PostComment::findOrFail($id);
         return response()->json($comment);
     }
 
     // PUT/PATCH /api/comments/{id}
     public function update(Request $request, $id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = PostComment::findOrFail($id);
 
         $data = $request->validate([
-            'Content' => 'sometimes|required|string',
-            'Status'  => 'nullable|boolean',
+            'text' => 'sometimes|required|string',
         ]);
 
-        $data['Update_at'] = now();
         $comment->update($data);
 
         return response()->json([
@@ -67,9 +58,37 @@ class PostCommentApi extends Controller
     // DELETE /api/comments/{id}
     public function destroy($id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = PostComment::findOrFail($id);
         $comment->delete();
 
         return response()->json(['message' => 'Xóa thành công'], 200);
+    }
+
+    // GET /api/posts/{post}/comments
+    public function postComments($postId)
+    {
+        $comments = PostComment::where('Post_ID', $postId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json($comments);
+    }
+
+    // POST /api/posts/{post}/comments
+    public function storePostComment(Request $request, $postId)
+    {
+        \Log::info('Request data:', $request->all()); // Thêm dòng này để debug dữ liệu nhận được
+
+        $data = $request->validate([
+            'User_ID'  => 'required|exists:users,ID',
+            'text'     => 'required|string',
+        ]);
+        $data['Post_ID'] = $postId;
+
+        $comment = PostComment::create($data);
+
+        return response()->json([
+            'message' => 'Tạo bình luận thành công',
+            'data'    => $comment
+        ], 201);
     }
 }

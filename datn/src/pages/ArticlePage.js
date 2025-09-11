@@ -17,6 +17,9 @@ function ArticlePage() {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Thêm dòng này để lấy user đã đăng nhập
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
   useEffect(() => {
     fetch(`/api/posts/${id}`)
       .then(res => res.json())
@@ -76,7 +79,7 @@ function ArticlePage() {
             }}
           />
           <ArticleRelated related={article.related || []} />
-          <ArticleComments postId={article.Post_ID} />
+          <ArticleComments postId={article.Post_ID} user={user} />
         </main>
         <aside style={{ flex: 1 }}>
           <ArticleSidebar />
