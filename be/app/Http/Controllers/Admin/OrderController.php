@@ -18,14 +18,58 @@ class OrderController extends Controller
     {
         $query = Order::with('user');
 
+        // Tìm kiếm theo mã đơn hàng (tìm theo ID hoặc mã hệ thống)
         if ($request->filled('order_code')) {
-            $query->where('order_code', 'like', '%' . $request->order_code . '%');
+            $searchTerm = $request->order_code;
+
+            $query->where(function($q) use ($searchTerm) {
+                // Tìm theo ID
+                $q->where('id', 'like', '%' . $searchTerm . '%')
+                  // Tìm theo mã đơn hàng hệ thống (DH + ID)
+                  ->orWhereRaw("CONCAT('DH', LPAD(id, 6, '0')) LIKE ?", ['%' . $searchTerm . '%']);
+            });
         }
 
+        // Tìm kiếm theo tên khách hàng
+        if ($request->filled('customer_name')) {
+            $query->where(function($q) use ($request) {
+                $q->where('full_name', 'like', '%' . $request->customer_name . '%')
+                  ->orWhereHas('user', function($userQuery) use ($request) {
+                      $userQuery->where('Name', 'like', '%' . $request->customer_name . '%');
+                  });
+            });
+        }
+
+        // Tìm kiếm theo số điện thoại
+        if ($request->filled('phone')) {
+            $query->where(function($q) use ($request) {
+                $q->where('phone', 'like', '%' . $request->phone . '%')
+                  ->orWhereHas('user', function($userQuery) use ($request) {
+                      $userQuery->where('Phone', 'like', '%' . $request->phone . '%');
+                  });
+            });
+        }
+
+        // Lọc theo trạng thái
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        // Lọc theo phương thức thanh toán
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', $request->payment_method);
+        }
+
+        // Lọc theo khoảng giá
+        if ($request->filled('min_amount')) {
+            $query->where('total_price', '>=', $request->min_amount);
+        }
+
+        if ($request->filled('max_amount')) {
+            $query->where('total_price', '<=', $request->max_amount);
+        }
+
+        // Lọc theo ngày
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
@@ -34,7 +78,13 @@ class OrderController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $orders = $query->orderByDesc('created_at')->paginate(10)->appends($request->query());
+        // Kiểm tra nếu có yêu cầu xuất Excel
+        if ($request->has('export') && $request->export === 'excel') {
+            return $this->exportToExcel($query);
+        }
+
+        // Sắp xếp và phân trang
+        $orders = $query->orderByDesc('created_at')->paginate(15)->appends($request->query());
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -244,5 +294,79 @@ class OrderController extends Controller
             return redirect()->back()->with('success', 'Đơn hàng đã chuyển sang trạng thái Đang giao!');
         }
         return redirect()->back()->with('error', 'Chỉ chuyển sang Đang giao với đơn đã xác nhận!');
+    }
+
+    // Xuất Excel danh sách đơn hàng
+    private function exportToExcel($query)
+    {
+        $orders = $query->with(['user', 'orderDetails.product'])->get();
+
+        $filename = 'danh_sach_don_hang_' . date('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($orders) {
+            $file = fopen('php://output', 'w');
+
+            // Thêm BOM để hiển thị tiếng Việt đúng trong Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Header
+            fputcsv($file, [
+                'STT',
+                'Mã đơn hàng',
+                'Tên khách hàng',
+                'Email',
+                'Số điện thoại',
+                'Địa chỉ',
+                'Tổng tiền (VNĐ)',
+                'Phí ship (VNĐ)',
+                'Trạng thái',
+                'Phương thức thanh toán',
+                'Ngày tạo',
+                'Ngày hoàn thành',
+                'Ghi chú'
+            ]);
+
+            // Data
+            foreach ($orders as $index => $order) {
+                fputcsv($file, [
+                    $index + 1,
+                    'DH' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
+                    $order->full_name ?? ($order->user->Name ?? 'N/A'),
+                    $order->email ?? ($order->user->Email ?? 'N/A'),
+                    $order->phone ?? ($order->user->Phone ?? 'N/A'),
+                    $order->address ?? 'N/A',
+                    number_format($order->total_price ?? $order->total_amount, 0, ',', '.'),
+                    number_format($order->shipping_fee ?? $order->shiping_fee, 0, ',', '.'),
+                    $this->getStatusText($order->status),
+                    ucfirst($order->payment_method),
+                    $order->created_at ? $order->created_at->format('d/m/Y H:i') : 'N/A',
+                    $order->updated_at ? $order->updated_at->format('d/m/Y H:i') : '',
+                    $order->note ?? 'N/A'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // Chuyển đổi status code thành text
+    private function getStatusText($status)
+    {
+        $statusMap = [
+            'pending' => 'Chờ xử lý',
+            'confirmed' => 'Đã xác nhận',
+            'shipping' => 'Đang giao hàng',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy'
+        ];
+
+        return $statusMap[$status] ?? $status;
     }
 }
