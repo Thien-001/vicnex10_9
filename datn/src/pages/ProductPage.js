@@ -23,10 +23,7 @@ function ProductPage() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [hotProducts, setHotProducts] = useState([]);
-  const [compareProducts, setCompareProducts] = useState(() => {
-    const saved = localStorage.getItem("compareProducts");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [compareProducts, setCompareProducts] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
   const [showNotice, setShowNotice] = useState(false);
   const [sort, setSort] = useState("default");
@@ -124,18 +121,12 @@ function ProductPage() {
   const handleAddCompare = (product) => {
     if (compareProducts.find((p) => p.Product_ID === product.Product_ID)) return;
     if (compareProducts.length >= 2) return;
-    const updated = [...compareProducts, product];
-    setCompareProducts(updated);
-    if (updated.length === 2) setShowCompare(true); // Chỉ mở modal khi đủ 2 sản phẩm
+    setCompareProducts([...compareProducts, product]);
   };
 
   const handleRemoveCompare = (productId) => {
     setCompareProducts(compareProducts.filter((p) => p.Product_ID !== productId));
   };
-
-  useEffect(() => {
-    localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
-  }, [compareProducts]);
 
   return (
     <div>
@@ -169,14 +160,11 @@ function ProductPage() {
 
       <CompareFloatingButton
         count={compareProducts.length}
-        onClick={() => {
-          if (compareProducts.length > 0) setShowCompare(true);
-          else setShowNotice(true);
-        }}
+        onClick={() => setShowCompare(true)}
         onEmptyCompare={() => setShowNotice(true)}
       />
 
-      {showCompare && compareProducts.length > 0 && (
+      {showCompare && (
         <CompareModal
           products={compareProducts}
           onClose={() => setShowCompare(false)}

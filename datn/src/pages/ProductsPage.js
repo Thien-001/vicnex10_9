@@ -10,9 +10,6 @@ import RecentlyViewed from "../components/product/RecentlyViewed";
 import SupportSection from "../components/product/SupportSection";
 import Hotmonthproduct from "../components/product/Hotmonthproduct";
 import RecomendProduct from "../components/product/RecomendProduct";
-import CompareFloatingButton from "../components/product/CompareFloatingButton";
-import CompareModal from "../components/product/CompareModal";
-import CompareNoticeModal from "../components/product/CompareNoticeModal";
 
 function ProductsPage() {
   const location = useLocation();
@@ -24,12 +21,6 @@ function ProductsPage() {
   const [categoryName, setCategoryName] = useState("");
   const [categoryId, setCategoryId] = useState(null);
   const [hotProducts, setHotProducts] = useState([]);
-  const [compareProducts, setCompareProducts] = useState(() => {
-    const saved = localStorage.getItem("compareProducts");
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [showCompare, setShowCompare] = useState(false);
-  const [showNotice, setShowNotice] = useState(false);
 
   // Lấy tên danh mục khi có categorySlug
   useEffect(() => {
@@ -72,30 +63,13 @@ function ProductsPage() {
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  // So sánh sản phẩm
-  const handleAddCompare = (product) => {
-    if (
-      compareProducts.length < 2 &&
-      !compareProducts.some((p) => p.Product_ID === product.Product_ID)
-    ) {
-      const updated = [...compareProducts, product];
-      setCompareProducts(updated);
-      // Chỉ mở modal khi đã đủ 2 sản phẩm
-      if (updated.length === 2) setShowCompare(true);
-    }
-  };
-
-  const handleRemoveCompare = (productId) => {
-    setCompareProducts(compareProducts.filter((p) => p.Product_ID !== productId));
-  };
-  const handleEmptyCompare = () => {
-    alert("Bạn cần chọn đủ 2 sản phẩm để so sánh!");
-  };
-
-  // Map filters từ tiếng Việt sang key backend
+  // Map filters từ tiếng Việt sang key backend API
   function mapFilters(filters, categoryId) {
     const mapped = {};
-    if (categoryId) mapped.Categories_ID = categoryId; // Đúng tên tham số backend
+    
+    
+    // Map các filter cơ bản
+    if (categoryId) mapped.Categories_ID = categoryId;
     if (filters["Lọc theo loại sản phẩm"] && filters["Lọc theo loại sản phẩm"].length > 0) {
       mapped.category = filters["Lọc theo loại sản phẩm"][0];
     }
@@ -105,13 +79,8 @@ function ProductsPage() {
     if (filters["Lọc theo giá"] && filters["Lọc theo giá"].length > 0) {
       mapped.price = filters["Lọc theo giá"].join(",");
     }
-    if (filters.keyword) mapped.keyword = filters.keyword;
     return mapped;
   }
-
-  useEffect(() => {
-    localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
-  }, [compareProducts]);
 
   return (
     <>
@@ -128,8 +97,6 @@ function ProductsPage() {
             page={page}
             filters={mapFilters(filters, categoryId)}
             addToCart={addToCart}
-            onAddCompare={handleAddCompare}
-            compareProducts={compareProducts}
           />
         </div>
       </div>
@@ -138,27 +105,6 @@ function ProductsPage() {
       <RecentlyViewed />
       <SupportSection />
       <Footer />
-      <CompareFloatingButton
-        count={compareProducts.length}
-        onClick={() => {
-          if (compareProducts.length > 0) setShowCompare(true);
-          else setShowNotice(true);
-        }}
-        onEmptyCompare={() => setShowNotice(true)}
-      />
-      {showCompare && compareProducts.length > 0 && (
-        <CompareModal
-          products={compareProducts}
-          onClose={() => setShowCompare(false)}
-          onRemove={handleRemoveCompare}
-        />
-      )}
-      {showNotice && (
-        <CompareNoticeModal
-          message="Vui lòng chọn ít nhất 1 sản phẩm để so sánh!"
-          onClose={() => setShowNotice(false)}
-        />
-      )}
     </>
   );
 }
