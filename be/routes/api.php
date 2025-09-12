@@ -33,6 +33,12 @@ use App\Http\Controllers\Api\ProductRatingController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ContactMessageController;
 
+// JWT Auth routes
+use App\Http\Controllers\Api\AuthController;
+
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:api')->get('/user', [AuthController::class, 'me']);
+
 // Products
 Route::get('/products', [ProductApiController::class, 'index']);
 Route::get('/products/{id}', [ProductApiController::class, 'show']);
@@ -70,9 +76,6 @@ Route::put('users/{user}', [UserApiController::class, 'update']);
 Route::patch('users/{user}', [UserApiController::class, 'update']);
 Route::post('/users/{id}/update-profile', [UserController::class, 'updateProfile']);
 
-// Login
-Route::post('/login', [UserApiController::class, 'login']);
-
 // Vouchers, Posts, Courts, Orders, etc.
 Route::resource('vouchers', VoucherApiController::class);
 Route::resource('post_categories', PostCategoryApiController::class);
@@ -96,10 +99,10 @@ Route::prefix('admin')->group(function () {
 });
 Route::get('flash-sales', [\App\Http\Controllers\Api\FlashSaleApi::class, 'index']);
 
-// Admin Banner
-Route::prefix('admin')->name('admin.')->group(function () {
+// Admin Banner (đã sửa lỗi trùng tên route)
+Route::prefix('admin')->group(function () {
     Route::resource('banner', BannerController::class);
-    Route::get('banner-image/{id}', [BannerController::class, 'image'])->name('banner.image');
+    Route::get('banner-image/{id}', [BannerController::class, 'image'])->name('admin.banner.image.api');
 });
 
 // Popup
@@ -128,7 +131,6 @@ Route::post('products/{product}/comments', [CommentApiController::class, 'storeP
 
 // Bình luận bài viết
 Route::get('posts/{post}/comments', [CommentApiController::class, 'postComments']);
-Route::post('posts/{post}/comments', [CommentApiController::class, 'storePostComment']);
 
 // Đánh giá bình luận (like/dislike)
 Route::post('comments/{id}/rate', [CommentRatingApiController::class, 'store']);
@@ -139,18 +141,18 @@ Route::get('/products/{productId}/ratings', [ProductRatingController::class, 'li
 Route::post('/products/{productId}/ratings', [ProductRatingController::class, 'store']); // Gửi đánh giá kèm ảnh
 
 // LẤY TOP ĐÁNH GIÁ CAO NHẤT TOÀN SHOP
-Route::get('/top-reviews', [ProductRatingController::class, 'topReviews']); // <-- Thêm dòng này
+Route::get('/top-reviews', [ProductRatingController::class, 'topReviews']);
 
 // Notifications
-Route::get('/notifications', [NotificationController::class, 'index']); // Lấy danh sách thông báo (có phân trang)
-Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']); // Đánh dấu đã đọc 1 thông báo
-Route::post('/notifications/mark-read', [NotificationController::class, 'markManyAsRead']); // Đánh dấu đã đọc nhiều thông báo
-Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']); // Xóa 1 thông báo
-Route::post('/notifications/delete-many', [NotificationController::class, 'destroyMany']); // Xóa nhiều thông báo
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+Route::post('/notifications/mark-read', [NotificationController::class, 'markManyAsRead']);
+Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+Route::post('/notifications/delete-many', [NotificationController::class, 'destroyMany']);
 
 // Contact Messages
 Route::post('/contact', [ContactMessageController::class, 'store']);
-Route::get('/contacts', [ContactMessageController::class, 'index']); // (tuỳ chọn, cho admin xem tất cả liên hệ)
+Route::get('/contacts', [ContactMessageController::class, 'index']);
 
 // Expert Reviews
 Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiController::class, 'index']);

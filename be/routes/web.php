@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\ExpertController;
 use App\Http\Controllers\Admin\ExpertReviewController;
+use App\Http\Controllers\Auth\LoginController;
 
 // Trang mặc định chuyển hướng đến /admin
 Route::redirect('/', '/admin');
@@ -160,5 +161,8 @@ Route::get('/admin/login', function () {
 
 // Route xử lý đăng nhập admin
 Route::post('/admin/login', [App\Http\Controllers\Admin\AdminLoginController::class, 'login'])->name('admin.login.submit');
+
+// Route xử lý đăng nhập cho user (React gọi)
+Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
 

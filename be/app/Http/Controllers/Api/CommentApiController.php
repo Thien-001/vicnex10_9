@@ -100,4 +100,20 @@ class CommentApiController extends Controller
         $comment->load('user');
         return response()->json($comment, 201);
     }
+
+    public function storePostComment(Request $request, $postId)
+    {
+        $data = $request->validate([
+            'User_ID'  => 'required|exists:users,ID',
+            'text'     => 'required|string',
+        ]);
+        $data['Post_ID'] = $postId;
+
+        $comment = \App\Models\PostComment::create($data);
+
+        return response()->json([
+            'message' => 'Tạo bình luận thành công',
+            'data'    => $comment
+        ], 201);
+    }
 }
