@@ -24,14 +24,18 @@ function ProductRating({ productId, user }) {
   }, [productId, message]);
 
   useEffect(() => {
-    // Kiểm tra khách đã mua hàng chưa (giả sử có API kiểm tra)
-    if (user) {
+    if (user && productId) {
+      console.log("Check purchased:", user.ID, productId); // Log giá trị truyền vào API
       fetch(`http://localhost:8000/api/orders/check-purchased?user_id=${user.ID}&product_id=${productId}`)
         .then(res => res.json())
         .then(data => {
+          console.log("API response:", data); // Log kết quả trả về từ API
           setHasPurchased(!!data.purchased);
         })
-        .catch(() => setHasPurchased(false));
+        .catch((err) => {
+          console.log("API error:", err); // Log lỗi nếu có
+          setHasPurchased(false);
+        });
     } else {
       setHasPurchased(false);
     }

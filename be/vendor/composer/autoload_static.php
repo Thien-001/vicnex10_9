@@ -568,6 +568,7 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         'App\\Http\\Controllers\\Admin\\StatisticsController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/StatisticsController.php',
         'App\\Http\\Controllers\\Admin\\UserController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/UserController.php',
         'App\\Http\\Controllers\\Admin\\VoucherController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/VoucherController.php',
+        'App\\Http\\Controllers\\Api\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/AuthController.php',
         'App\\Http\\Controllers\\Api\\BannerApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/BannerApiController.php',
         'App\\Http\\Controllers\\Api\\CartApi' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/CartApi.php',
         'App\\Http\\Controllers\\Api\\CategoryApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/CategoryApiController.php',

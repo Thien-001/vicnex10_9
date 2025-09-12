@@ -229,6 +229,22 @@ class OrderApi extends Controller
         return response()->json(['message' => 'Đã hủy đơn hàng!']);
     }
 
+    // Kiểm tra xem người dùng đã mua sản phẩm này chưa
+    public function checkPurchased(Request $request)
+    {
+        $user_id = $request->query('user_id');
+        $product_id = $request->query('product_id');
+
+        $order = \App\Models\Order::where('user_id', $user_id)
+            ->where('status', 'completed')
+            ->whereHas('orderDetails', function($q) use ($product_id) {
+                $q->where('Product_ID', $product_id);
+            })
+            ->first();
+
+        return response()->json(['purchased' => !!$order]);
+    }
+
     private function calculateShippingFee($total, $area, $distanceKm)
     {
         if ($total >= 500000) {

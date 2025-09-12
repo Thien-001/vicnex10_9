@@ -358,7 +358,9 @@ const Header = ({ cartItems }) => {
                               transition={{ duration: 0.3 }}
                             />
                           )}
-                          <span style={iconTextStyle}>{user.name || "TÀI KHOẢN"}</span>
+                          <span style={iconTextStyle}>
+                            {user.Name ? user.Name.toUpperCase() : "TÀI KHOẢN"}
+                          </span>
                           <AnimatePresence>
                             {isUserDropdownOpen && (
                               <motion.div

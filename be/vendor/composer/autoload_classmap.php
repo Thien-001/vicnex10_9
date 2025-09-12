@@ -43,6 +43,7 @@ return array(
     'App\\Http\\Controllers\\Admin\\StatisticsController' => $baseDir . '/app/Http/Controllers/Admin/StatisticsController.php',
     'App\\Http\\Controllers\\Admin\\UserController' => $baseDir . '/app/Http/Controllers/Admin/UserController.php',
     'App\\Http\\Controllers\\Admin\\VoucherController' => $baseDir . '/app/Http/Controllers/Admin/VoucherController.php',
+    'App\\Http\\Controllers\\Api\\AuthController' => $baseDir . '/app/Http/Controllers/Api/AuthController.php',
     'App\\Http\\Controllers\\Api\\BannerApiController' => $baseDir . '/app/Http/Controllers/Api/BannerApiController.php',
     'App\\Http\\Controllers\\Api\\CartApi' => $baseDir . '/app/Http/Controllers/Api/CartApi.php',
     'App\\Http\\Controllers\\Api\\CategoryApiController' => $baseDir . '/app/Http/Controllers/Api/CategoryApiController.php',

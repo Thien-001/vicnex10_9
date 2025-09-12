@@ -24,7 +24,6 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Api\PopupApiController;
 use App\Http\Controllers\Admin\ChatBotController;
 use App\Http\Controllers\Api\ProductVariantController;
-use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\Api\LocationApi;
 use App\Http\Controllers\Api\CommentApiController;
@@ -70,18 +69,14 @@ Route::get('/users', [UserApiController::class, 'index']);
 Route::get('/users/{id}', [UserApiController::class, 'show']);
 Route::post('/users', [UserApiController::class, 'store']);
 Route::put('/users/{id}', [UserApiController::class, 'update']);
-Route::post('/users/{id}', [UserApiController::class, 'update']);
 Route::delete('/users/{id}', [UserApiController::class, 'destroy']);
-Route::put('users/{user}', [UserApiController::class, 'update']);
-Route::patch('users/{user}', [UserApiController::class, 'update']);
-Route::post('/users/{id}/update-profile', [UserController::class, 'updateProfile']);
+Route::post('/users/{id}/update-profile', [UserApiController::class, 'updateProfile']);
 
 // Vouchers, Posts, Courts, Orders, etc.
 Route::resource('vouchers', VoucherApiController::class);
 Route::resource('post_categories', PostCategoryApiController::class);
 Route::resource('posts', PostApiController::class);
 Route::resource('product_reviews', ProductReviewApiController::class);
-Route::resource('comments', PostCommentApi::class);
 Route::resource('courts', CourtApi::class);
 Route::resource('court_bookings', CourtBookingApi::class);
 Route::resource('carts', CartApi::class);
@@ -131,6 +126,7 @@ Route::post('products/{product}/comments', [CommentApiController::class, 'storeP
 
 // Bình luận bài viết
 Route::get('posts/{post}/comments', [CommentApiController::class, 'postComments']);
+Route::post('posts/{post}/comments', [CommentApiController::class, 'storePostComment']);
 
 // Đánh giá bình luận (like/dislike)
 Route::post('comments/{id}/rate', [CommentRatingApiController::class, 'store']);
@@ -157,7 +153,5 @@ Route::get('/contacts', [ContactMessageController::class, 'index']);
 // Expert Reviews
 Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiController::class, 'index']);
 
-// Bình luận bài viết
-Route::resource('comments', PostCommentApi::class);
-Route::get('posts/{post}/comments', [PostCommentApi::class, 'postComments']);
-Route::post('posts/{post}/comments', [PostCommentApi::class, 'storePostComment']);
+// Kiểm tra đã mua sản phẩm
+Route::get('orders/check-purchased', [OrderApi::class, 'checkPurchased']);

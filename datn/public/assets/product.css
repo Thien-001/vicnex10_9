@@ -1693,3 +1693,89 @@ main {
     min-height: 28px;
   }
 }
+
+/* Overlay */
+.variant-popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popup box */
+.variant-popup {
+  background: #fff;
+  border-radius: 14px;
+  padding: 32px 28px;
+  min-width: 340px;
+  box-shadow: 0 4px 24px rgba(1,84,185,0.18);
+  text-align: center;
+  animation: popupShow 0.25s;
+}
+
+@keyframes popupShow {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Option group */
+.variant-popup > div {
+  margin-bottom: 18px;
+}
+
+/* Option label */
+.variant-popup p {
+  font-weight: 600;
+  margin-bottom: 7px;
+  color: #0154b9;
+}
+
+/* Option button */
+.variant-popup button {
+  background: #f5f9ff;
+  border: 1.5px solid #0154b9;
+  border-radius: 7px;
+  padding: 7px 18px;
+  margin: 0 6px 6px 0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  outline: none;
+}
+
+.variant-popup button.selected,
+.variant-popup button:hover {
+  background: #0154b9;
+  color: #fff;
+}
+
+/* Confirm & Cancel buttons */
+.confirm-btn {
+  background: #0154b9 !important;
+  color: #fff !important;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.cancel-btn {
+  background: #eee !important;
+  color: #333 !important;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Info text */
+.variant-popup .info {
+  margin: 12px 0;
+  font-size: 1.08em;
+}

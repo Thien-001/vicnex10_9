@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/home/Header";
 import Footer from "../components/home/Footer";
 
@@ -19,6 +20,8 @@ function UserProfile() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const navigate = useNavigate();
 
   // Thêm state cho tỉnh/huyện/xã
   const [provinces, setProvinces] = useState([]);
@@ -121,19 +124,39 @@ function UserProfile() {
   const [orderPage, setOrderPage] = useState(1);
   const [orderPagination, setOrderPagination] = useState({});
 
+  // Lấy danh sách sản phẩm để map slug nếu cần
+  const [productSlugMap, setProductSlugMap] = useState({});
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/products").then(res => {
+      const map = {};
+      (res.data.data || []).forEach(p => {
+        map[p.Product_ID] = p.slug;
+      });
+      setProductSlugMap(map);
+    });
+  }, []);
+
+  // Lấy lịch sử đơn hàng, bổ sung slug cho từng sản phẩm
   useEffect(() => {
     if (!user || !user.id) return;
     axios.get(`http://localhost:8000/api/orders/user/${user.id}?page=${orderPage}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     }).then(res => {
-      setOrders(res.data.data || []);
+      const ordersWithSlug = (res.data.data || []).map(order => ({
+        ...order,
+        order_details: (order.order_details || []).map(item => ({
+          ...item,
+          slug: item.slug || productSlugMap[item.Product_ID] || "",
+        }))
+      }));
+      setOrders(ordersWithSlug);
       setOrderPagination({
         current: res.data.current_page,
         last: res.data.last_page,
         total: res.data.total,
       });
     });
-  }, [user, orderPage]);
+  }, [user, orderPage, productSlugMap]);
 
   // Lấy lịch sử đặt sân (có phân trang)
   const [bookingPage, setBookingPage] = useState(1);
@@ -1044,11 +1067,33 @@ function UserProfile() {
                               <td style={{ padding: 6 }}>
                                 {(Number(item.price) * Number(item.quantity)).toLocaleString()}₫
                               </td>
+                              <td style={{ padding: 6 }}>
+                                {/* Hiển thị nút đánh giá nếu đơn hàng đã hoàn thành */}
+                                {selectedOrder.status === "completed" && (
+                                  <button
+                                    style={{
+                                      background: "#FFD600",
+                                      color: "#0154b9",
+                                      border: "none",
+                                      borderRadius: 6,
+                                      padding: "6px 18px",
+                                      fontWeight: 600,
+                                      cursor: "pointer"
+                                    }}
+                                    onClick={() => {
+                                      // Chuyển đến trang chi tiết sản phẩm theo slug
+                                      navigate(`/product/${item.slug}`);
+                                    }}
+                                  >
+                                    Đánh giá sản phẩm
+                                  </button>
+                                )}
+                              </td>
                             </tr>
                           ))
                         ) : (
                           <tr>
-                            <td colSpan={5} style={{ textAlign: "center", color: "#888" }}>Không có sản phẩm.</td>
+                            <td colSpan={6} style={{ textAlign: "center", color: "#888" }}>Không có sản phẩm.</td>
                           </tr>
                         )}
                       </tbody>
@@ -1257,11 +1302,33 @@ function UserProfile() {
                       <td style={{ padding: 6 }}>
                         {(Number(item.price) * Number(item.quantity)).toLocaleString()}₫
                       </td>
+                      <td style={{ padding: 6 }}>
+                        {/* Hiển thị nút đánh giá nếu đơn hàng đã hoàn thành */}
+                        {selectedOrder.status === "completed" && (
+                          <button
+                            style={{
+                              background: "#FFD600",
+                              color: "#0154b9",
+                              border: "none",
+                              borderRadius: 6,
+                              padding: "6px 18px",
+                              fontWeight: 600,
+                              cursor: "pointer"
+                            }}
+                            onClick={() => {
+                              // Chuyển đến trang chi tiết sản phẩm theo slug
+                              navigate(`/product/${item.slug}`);
+                            }}
+                          >
+                            Đánh giá sản phẩm
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: "center", color: "#888" }}>Không có sản phẩm.</td>
+                    <td colSpan={6} style={{ textAlign: "center", color: "#888" }}>Không có sản phẩm.</td>
                   </tr>
                 )}
               </tbody>

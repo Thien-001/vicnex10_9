@@ -101,6 +101,7 @@ function ProductDetailPage() {
 
       <ProductRating productId={product?.Product_ID} user={user} />
       <ProductComments productId={product?.Product_ID} user={user} />
+
       <Hotmonthproduct products={hotProducts} />
       <RecentlyViewed />
       <RecomendProduct />
