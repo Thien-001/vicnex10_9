@@ -236,7 +236,7 @@
      Form lọc sản phẩm
 ============================ -->
 <div class="body-content">
-         <form action="{{ route('admin.products.index') }}" method="GET" class="filter-form" style="margin-bottom: 20px;">
+         <form action="{{ route('admin.products.index') }}" method="GET" class="filter-form" style="margin-bottom: 20px;" id="filterForm">
          <div>
              <div>
                  <label for="keyword">Tìm kiếm:</label>
@@ -590,42 +590,55 @@
      }
  });
 
- // Cải thiện trải nghiệm form lọc
- document.addEventListener('DOMContentLoaded', function() {
-     // Tắt auto-submit để người dùng có thể điền nhiều điều kiện trước khi lọc
-     // Chỉ auto-submit cho sắp xếp để trải nghiệm tốt hơn
-     const sortSelects = ['sort_by', 'sort_order'];
-     sortSelects.forEach(function(selectId) {
-         const select = document.getElementById(selectId);
-         if (select) {
-             select.addEventListener('change', function() {
-                 this.form.submit();
+     // Cải thiện trải nghiệm form lọc
+     document.addEventListener('DOMContentLoaded', function() {
+         console.log('Filter form loaded'); // Debug log
+
+         // Tắt auto-submit để người dùng có thể điền nhiều điều kiện trước khi lọc
+         // Chỉ auto-submit cho sắp xếp để trải nghiệm tốt hơn
+         const sortSelects = ['sort_by', 'sort_order'];
+         sortSelects.forEach(function(selectId) {
+             const select = document.getElementById(selectId);
+             if (select) {
+                 select.addEventListener('change', function() {
+                     console.log('Sort changed, submitting form'); // Debug log
+                     this.form.submit();
+                 });
+             }
+         });
+
+         // Thêm tính năng Enter để submit form
+         const keywordInput = document.getElementById('keyword');
+         if (keywordInput) {
+             keywordInput.addEventListener('keypress', function(e) {
+                 if (e.key === 'Enter') {
+                     e.preventDefault();
+                     console.log('Enter pressed in keyword, submitting form'); // Debug log
+                     this.form.submit();
+                 }
+             });
+         }
+
+         // Thêm tính năng Enter cho input thương hiệu
+         const brandInput = document.getElementById('brand');
+         if (brandInput) {
+             brandInput.addEventListener('keypress', function(e) {
+                 if (e.key === 'Enter') {
+                     e.preventDefault();
+                     console.log('Enter pressed in brand, submitting form'); // Debug log
+                     this.form.submit();
+                 }
+             });
+         }
+
+         // Thêm debug cho form submit
+         const filterForm = document.querySelector('.filter-form');
+         if (filterForm) {
+             filterForm.addEventListener('submit', function(e) {
+                 console.log('Form submitted with data:', new FormData(this)); // Debug log
              });
          }
      });
-
-     // Thêm tính năng Enter để submit form
-     const keywordInput = document.getElementById('keyword');
-     if (keywordInput) {
-         keywordInput.addEventListener('keypress', function(e) {
-             if (e.key === 'Enter') {
-                 e.preventDefault();
-                 this.form.submit();
-             }
-         });
-     }
-
-     // Thêm tính năng Enter cho input thương hiệu
-     const brandInput = document.getElementById('brand');
-     if (brandInput) {
-         brandInput.addEventListener('keypress', function(e) {
-             if (e.key === 'Enter') {
-                 e.preventDefault();
-                 this.form.submit();
-             }
-         });
-     }
- });
 
      // Validate giá min/max
      const priceMin = document.getElementById('price_min');

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 
@@ -35,6 +35,8 @@ const filterData = [
 function FilterSidebar({ setFilters, filters }) {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState("");
+  const prevFiltersRef = useRef({});
+  const isInitialMount = useRef(true);
 
   // Hàm xóa tất cả bộ lọc
   const handleClearAll = useCallback(() => {
@@ -73,8 +75,8 @@ function FilterSidebar({ setFilters, filters }) {
     });
   }, []);
 
-  // Memoize filters để tránh re-render không cần thiết
-  const memoizedFilters = useMemo(() => {
+  // Gửi filters ra ngoài cho component cha xử lý API
+  useEffect(() => {
     let filtersWithKeyword = { ...selectedFilters };
     if (
       selectedFilters["Lọc theo loại sản phẩm"] &&
@@ -84,13 +86,25 @@ function FilterSidebar({ setFilters, filters }) {
     } else {
       delete filtersWithKeyword.keyword;
     }
-    return filtersWithKeyword;
-  }, [selectedFilters]);
 
-  // Gửi filters ra ngoài cho component cha xử lý API
-  useEffect(() => {
-    setFilters(memoizedFilters);
-  }, [memoizedFilters, setFilters]);
+    // Chỉ gửi khi filters thực sự thay đổi
+    const filtersString = JSON.stringify(filtersWithKeyword);
+    const prevFiltersString = JSON.stringify(prevFiltersRef.current);
+    
+    // Tránh gửi empty filters lần đầu mount
+    const hasFilters = Object.keys(filtersWithKeyword).length > 0;
+    
+    if (filtersString !== prevFiltersString && (hasFilters || !isInitialMount.current)) {
+      console.log('🔄 FilterSidebar: Sending filters to parent:', filtersWithKeyword);
+      setFilters(filtersWithKeyword);
+      prevFiltersRef.current = filtersWithKeyword;
+    }
+    
+    // Đánh dấu đã mount xong
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    }
+  }, [selectedFilters]); // Bỏ setFilters khỏi dependency
 
   return (
     <motion.aside

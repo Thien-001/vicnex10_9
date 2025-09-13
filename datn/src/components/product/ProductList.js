@@ -34,6 +34,8 @@ function findVariant(variants, weight, stiffness, balance, playStyle) {
 
 function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }) {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showVariantPopup, setShowVariantPopup] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -49,14 +51,23 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+        setError(null);
+        console.log('🚀 Fetching products with filters:', filters); // Debug log
         const res = await fetchProducts(page, filters);
-        let data = res.data.data;
+        console.log('📦 API response:', res.data); // Debug log
+        
+        let data = res.data.data || res.data;
         if (page === 1) {
           data = [...data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         }
         setProducts(data);
       } catch (err) {
         console.error("Lỗi gọi API:", err);
+        setError("Không thể tải sản phẩm. Vui lòng thử lại sau.");
+        setProducts([]); // Set empty array on error
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -87,68 +98,8 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     navigate(`/product/${slug}`);
   };
 
-  // Lọc theo ID danh mục
-  let filteredProducts = products;
-  if (filters && filters.category_id) {
-    filteredProducts = filteredProducts.filter(product => {
-      return product.Categories_ID === Number(filters.category_id);
-    });
-  }
-
-  // Lọc theo thương hiệu
-  if (filters && filters.brand) {
-    const brandArr = filters.brand.split(",").map((b) => b.trim().toLowerCase());
-    filteredProducts = filteredProducts.filter(
-      (product) =>
-        product.Brand &&
-        brandArr.includes(product.Brand.toLowerCase())
-    );
-  }
-
-  // Lọc theo giá
-  if (filters && filters.price) {
-    const priceArr = filters.price.split(",");
-    filteredProducts = filteredProducts.filter((product) => {
-      return priceArr.some((priceRange) => {
-        priceRange = priceRange.trim();
-        const price = Number(product.Discount_price || product.Price);
-        if (priceRange === "Dưới 500.000đ") return price < 500000;
-        if (priceRange === "500.000đ - 1.000.000đ") return price >= 500000 && price <= 1000000;
-        if (priceRange === "1.000.000đ - 2.000.000đ") return price > 1000000 && price <= 2000000;
-        if (priceRange === "Trên 2.000.000đ") return price > 2000000;
-        return true;
-      });
-    });
-  }
-
-  // Lọc theo các biến thể khác (size, color, gender...)
-  Object.keys(filters || {}).forEach((key) => {
-    if (
-      !["category_id", "brand", "price"].includes(key)
-    ) {
-      const filterValues = filters[key].split(",").map((v) => v.trim().toLowerCase());
-      filteredProducts = filteredProducts.filter((product) => {
-        if (product[key]) {
-          if (Array.isArray(product[key])) {
-            return product[key].some((val) =>
-              filterValues.includes(String(val).toLowerCase())
-            );
-          }
-          return filterValues.includes(String(product[key]).toLowerCase());
-        }
-        if (product.variants && Array.isArray(product.variants)) {
-          return product.variants.some((variant) =>
-            variant.title === key &&
-            filterValues.includes(String(variant.value).toLowerCase())
-          );
-        }
-        return false;
-      });
-    }
-  });
-
   // Sắp xếp sản phẩm theo lựa chọn sort (nếu có)
-  let sortedProducts = [...filteredProducts];
+  let sortedProducts = [...products];
   if (sort === "price-asc") {
     sortedProducts.sort((a, b) => (a.Discount_price || a.Price) - (b.Discount_price || b.Price));
   } else if (sort === "price-desc") {
@@ -157,6 +108,38 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     sortedProducts.sort((a, b) => (b.is_best_seller || 0) - (a.is_best_seller || 0));
   }
   // Nếu không có sort, mặc định đã là newest lên đầu do đã sort khi fetch
+
+  // Loading state
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px' }}>
+        <div style={{ fontSize: '18px', color: '#666' }}>Đang tải sản phẩm...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px' }}>
+        <div style={{ fontSize: '18px', color: '#d70018' }}>{error}</div>
+        <button 
+          onClick={() => window.location.reload()} 
+          style={{ 
+            marginTop: '10px', 
+            padding: '8px 16px', 
+            background: '#0154b9', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          Thử lại
+        </button>
+      </div>
+    );
+  }
 
   if (!sortedProducts || sortedProducts.length === 0) {
     return <p className="product-list-empty">Không tìm thấy sản phẩm phù hợp.</p>;

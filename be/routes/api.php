@@ -24,7 +24,6 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Api\PopupApiController;
 use App\Http\Controllers\Admin\ChatBotController;
 use App\Http\Controllers\Api\ProductVariantController;
-use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\Api\LocationApi;
 use App\Http\Controllers\Api\CommentApiController;
@@ -68,7 +67,7 @@ Route::post('/users/{id}', [UserApiController::class, 'update']);
 Route::delete('/users/{id}', [UserApiController::class, 'destroy']);
 Route::put('users/{user}', [UserApiController::class, 'update']);
 Route::patch('users/{user}', [UserApiController::class, 'update']);
-Route::post('/users/{id}/update-profile', [UserController::class, 'updateProfile']);
+Route::post('/users/{id}/update-profile', [UserApiController::class, 'updateProfile']);
 
 // Login
 Route::post('/login', [UserApiController::class, 'login']);
