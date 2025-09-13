@@ -317,6 +317,10 @@ class ProductController extends Controller
                     ]);
                     $variant->values()->attach($variantData['Values_IDs'] ?? []);
                 }
+                // ✅ Cập nhật lại số lượng sản phẩm cha
+                if ($totalQty > 0) {
+                    $product->update(['Quantity' => $totalQty]);
+                }
             }
 
             if ($request->hasFile('Images')) {
@@ -523,6 +527,11 @@ class ProductController extends Controller
         if (!empty($toDelete)) {
             ProductVariant::whereIn('Variant_ID', $toDelete)->delete();
         }
+        // ✅ Cập nhật lại số lượng sản phẩm cha dựa vào biến thể
+        if ($product->variants()->exists()) {
+            $totalQty = $product->variants()->sum('Quantity');
+            $product->update(['Quantity' => $totalQty]);
+        }
 
         $successMessage = "Cập nhật sản phẩm thành công!";
         $successMessage .= " Sản phẩm: " . $product->Name;
@@ -581,4 +590,5 @@ class ProductController extends Controller
 
         return view('admin.products.show', compact('product'));
     }
+    
 }

@@ -36,6 +36,10 @@
     font-size: 16px;
     margin-left: 8px;
 }
+#content{
+    width: 100%;
+    left: 0;
+}
 </style>
 <div class="popup-form-container">
     <h2>Thêm Popup</h2>

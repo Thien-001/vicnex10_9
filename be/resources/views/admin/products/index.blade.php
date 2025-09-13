@@ -2,19 +2,7 @@
 
 @section('content')
 
-<!-- Hiển thị thông báo thành công -->
-@if (session('success'))
-    <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
-        <strong>Thành công!</strong> {{ session('success') }}
-    </div>
-@endif
 
-<!-- Hiển thị thông báo lỗi -->
-@if (session('error'))
-    <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
-        <strong>Lỗi!</strong> {{ session('error') }}
-    </div>
-@endif
 
 <style>
     /* Phần form lọc tổng thể */
@@ -231,9 +219,19 @@
         <span class="text">+ Thêm sản phẩm mới</span>
     </a>
 </div>
-@if(session('success'))
-        <div class="alert alert-success" style="margin: 15px 0;">{{ session('success') }}</div>
-    @endif
+<!-- Hiển thị thông báo thành công -->
+@if (session('success'))
+    <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+        <strong>Thành công!</strong> {{ session('success') }}
+    </div>
+@endif
+
+<!-- Hiển thị thông báo lỗi -->
+@if (session('error'))
+    <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+        <strong>Lỗi!</strong> {{ session('error') }}
+    </div>
+@endif
 <!-- =========================
      Form lọc sản phẩm
 ============================ -->
@@ -463,7 +461,15 @@
                 </td>
                 <td>{{ number_format($product->Price, 0, ',', '.') }}₫</td>
                 <td>{{ number_format($product->Discount_price, 0, ',', '.') }}₫</td>
-                <td>{{ $product->total_variant_quantity }}</td>
+                {{-- <td>{{ $product->total_variant_quantity }}</td> --}}
+                <td>
+                    {{-- Nếu có biến thể thì lấy tổng số lượng của biến thể, nếu không thì lấy Quantity gốc --}}
+                    @if($product->variants()->exists())
+                        {{ $product->variants->sum('Quantity') }}
+                    @else
+                        {{ $product->Quantity }}
+                    @endif
+                </td>
                 <td>{{ $product->Brand }}</td>
                 <!-- Phân loại sản phẩm -->
                 <td style="position: relative;">

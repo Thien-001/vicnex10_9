@@ -403,8 +403,8 @@
             <span class="vnd-format" id="DiscountPriceVND"></span>
         </div>
         <div class="form-group">
-            <label for="Quantity">Số lượng mặc định</label>
-            <input type="number" id="Quantity" name="Quantity" min="0" value="0" required>
+            <label for="Quantity">Số lượng</label>
+            <input type="number" id="Quantity" name="Quantity" value="{{ old('Quantity', 0) }}" min="0" value="0" required>
         </div>
         <div class="form-group">
             <label for="brand_id">Thương hiệu</label>
