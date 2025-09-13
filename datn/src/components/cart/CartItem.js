@@ -8,7 +8,8 @@ export default function CartItem({ item, updateQuantity, removeItem, loadingVari
       : item.images && item.images[0] && item.images[0].Image_path
       ? "http://localhost:8000/" + encodeURI(item.images[0].Image_path)
       : "/htm_css/img/product/font-size 18px;.png";
-  const price = Number(item.Price) || 0;
+  const discountPrice = Number(item.Discount_price) || 0;
+  const price = discountPrice > 0 ? discountPrice : Number(item.Price) || 0;
   const qty = Number(item.qty) || 1;
 
   const variantName = item.Variant_name || item.variant_name || "";
@@ -48,6 +49,11 @@ export default function CartItem({ item, updateQuantity, removeItem, loadingVari
       </td>
       <td>
         <span className="new-price">₫{price.toLocaleString()}</span>
+        {discountPrice > 0 && (
+          <span style={{ textDecoration: "line-through", color: "#888", marginLeft: 6 }}>
+            ₫{Number(item.Price).toLocaleString()}
+          </span>
+        )}
       </td>
       <td className="quantity">
         <button

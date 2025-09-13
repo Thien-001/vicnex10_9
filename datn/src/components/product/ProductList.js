@@ -173,12 +173,25 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
   const addToCart = (product, variant = null) => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    let item = { ...product, quantity: 1 };
+    let item;
     if (variant) {
-      item.selectedVariant = variant;
-      item.SKU = variant.SKU || variant.sku;
-      item.Price = variant.Price || variant.price || product.Price;
-      item.Discount_price = variant.Discount_price || variant.discount_price || product.Discount_price;
+      // Nếu có biến thể
+      item = {
+        ...product,
+        selectedVariant: variant,
+        SKU: variant.SKU || variant.sku,
+        Price: variant.Price || variant.price || product.Price,
+        Discount_price: variant.Discount_price || variant.discount_price || product.Discount_price,
+        quantity: 1,
+      };
+    } else {
+      // Sản phẩm gốc: ưu tiên lấy Discount_price nếu có
+      item = {
+        ...product,
+        Price: product.Discount_price || product.Price,
+        Discount_price: product.Discount_price,
+        quantity: 1,
+      };
     }
     const exist = cart.find(
       (i) => i.Product_ID === product.Product_ID && (!variant || JSON.stringify(i.selectedVariant) === JSON.stringify(variant))

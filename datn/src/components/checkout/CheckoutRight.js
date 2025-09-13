@@ -25,7 +25,12 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
   const hasProduct = cartItems && cartItems.length > 0;
   const subtotal = hasProduct
     ? cartItems.reduce(
-        (sum, item) => sum + (Number(item.Price) || 0) * (item.quantity || 1),
+        (sum, item) =>
+          sum +
+          (Number(item.Discount_price) > 0
+            ? Number(item.Discount_price)
+            : Number(item.Price)) *
+          (item.qty || item.quantity || 1),
         0
       )
     : 0;
@@ -390,6 +395,11 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
             <span>Phí vận chuyển:</span>
             <strong>₫{shippingFee.toLocaleString()}</strong>
           </div>
+          {shippingFee === 0 && (
+            <div style={{ color: "#10b981", fontSize: 13, marginTop: 2 }}>
+              Đơn hàng trên 500.000đ được <b>miễn phí vận chuyển</b>
+            </div>
+          )}
           <div className="summary-row total-row">
             <span>Tổng thanh toán:</span>
             <strong>₫{total.toLocaleString()}</strong>

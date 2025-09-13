@@ -17,7 +17,7 @@ function CartRight({ cartItems }) {
           Number(item.Discount_price) > 0
             ? Number(item.Discount_price)
             : Number(item.Price) || 0;
-        const qty = Number(item.quantity) || 1;
+        const qty = Number(item.qty) || 1;
         return sum + price * qty;
       }, 0)
     : 0;
@@ -35,7 +35,7 @@ function CartRight({ cartItems }) {
         Number(item.Discount_price) > 0
           ? Number(item.Discount_price)
           : Number(item.Price) || 0;
-      const qty = Number(item.quantity) || 1;
+      const qty = Number(item.qty) || 1;
       return sum + price * qty;
     }, 0);
 
