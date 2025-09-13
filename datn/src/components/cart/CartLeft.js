@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import CartItem from "./CartItem";
 
-function CartLeft({ cartItems, updateQuantity, removeItem, allVariants, loadingVariants }) {
+function CartLeft({ cartItems, updateQuantity, removeItem, allVariants, loadingVariants, allProducts }) {
   const [showStockAlert, setShowStockAlert] = useState(false);
   const [stockMessage, setStockMessage] = useState("");
 
@@ -15,21 +15,23 @@ function CartLeft({ cartItems, updateQuantity, removeItem, allVariants, loadingV
   const normalize = (val) => String(val || "").trim().toLowerCase();
 
   const handleUpdateQuantity = (productId, sku, newQty) => {
-    if (loadingVariants || !allVariants || allVariants.length === 0) {
-      setStockMessage("Đang tải dữ liệu tồn kho, vui lòng thử lại sau!");
-      setShowStockAlert(true);
-      return;
-    }
-    // SKU lấy từ item trong giỏ hàng (đã truyền từ action)
-    const variant = allVariants.find(
-      (v) => normalize(v.SKU) === normalize(sku)
+    // Nếu có SKU và tìm thấy biến thể thì lấy tồn kho từ biến thể
+    let variant = allVariants.find(
+      (v) => Number(v.Product_ID) === Number(productId) && normalize(v.SKU) === normalize(sku)
     );
-    const maxQty = variant ? Number(variant.Quantity) : 0;
+    let maxQty = variant ? Number(variant.Quantity) : 0;
+
+    // Nếu không tìm thấy biến thể (sản phẩm gốc), lấy tồn kho từ bảng products
+    if (!variant) {
+      const product = allProducts.find((p) => Number(p.Product_ID) === Number(productId));
+      maxQty = product ? Number(product.Quantity) : 0;
+      variant = product;
+    }
+
+    console.log("Variant/Sản phẩm gốc tìm được:", variant);
 
     if (newQty > maxQty) {
-      setStockMessage(
-        `Số lượng không đủ. Chỉ còn ${maxQty} sản phẩm trong kho!`
-      );
+      setStockMessage(`Số lượng không đủ. Chỉ còn ${maxQty} sản phẩm trong kho!`);
       setShowStockAlert(true);
       return;
     }
@@ -134,6 +136,7 @@ function CartLeft({ cartItems, updateQuantity, removeItem, allVariants, loadingV
                   updateQuantity={handleUpdateQuantity}
                   removeItem={handleRemoveItem}
                   allVariants={allVariants}
+                  allProducts={allProducts} // Thêm dòng này!
                 />
               ))}
             </tbody>

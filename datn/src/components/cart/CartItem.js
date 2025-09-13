@@ -9,7 +9,7 @@ export default function CartItem({ item, updateQuantity, removeItem, loadingVari
       ? "http://localhost:8000/" + encodeURI(item.images[0].Image_path)
       : "/htm_css/img/product/font-size 18px;.png";
   const price = Number(item.Price) || 0;
-  const qty = Number(item.quantity) || 1;
+  const qty = Number(item.qty) || 1;
 
   const variantName = item.Variant_name || item.variant_name || "";
   const sku = item.SKU || item.sku || "";
@@ -51,12 +51,12 @@ export default function CartItem({ item, updateQuantity, removeItem, loadingVari
       </td>
       <td className="quantity">
         <button
-          onClick={() => updateQuantity(item.Product_ID, item.SKU, qty - 1)}
+          onClick={() => updateQuantity(item.Product_ID, sku, qty - 1)}
           disabled={loadingVariants || qty <= 1}
         >-</button>
         <input type="number" value={qty} readOnly disabled={loadingVariants} />
         <button
-          onClick={() => updateQuantity(item.Product_ID, item.SKU, qty + 1)}
+          onClick={() => updateQuantity(item.Product_ID, sku, qty + 1)}
           disabled={loadingVariants}
         >+</button>
       </td>

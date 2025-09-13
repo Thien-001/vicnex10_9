@@ -26,6 +26,7 @@ function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [allVariants, setAllVariants] = useState([]);
   const [loadingVariants, setLoadingVariants] = useState(true);
+  const [allProducts, setAllProducts] = useState([]);
 
   useEffect(() => {
     // Lấy cartItems từ localStorage
@@ -51,7 +52,7 @@ function CartPage() {
   const updateQuantity = (productId, sku, newQty) => {
     const updated = cartItems.map((item) =>
       String(item.Product_ID) === String(productId) && String(item.SKU) === String(sku)
-        ? { ...item, quantity: newQty }
+        ? { ...item, qty: newQty } // Sửa lại thành qty
         : item
     );
     setCartItems(updated);
@@ -74,6 +75,12 @@ function CartPage() {
       .then((data) => setHotProducts(data.data || []));
   }, []);
 
+  useEffect(() => {
+    fetch("http://localhost:8000/api/products")
+      .then((res) => res.json())
+      .then((data) => setAllProducts(data.data || []));
+  }, []);
+
   return (
     <CartProvider>
       <>
@@ -92,6 +99,7 @@ function CartPage() {
             removeItem={removeItem}
             allVariants={allVariants}
             loadingVariants={loadingVariants}
+            allProducts={allProducts} // Thêm dòng này!
           />
           <CartRight cartItems={cartItems} />
         </div>
