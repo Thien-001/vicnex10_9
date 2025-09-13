@@ -2,7 +2,20 @@ import React from "react";
 
 function ProductSortDropdown({ sort, setSort }) {
   return (
-    <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 20 }}>
+    <div 
+      className="product-sort-container"
+      style={{ 
+        display: "flex", 
+        justifyContent: "flex-end", 
+        alignItems: "center", 
+        marginBottom: 20,
+        width: "100%",
+        position: "relative",
+        minHeight: "40px", // Đảm bảo chiều cao cố định
+        flexShrink: 0, // Không cho phép co lại
+        order: -1, // Đảm bảo luôn ở trên cùng
+      }}
+    >
       <label
         style={{
           fontWeight: 600,
@@ -10,6 +23,7 @@ function ProductSortDropdown({ sort, setSort }) {
           marginRight: 10,
           color: "#0154b9",
           letterSpacing: 0.2,
+          whiteSpace: "nowrap", // Tránh xuống dòng
         }}
       >
         Sắp xếp:
@@ -30,6 +44,8 @@ function ProductSortDropdown({ sort, setSort }) {
           boxShadow: "0 2px 8px rgba(1,84,185,0.07)",
           transition: "border 0.2s, box-shadow 0.2s",
           cursor: "pointer",
+          position: "relative",
+          zIndex: 1,
         }}
         onFocus={e => (e.target.style.border = "1.5px solid #003c7e")}
         onBlur={e => (e.target.style.border = "1.5px solid #0154b9")}

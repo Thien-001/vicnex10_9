@@ -2,19 +2,7 @@
 
 @section('content')
 
-<!-- Hiển thị thông báo thành công -->
-@if (session('success'))
-    <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
-        <strong>Thành công!</strong> {{ session('success') }}
-    </div>
-@endif
 
-<!-- Hiển thị thông báo lỗi -->
-@if (session('error'))
-    <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
-        <strong>Lỗi!</strong> {{ session('error') }}
-    </div>
-@endif
 
 <style>
     /* Phần form lọc tổng thể */
@@ -231,14 +219,24 @@
         <span class="text">+ Thêm sản phẩm mới</span>
     </a>
 </div>
-@if(session('success'))
-        <div class="alert alert-success" style="margin: 15px 0;">{{ session('success') }}</div>
-    @endif
+<!-- Hiển thị thông báo thành công -->
+@if (session('success'))
+    <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+        <strong>Thành công!</strong> {{ session('success') }}
+    </div>
+@endif
+
+<!-- Hiển thị thông báo lỗi -->
+@if (session('error'))
+    <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+        <strong>Lỗi!</strong> {{ session('error') }}
+    </div>
+@endif
 <!-- =========================
      Form lọc sản phẩm
 ============================ -->
 <div class="body-content">
-         <form action="{{ route('admin.products.index') }}" method="GET" class="filter-form" style="margin-bottom: 20px;">
+         <form action="{{ route('admin.products.index') }}" method="GET" class="filter-form" style="margin-bottom: 20px;" id="filterForm">
          <div>
              <div>
                  <label for="keyword">Tìm kiếm:</label>
@@ -463,7 +461,15 @@
                 </td>
                 <td>{{ number_format($product->Price, 0, ',', '.') }}₫</td>
                 <td>{{ number_format($product->Discount_price, 0, ',', '.') }}₫</td>
-                <td>{{ $product->total_variant_quantity }}</td>
+                {{-- <td>{{ $product->total_variant_quantity }}</td> --}}
+                <td>
+                    {{-- Nếu có biến thể thì lấy tổng số lượng của biến thể, nếu không thì lấy Quantity gốc --}}
+                    @if($product->variants()->exists())
+                        {{ $product->variants->sum('Quantity') }}
+                    @else
+                        {{ $product->Quantity }}
+                    @endif
+                </td>
                 <td>{{ $product->Brand }}</td>
                 <!-- Phân loại sản phẩm -->
                 <td style="position: relative;">
@@ -584,42 +590,55 @@
      }
  });
 
- // Cải thiện trải nghiệm form lọc
- document.addEventListener('DOMContentLoaded', function() {
-     // Tắt auto-submit để người dùng có thể điền nhiều điều kiện trước khi lọc
-     // Chỉ auto-submit cho sắp xếp để trải nghiệm tốt hơn
-     const sortSelects = ['sort_by', 'sort_order'];
-     sortSelects.forEach(function(selectId) {
-         const select = document.getElementById(selectId);
-         if (select) {
-             select.addEventListener('change', function() {
-                 this.form.submit();
+     // Cải thiện trải nghiệm form lọc
+     document.addEventListener('DOMContentLoaded', function() {
+         console.log('Filter form loaded'); // Debug log
+
+         // Tắt auto-submit để người dùng có thể điền nhiều điều kiện trước khi lọc
+         // Chỉ auto-submit cho sắp xếp để trải nghiệm tốt hơn
+         const sortSelects = ['sort_by', 'sort_order'];
+         sortSelects.forEach(function(selectId) {
+             const select = document.getElementById(selectId);
+             if (select) {
+                 select.addEventListener('change', function() {
+                     console.log('Sort changed, submitting form'); // Debug log
+                     this.form.submit();
+                 });
+             }
+         });
+
+         // Thêm tính năng Enter để submit form
+         const keywordInput = document.getElementById('keyword');
+         if (keywordInput) {
+             keywordInput.addEventListener('keypress', function(e) {
+                 if (e.key === 'Enter') {
+                     e.preventDefault();
+                     console.log('Enter pressed in keyword, submitting form'); // Debug log
+                     this.form.submit();
+                 }
+             });
+         }
+
+         // Thêm tính năng Enter cho input thương hiệu
+         const brandInput = document.getElementById('brand');
+         if (brandInput) {
+             brandInput.addEventListener('keypress', function(e) {
+                 if (e.key === 'Enter') {
+                     e.preventDefault();
+                     console.log('Enter pressed in brand, submitting form'); // Debug log
+                     this.form.submit();
+                 }
+             });
+         }
+
+         // Thêm debug cho form submit
+         const filterForm = document.querySelector('.filter-form');
+         if (filterForm) {
+             filterForm.addEventListener('submit', function(e) {
+                 console.log('Form submitted with data:', new FormData(this)); // Debug log
              });
          }
      });
-
-     // Thêm tính năng Enter để submit form
-     const keywordInput = document.getElementById('keyword');
-     if (keywordInput) {
-         keywordInput.addEventListener('keypress', function(e) {
-             if (e.key === 'Enter') {
-                 e.preventDefault();
-                 this.form.submit();
-             }
-         });
-     }
-
-     // Thêm tính năng Enter cho input thương hiệu
-     const brandInput = document.getElementById('brand');
-     if (brandInput) {
-         brandInput.addEventListener('keypress', function(e) {
-             if (e.key === 'Enter') {
-                 e.preventDefault();
-                 this.form.submit();
-             }
-         });
-     }
- });
 
      // Validate giá min/max
      const priceMin = document.getElementById('price_min');

@@ -57,8 +57,13 @@
             <input type="number" id="Discount_price" name="Discount_price" value="{{ $product->Discount_price }}">
         </div>
         <div class="form-group">
-            <label for="Quantity">Số lượng mặc định</label>
-            <input type="number" id="Quantity" name="Quantity" value="{{ $product->Quantity }}" required>
+            <label for="Quantity">Số lượng</label>
+            @if($product->variants()->exists())
+                <input type="number" class="form-control" value="{{ $product->variants->sum('Quantity') }}" disabled>
+                <small class="text-muted">Số lượng này được tính tự động theo biến thể</small>
+            @else
+                <input type="number" name="Quantity" class="form-control" value="{{ old('Quantity', $product->Quantity) }}">
+            @endif
         </div>
         <div class="form-group">
             <label for="brand_id">Thương hiệu</label>

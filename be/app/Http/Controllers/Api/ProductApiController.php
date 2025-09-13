@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Log;
 
 class ProductApiController extends Controller
 {
@@ -14,6 +15,9 @@ class ProductApiController extends Controller
     public function index()
     {
         $query = Product::with(['category', 'variants']);
+
+        // Debug: Log request parameters
+        Log::info('Product API Filter Request:', request()->all());
 
         // Lọc theo Categories_ID (ưu tiên nếu có)
         if (request()->has('Categories_ID') && request('Categories_ID')) {
@@ -33,21 +37,32 @@ class ProductApiController extends Controller
             $query->whereIn('Brand', $brands);
         }
 
-        // Lọc theo giá (bạn cần bổ sung xử lý ở đây nếu muốn lọc theo giá)
+        // Lọc theo giá
         if (request()->has('price')) {
-            // Giả sử FE truyền dạng: "Dưới 500.000đ", "500.000đ - 1.000.000đ", "Trên 2.000.000đ"
             $prices = explode(',', request('price'));
             $query->where(function($q) use ($prices) {
                 foreach ($prices as $price) {
                     $price = trim($price);
                     if ($price == "Dưới 500.000đ") {
-                        $q->orWhere('Price', '<', 500000);
+                        $q->orWhere(function($subQ) {
+                            $subQ->where('Price', '<', 500000)
+                                 ->orWhere('Discount_price', '<', 500000);
+                        });
                     } elseif ($price == "500.000đ - 1.000.000đ") {
-                        $q->orWhereBetween('Price', [500000, 1000000]);
+                        $q->orWhere(function($subQ) {
+                            $subQ->whereBetween('Price', [500000, 1000000])
+                                 ->orWhereBetween('Discount_price', [500000, 1000000]);
+                        });
                     } elseif ($price == "1.000.000đ - 2.000.000đ") {
-                        $q->orWhereBetween('Price', [1000000, 2000000]);
+                        $q->orWhere(function($subQ) {
+                            $subQ->whereBetween('Price', [1000000, 2000000])
+                                 ->orWhereBetween('Discount_price', [1000000, 2000000]);
+                        });
                     } elseif ($price == "Trên 2.000.000đ") {
-                        $q->orWhere('Price', '>', 2000000);
+                        $q->orWhere(function($subQ) {
+                            $subQ->where('Price', '>', 2000000)
+                                 ->orWhere('Discount_price', '>', 2000000);
+                        });
                     }
                 }
             });
@@ -103,7 +118,20 @@ class ProductApiController extends Controller
             });
         }
 
+        // Debug: Log final SQL query
+        Log::info('Product API Final Query:', [
+            'sql' => $query->toSql(),
+            'bindings' => $query->getBindings()
+        ]);
+
         $products = $query->orderBy('created_at', 'desc')->paginate(12);
+
+        // Debug: Log result count
+        Log::info('Product API Result:', [
+            'total' => $products->total(),
+            'count' => $products->count()
+        ]);
+
         return response()->json($products, 200, [], JSON_PRETTY_PRINT);
     }
 
