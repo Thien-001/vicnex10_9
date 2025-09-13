@@ -2,7 +2,7 @@
 @section('content')
 <style>
 .popup-table-container {
-    max-width: 1100px;
+    /* max-width: 1100px; */
     margin: 36px auto;
     background: #fff;
     border-radius: 16px;
@@ -103,6 +103,7 @@
         <thead>
             <tr>
                 <th>Ảnh</th>
+                <th>Link</th>
                 <th>Tiêu đề</th>
                 <th>Nội dung</th>
                 <th>Trạng thái</th>
@@ -114,12 +115,16 @@
             <tr>
                 <td>
                     @if($popup->image_url)
-                        {{ asset('storage/' . ltrim($popup->image_url, '/')) }}
-                        <img src="{{ asset('storage/' . $popup->image_url) }}" alt="Popup" width="120">
+
+                        <img src="{{ asset($popup->image_url) }}" alt="Popup" width="120">
                     @else
                         Không có ảnh
                     @endif
                 </td>
+                <td>
+                    {{ asset(ltrim($popup->image_url, '/')) }}
+                </td>
+
                 <td>{{ $popup->title }}</td>
                 <td>{{ $popup->content }}</td>
                 <td>

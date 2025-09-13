@@ -5,7 +5,7 @@
 @section('content')
 <style>
     .banner-form-container {
-        max-width: 600px;
+        /* max-width: 600px; */
         margin: 40px auto;
         background: #fff;
         border-radius: 16px;
@@ -88,8 +88,12 @@
                 @endif
             </label><br>
             @if($banner->image_url)
-                <img src="{{ route('admin.banner.image', $banner->id) }}" alt="Banner" width="220" class="current-banner-img mb-2">
-            @endif
+                    <img src="{{ asset($banner->image_url) }}"
+                        alt="Banner"
+                        width="220"
+                        class="current-banner-img mb-2">
+                @endif
+
             <input type="file" class="form-control mt-2" name="image_url">
             <small class="text-muted">Chọn ảnh mới nếu muốn thay đổi</small>
         </div>

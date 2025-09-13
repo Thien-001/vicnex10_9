@@ -41,7 +41,7 @@
 
 <style>
 .banner-form-container {
-    max-width: 520px;
+    /* max-width: 520px; */
     margin: 48px auto;
     background: #fff;
     border-radius: 18px;
