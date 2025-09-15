@@ -34,11 +34,16 @@ class PopupController extends Controller
 
         if ($request->hasFile('image_url')) {
             $file = $request->file('image_url');
-            $ext = $file->getClientOriginalExtension(); // Lấy đúng extension
+            $ext = $file->getClientOriginalExtension();
             $filename = uniqid() . '.' . $ext;
-            $path = $file->storeAs('uploads/popups', $filename, 'public');
-            $data['image_url'] = $path;
+
+            // Lưu trực tiếp vào public/uploads/popups
+            $file->move(public_path('uploads/popups'), $filename);
+
+            // Lưu đường dẫn tương đối để dùng với asset()
+            $data['image_url'] = 'uploads/popups/' . $filename;
         }
+
 
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
 
@@ -75,10 +80,15 @@ class PopupController extends Controller
 
         if ($request->hasFile('image_url')) {
             $file = $request->file('image_url');
-            $ext = $file->getClientOriginalExtension(); // Lấy đúng extension
+            $ext = $file->getClientOriginalExtension();
             $filename = uniqid() . '.' . $ext;
-            $path = $file->storeAs('uploads/popups', $filename, 'public');
-            $data['image_url'] = $path;
+
+            // Lưu trực tiếp vào public/uploads/popups
+            $file->move(public_path('uploads/popups'), $filename);
+
+            // Lưu đường dẫn tương đối để dùng với asset()
+            $data['image_url'] = 'uploads/popups/' . $filename;
+
         } else {
             unset($data['image_url']);
         }

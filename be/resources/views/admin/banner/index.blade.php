@@ -5,7 +5,7 @@
 @section('content')
 <style>
     .banner-table-container {
-        max-width: 1100px;
+        /* max-width: 1100px; */
         margin: 36px auto;
         background: #fff;
         border-radius: 16px;
@@ -123,10 +123,10 @@
             <tr>
                 <td>
                     @if($banner->image_url)
-                        <img src="{{ route('admin.banner.image', $banner->id) }}" alt="Banner" width="120">
+                        <img src="{{ asset($banner->image_url) }}" alt="Banner" width="120">
                     @endif
                 </td>
-                <td>{{ $banner->link }}</td>
+                <td>{{ $banner->image_url }}</td>
                 <td>
                     @if($banner->position == 1)
                         <span class="badge bg-primary">Ảnh chính</span>

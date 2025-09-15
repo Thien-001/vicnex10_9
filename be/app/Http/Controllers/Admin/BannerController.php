@@ -35,9 +35,15 @@ class BannerController extends Controller
         // Xử lý upload ảnh nếu có
         if ($request->hasFile('image_url')) {
             $file = $request->file('image_url');
-            $path = $file->store('uploads/banners', 'public');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = 'uploads/banners/' . $filename;
+
+            // Di chuyển file trực tiếp vào thư mục public
+            $file->move(public_path('uploads/banners'), $filename);
+
             $data['image_url'] = $path;
         }
+
 
         // Xử lý checkbox is_active
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
@@ -67,12 +73,15 @@ class BannerController extends Controller
         // Xử lý upload ảnh nếu có
         if ($request->hasFile('image_url')) {
             $file = $request->file('image_url');
-            $path = $file->store('uploads/banners', 'public');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = 'uploads/banners/' . $filename;
+
+            // Di chuyển file trực tiếp vào thư mục public
+            $file->move(public_path('uploads/banners'), $filename);
+
             $data['image_url'] = $path;
-        } else {
-            // Không upload ảnh mới thì giữ ảnh cũ
-            unset($data['image_url']);
         }
+
 
         // Xử lý checkbox is_active
         $data['is_active'] = $request->has('is_active') ? 1 : 0;

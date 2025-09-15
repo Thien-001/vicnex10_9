@@ -2,7 +2,7 @@
 @section('content')
 <style>
 .popup-form-container {
-    max-width: 600px;
+    /* max-width: 600px; */
     margin: 36px auto;
     background: #fff;
     border-radius: 16px;
@@ -50,7 +50,7 @@
             <label for="image_url" class="form-label">Ảnh</label>
             <div class="mb-2">
                 @if($popup->image_url)
-                    <img id="preview-image" src="{{ asset('storage/' . $popup->image_url) }}" alt="Popup" width="120">
+                    <img id="preview-image" src="{{ asset($popup->image_url) }}" alt="Popup" width="120">
                 @else
                     <img id="preview-image" src="" alt="Popup" style="display:none;" width="120">
                 @endif

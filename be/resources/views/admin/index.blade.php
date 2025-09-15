@@ -247,12 +247,13 @@
               </tr>
             </thead>
             <tbody>
-                @foreach($stockProducts as $p)
+               @foreach($stockProducts as $p)
                 <tr>
                     <td>{{ $p->name }}</td>
-                    <td>{{ $p->quantity }}</td>
+                    <td>{{ $p->total_quantity }}</td>
                 </tr>
                 @endforeach
+
                 </tbody>
           </table>
         </div>

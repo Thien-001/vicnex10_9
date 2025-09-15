@@ -2,7 +2,7 @@
 @section('content')
 <style>
 .popup-form-container {
-    max-width: 600px;
+    /* max-width: 600px; */
     margin: 36px auto;
     background: #fff;
     border-radius: 16px;
@@ -63,7 +63,7 @@
                 Hiển thị popup
             </label>
         </div>
-        <button type="submit" class="btn btn-success">Lưu</button>
+        <button type="submit" class="btn btn-success">Thêm</button>
         <a href="{{ route('admin.popup.index') }}" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>

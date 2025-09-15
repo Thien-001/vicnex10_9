@@ -102,12 +102,26 @@ $topProducts = DB::table('order_detail')
     ->get();
 
 
+// $stockProducts = DB::table('products')
+//     ->select('name', 'quantity') // giả sử cột tồn kho là quantity
+//     ->where('quantity', '<', 10)
+//     ->orderBy('quantity', 'asc') // sắp xếp tăng dần để thấy hàng nào gần hết
+//     ->limit(5)
+//     ->get();
 $stockProducts = DB::table('products')
-    ->select('name', 'quantity') // giả sử cột tồn kho là quantity
-    ->where('quantity', '<', 10)
-    ->orderBy('quantity', 'asc') // sắp xếp tăng dần để thấy hàng nào gần hết
+    ->leftJoin('product_variants', 'products.product_id', '=', 'product_variants.product_id')
+    ->select(
+        'products.product_id',
+        'products.name',
+        DB::raw('COALESCE(SUM(product_variants.quantity), products.quantity) as total_quantity')
+    )
+    ->groupBy('products.product_id', 'products.name', 'products.quantity')
+    ->having('total_quantity', '<', 10)
+    ->orderBy('total_quantity', 'asc')
     ->limit(5)
     ->get();
+
+
 
 
 $orderStatusStats = DB::table('orders')
