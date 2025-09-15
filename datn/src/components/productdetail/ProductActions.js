@@ -9,6 +9,9 @@ function ProductActions({ product, selectedVariant, quantity, showOutOfStock }) 
   if (!product) return null;
 
   const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+  const hasStock = hasVariants
+    ? product.variants.some(v => Number(v.Quantity) > 0)
+    : Number(product.Quantity) > 0;
 
   const getCurrentStock = () => {
     if (selectedVariant && typeof selectedVariant.Quantity !== "undefined") {
@@ -113,6 +116,7 @@ function ProductActions({ product, selectedVariant, quantity, showOutOfStock }) 
     <div className="actions">
       <button
         onClick={handleAddToCart}
+        disabled={!hasStock}
         style={{
           padding: "10px 24px",
           background: "#0154b9",
@@ -122,13 +126,15 @@ function ProductActions({ product, selectedVariant, quantity, showOutOfStock }) 
           fontWeight: 600,
           fontSize: 16,
           marginRight: 12,
-          cursor: "pointer",
+          cursor: !hasStock ? "not-allowed" : "pointer",
+          opacity: !hasStock ? 0.6 : 1,
         }}
       >
         🛒 Thêm Vào Giỏ Hàng
       </button>
       <button
         onClick={handleBuyNow}
+        disabled={!hasStock}
         style={{
           padding: "10px 24px",
           background: "#d70018",
@@ -137,7 +143,8 @@ function ProductActions({ product, selectedVariant, quantity, showOutOfStock }) 
           borderRadius: 6,
           fontWeight: 600,
           fontSize: 16,
-          cursor: "pointer",
+          cursor: !hasStock ? "not-allowed" : "pointer",
+          opacity: !hasStock ? 0.6 : 1,
         }}
       >
         Mua Ngay

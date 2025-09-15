@@ -54,7 +54,14 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
         item => (item.Category_Name || item.category_name || item.category?.Name) === voucherInfo.category_name
       );
       const eligibleSubtotal = eligibleItems.reduce(
-        (sum, item) => sum + (Number(item.Price) || 0) * (item.quantity || 1),
+        (sum, item) => {
+          const price =
+            Number(item.Discount_price) > 0
+              ? Number(item.Discount_price)
+              : Number(item.Price) || 0;
+          const qty = Number(item.qty) || Number(item.quantity) || 1;
+          return sum + price * qty;
+        },
         0
       );
       if (voucherInfo.discount_type === "percentage") {
@@ -480,6 +487,7 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
           />{" "}
           Thanh toán qua VNPAY
         </label>
+        {/* 
         <label>
           <input
             type="radio"
@@ -510,6 +518,7 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
           />{" "}
           Thẻ Visa/MasterCard
         </label>
+        */}
       </div>
 
       <button

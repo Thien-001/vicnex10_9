@@ -243,6 +243,23 @@ class OrderController extends Controller
                 'quantity'     => $quantity,
                 'total'        => $price * $quantity,
             ]);
+
+            // Trừ số lượng kho
+            if (!empty($item['SKU'])) {
+                // Nếu có SKU, trừ biến thể
+                $variant = \App\Models\Variant::where('SKU', $item['SKU'])->first();
+                if ($variant) {
+                    $variant->Quantity = max(0, $variant->Quantity - ($item['quantity'] ?? 1));
+                    $variant->save();
+                }
+            } else {
+                // Nếu không có SKU, trừ sản phẩm gốc
+                $product = \App\Models\Product::where('Product_ID', $item['Product_ID'])->first();
+                if ($product) {
+                    $product->Quantity = max(0, $product->Quantity - ($item['quantity'] ?? 1));
+                    $product->save();
+                }
+            }
         }
 
         return redirect()->route('admin.orders.show', $order->id)->with('success', 'Thêm chi tiết đơn hàng thành công!');

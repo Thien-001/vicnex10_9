@@ -32,6 +32,11 @@ function findVariant(variants, weight, stiffness, balance, playStyle) {
   });
 }
 
+async function fetchProductRatings(productId) {
+  const res = await fetch(`http://localhost:8000/api/products/${productId}/ratings`);
+  return await res.json();
+}
+
 function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,7 +66,23 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         if (page === 1) {
           data = [...data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         }
-        setProducts(data);
+
+        // Lấy rating cho từng sản phẩm
+        const productsWithRatings = await Promise.all(
+          data.map(async (product) => {
+            try {
+              const ratingData = await fetchProductRatings(product.Product_ID);
+              return {
+                ...product,
+                rating: ratingData.avg || 0,
+                ratingCount: ratingData.count || 0,
+              };
+            } catch {
+              return { ...product, rating: 0, ratingCount: 0 };
+            }
+          })
+        );
+        setProducts(productsWithRatings);
       } catch (err) {
         console.error("Lỗi gọi API:", err);
         setError("Không thể tải sản phẩm. Vui lòng thử lại sau.");
@@ -147,9 +168,18 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
   const handleAddToCart = (product) => {
     if (product.variants && product.variants.length > 0) {
+      const allVariantsOut = product.variants.every(v => Number(v.Quantity) <= 0);
+      if (allVariantsOut) {
+        alert("Tất cả biến thể đã hết hàng!");
+        return;
+      }
       setSelectedProduct(product);
       setShowVariantPopup(true);
     } else {
+      if (Number(product.Quantity) <= 0) {
+        alert("Sản phẩm đã hết hàng!");
+        return;
+      }
       addToCart(product);
     }
   };
@@ -198,102 +228,109 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
   return (
     <main className="product-list-main">
-      {sortedProducts.map((product) => (
-        <div
-          className="product-list-item"
-          key={product.Product_ID}
-          onClick={() => handleProductClick(product.slug)}
-        >
-          {/* Trái tim yêu thích */}
-          <div className="product-list-fav tooltip-parent">
-            ♡
-            <span className="tooltip">Yêu thích</span>
-          </div>
-          {/* Ribbon trạng thái */}
-          <div className="product-list-ribbons">
-            {product.is_hot && (
-              <div className="product-list-ribbon hot">HOT</div>
-            )}
-            {product.is_best_seller && (
-              <div className="product-list-ribbon best">BEST</div>
-            )}
-            {product.is_featured && (
-              <div className="product-list-ribbon featured">FEATURED</div>
-            )}
-          </div>
-          {/* Ảnh sản phẩm */}
-          <img
-            src={`/${product.Image}`}
-            alt={product.Name}
-            className="product-list-image"
-          />
-          {/* Nội dung sản phẩm */}
-          <div className="product-list-info">
-            <h3 className="product-list-name">{product.Name}</h3>
-            <div className="product-list-category">
-              {product?.category?.Name || ""}
+      {sortedProducts.map((product) => {
+        const hasVariant = product.variants && product.variants.length > 0;
+        const hasStock = hasVariant
+          ? product.variants.some(v => Number(v.Quantity) > 0)
+          : Number(product.Quantity) > 0;
+
+        return (
+          <div
+            className="product-list-item"
+            key={product.Product_ID}
+            onClick={() => handleProductClick(product.slug)}
+          >
+            {/* Trái tim yêu thích */}
+            <div className="product-list-fav tooltip-parent">
+              ♡
+              <span className="tooltip">Yêu thích</span>
             </div>
-            <div className="product-list-brand">
-              {product.Brand || ""}
-            </div>
-            <div className="product-list-price">
-              {product.Discount_price ? (
-                <>
-                  <span className="product-list-price-sale">
-                    {Number(product.Discount_price).toLocaleString("vi-VN")}₫
-                  </span>
-                  <del className="product-list-price-old">
-                    {Number(product.Price).toLocaleString("vi-VN")}₫
-                  </del>
-                </>
-              ) : (
-                <span>{Number(product.Price).toLocaleString("vi-VN")}₫</span>
+            {/* Ribbon trạng thái */}
+            <div className="product-list-ribbons">
+              {product.is_hot && (
+                <div className="product-list-ribbon hot">HOT</div>
+              )}
+              {product.is_best_seller && (
+                <div className="product-list-ribbon best">BEST</div>
+              )}
+              {product.is_featured && (
+                <div className="product-list-ribbon featured">FEATURED</div>
               )}
             </div>
-            <div className="product-list-rating">
-              {Array.from({ length: 5 }).map((_, i) => {
-                if (product.rating >= i + 1) return <span key={i} style={{color:'#FFD700'}}>★</span>;
-                if (product.rating > i) return <span key={i} style={{color:'#FFD700'}}>☆</span>;
-                return <span key={i} style={{color:'#ddd'}}>★</span>;
-              })}
-              <span style={{marginLeft: 4, color: "#888", fontSize: "0.95em"}}>
-                ({product.rating ? product.rating.toFixed(1) : "0"})
-              </span>
-            </div>
-            <div className="product-list-actions">
-              <button
-                className="product-list-cart-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(product);
-                }}
-                disabled={!product.Status}
-              >
-                🛒 Thêm vào giỏ hàng
-              </button>
-              <button
-                className="product-list-compare-btn tooltip-parent"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddCompare && onAddCompare(product);
-                }}
-                disabled={
-                  compareProducts.some(
+            {/* Ảnh sản phẩm */}
+            <img
+              src={`/${product.Image}`}
+              alt={product.Name}
+              className="product-list-image"
+            />
+            {/* Nội dung sản phẩm */}
+            <div className="product-list-info">
+              <h3 className="product-list-name">{product.Name}</h3>
+              <div className="product-list-category">
+                {product?.category?.Name || ""}
+              </div>
+              <div className="product-list-brand">
+                {product.Brand || ""}
+              </div>
+              <div className="product-list-price">
+                {product.Discount_price ? (
+                  <>
+                    <span className="product-list-price-sale">
+                      {Number(product.Discount_price).toLocaleString("vi-VN")}₫
+                    </span>
+                    <del className="product-list-price-old">
+                      {Number(product.Price).toLocaleString("vi-VN")}₫
+                    </del>
+                  </>
+                ) : (
+                  <span>{Number(product.Price).toLocaleString("vi-VN")}₫</span>
+                )}
+              </div>
+              <div className="product-list-rating">
+                {Array.from({ length: 5 }).map((_, i) => {
+                  if (product.rating >= i + 1) return <span key={i} style={{color:'#FFD700'}}>★</span>;
+                  if (product.rating > i) return <span key={i} style={{color:'#FFD700'}}>☆</span>;
+                  return <span key={i} style={{color:'#ddd'}}>★</span>;
+                })}
+                <span style={{marginLeft: 4, color: "#888", fontSize: "0.95em"}}>
+                  {product.ratingCount ? `(${product.ratingCount} đánh giá)` : "(0 đánh giá)"}
+                </span>
+              </div>
+              <div className="product-list-actions">
+                <button
+                  className="product-list-cart-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(product);
+                  }}
+                  disabled={!product.Status || !hasStock}
+                >
+                  {!hasStock ? "Đã hết hàng" : "🛒 Thêm vào giỏ hàng"}
+                </button>
+                <button
+                  className="product-list-compare-btn tooltip-parent"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddCompare && onAddCompare(product);
+                  }}
+                  disabled={
+                    compareProducts.some(
+                      (p) => p.Product_ID === product.Product_ID
+                    ) || compareProducts.length >= 2
+                  }
+                >
+                  {compareProducts.some(
                     (p) => p.Product_ID === product.Product_ID
-                  ) || compareProducts.length >= 2
-                }
-              >
-                {compareProducts.some(
-                  (p) => p.Product_ID === product.Product_ID
-                )
-                  ? "Đã chọn"
-                  : "So sánh"}
-                <span className="tooltip">So sánh sản phẩm</span>
-              </button>
+                  )
+                    ? "Đã chọn"
+                    : "So sánh"}
+                  <span className="tooltip">So sánh sản phẩm</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* Popup chọn biến thể giống ProductOptions */}
       {showVariantPopup && selectedProduct && (
@@ -373,8 +410,14 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
             <div style={{ marginTop: 16 }}>
               <button
                 className="confirm-btn"
-                disabled={!selectedVariant}
-                onClick={() => addToCart(selectedProduct, selectedVariant)}
+                disabled={!selectedVariant || Number(selectedVariant.Quantity) <= 0}
+                onClick={() => {
+                  if (Number(selectedVariant.Quantity) <= 0) {
+                    alert("Biến thể đã hết hàng!");
+                    return;
+                  }
+                  addToCart(selectedProduct, selectedVariant);
+                }}
               >
                 Xác nhận
               </button>
