@@ -79,8 +79,8 @@ class VoucherApiController extends Controller
     public function check(Request $request)
     {
         $code = $request->input('code');
-        $isBooking = $request->input('is_booking', false); // true nếu là đặt sân
-        $cartCategories = $request->input('cart_categories', []); // mảng tên danh mục sản phẩm
+        $isBooking = $request->input('is_booking', false);
+        $cartCategories = $request->input('cart_categories', []);
 
         $voucher = Voucher::where('code', $code)
             ->where(function($q) {
@@ -92,8 +92,11 @@ class VoucherApiController extends Controller
             return response()->json(['valid' => false, 'message' => 'Mã không hợp lệ hoặc đã hết hạn']);
         }
 
-        // --- Bắt đầu kiểm tra applies_to ---
+        // --- Chuẩn hóa danh mục ---
         $appliesTo = trim(mb_strtolower($voucher->applies_to));
+        $cartCategoriesNorm = array_map(function($cat) {
+            return trim(mb_strtolower($cat));
+        }, $cartCategories);
 
         $canApply = false;
         if ($appliesTo === 'all') {
@@ -101,9 +104,11 @@ class VoucherApiController extends Controller
         } elseif ($isBooking && $appliesTo === 'booking') {
             $canApply = true;
         } elseif (!$isBooking && $appliesTo !== 'booking' && $appliesTo !== 'all') {
-            $allowed = array_map('mb_strtolower', array_map('trim', explode(',', $voucher->applies_to)));
-            foreach ($cartCategories as $cat) {
-                if (in_array(mb_strtolower(trim($cat)), $allowed)) {
+            $allowed = array_map(function($cat) {
+                return trim(mb_strtolower($cat));
+            }, explode(',', $voucher->applies_to));
+            foreach ($cartCategoriesNorm as $cat) {
+                if (in_array($cat, $allowed)) {
                     $canApply = true;
                     break;
                 }
@@ -113,8 +118,12 @@ class VoucherApiController extends Controller
         if (!$canApply) {
             return response()->json(['valid' => false, 'message' => 'Voucher không áp dụng cho đơn hàng này']);
         }
-        // --- Kết thúc kiểm tra applies_to ---
 
-        return response()->json(['valid' => true, 'voucher' => $voucher]);
+        // Trả về thêm trường category_names (mảng) để FE dùng
+        return response()->json([
+            'valid' => true,
+            'voucher' => $voucher,
+            'category_names' => $appliesTo === 'all' ? [] : $allowed
+        ]);
     }
 }

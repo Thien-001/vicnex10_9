@@ -68,7 +68,7 @@ function CartRight({ cartItems }) {
     }
 
     // Log toàn bộ cartItems để xem cấu trúc thực tế
-    console.log("cartItems:", cartItems);
+    console.log("CartRight cartItems:", cartItems);
 
     // Log thử từng item để xem có trường category không
     cartItems.forEach((item, idx) => {
