@@ -4,116 +4,43 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Comment;
+use App\Models\PostComment;
 
 class CommentApiController extends Controller
 {
-    // Lấy danh sách bình luận sản phẩm theo Product_ID
-    public function index($id, Request $request)
+    // Lấy bình luận bài viết
+    public function postComments($postId)
     {
-        // Nếu là bình luận sản phẩm
-        if ($request->is('api/products/*/comments')) {
-            $comments = Comment::with('user')
-                ->where('Product_ID', $id)
-                ->orderByDesc('Create_at')
-                ->get();
-        }
-        // Nếu là bình luận bài viết
-        else if ($request->is('api/posts/*/comments')) {
-            $comments = Comment::with('user')
-                ->where('Post_ID', $id)
-                ->orderByDesc('Create_at')
-                ->get();
-        }
-        return response()->json($comments);
-    }
-
-    // Thêm mới bình luận sản phẩm
-    public function store($id, Request $request)
-    {
-        if ($request->is('api/products/*/comments')) {
-            $validated = $request->validate([
-                'User_ID'    => 'required|exists:user,ID',
-                'Content'    => 'required|string',
-                'Status'     => 'nullable|integer',
-            ]);
-            $comment = Comment::create([
-                'Product_ID' => $id,
-                'User_ID'    => $validated['User_ID'],
-                'Content'    => $validated['Content'],
-                'Status'     => $validated['Status'] ?? 1,
-                'Create_at'  => now(),
-                'Update_at'  => now(),
-            ]);
-        } else if ($request->is('api/posts/*/comments')) {
-            $validated = $request->validate([
-                'User_ID'    => 'required|exists:user,ID',
-                'Content'    => 'required|string',
-                'Status'     => 'nullable|integer',
-            ]);
-            $comment = Comment::create([
-                'Post_ID'    => $id,
-                'User_ID'    => $validated['User_ID'],
-                'Content'    => $validated['Content'],
-                'Status'     => $validated['Status'] ?? 1,
-                'Create_at'  => now(),
-                'Update_at'  => now(),
-            ]);
-        }
-        $comment->load('user');
-        return response()->json($comment, 201);
-    }
-
-    // Xóa bình luận
-    public function destroy($id)
-    {
-        $comment = Comment::findOrFail($id);
-        $comment->delete();
-
-        return response()->json(['message' => 'Xóa bình luận thành công!']);
-    }
-
-    public function productComments($productId)
-    {
-        $comments = Comment::with('user')
-            ->where('Product_ID', $productId)
-            ->orderByDesc('Create_at')
+        $comments = \App\Models\PostComment::with('user')
+            ->where('Post_ID', $postId)
+            ->orderBy('created_at', 'desc')
             ->get();
         return response()->json($comments);
     }
 
-    public function storeProductComment(Request $request, $productId)
-    {
-        $validated = $request->validate([
-            'User_ID'    => 'required|exists:user,ID',
-            'Content'    => 'required|string',
-            'Status'     => 'nullable|integer',
-        ]);
-        $comment = Comment::create([
-            'Product_ID' => $productId,
-            'User_ID'    => $validated['User_ID'],
-            'Content'    => $validated['Content'],
-            'Status'     => $validated['Status'] ?? 1,
-            'Create_at'  => now(),
-            'Update_at'  => now(),
-        ]);
-        $comment->load('user');
-        return response()->json($comment, 201);
-    }
-
+    // Thêm bình luận bài viết
     public function storePostComment(Request $request, $postId)
     {
-        $data = $request->validate([
-            'User_ID'  => 'required|exists:users,ID',
-            'text'     => 'required|string',
-        ]);
-        $data['Post_ID'] = $postId;
+        \Log::info('Dữ liệu nhận được:', $request->all());
 
-        $comment = \App\Models\PostComment::create($data);
+        try {
+            $validated = $request->validate([
+                'User_ID' => 'required|exists:user,ID',
+                'text'    => 'required|string',
+            ]);
+            $validated['Post_ID'] = $postId;
+            $comment = \App\Models\PostComment::create($validated);
 
-        return response()->json([
-            'message' => 'Tạo bình luận thành công',
-            'data'    => $comment
-        ], 201);
+            return response()->json([
+                'message' => 'Tạo bình luận thành công',
+                'comment' => $comment
+            ], 201);
+        } catch (\Exception $e) {
+            \Log::error('Lỗi bình luận:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Bình luận thất bại!',
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 }

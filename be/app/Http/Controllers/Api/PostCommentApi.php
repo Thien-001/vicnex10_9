@@ -27,7 +27,7 @@ class PostCommentApi extends Controller
 
         return response()->json([
             'message' => 'Tạo bình luận thành công',
-            'data'    => $comment
+            'comment' => $comment
         ], 201);
     }
 
@@ -76,7 +76,7 @@ class PostCommentApi extends Controller
     // POST /api/posts/{post}/comments
     public function storePostComment(Request $request, $postId)
     {
-        \Log::info('Request data:', $request->all()); // Thêm dòng này để debug dữ liệu nhận được
+        \Log::info('Dữ liệu nhận từ FE:', $request->all());
 
         $data = $request->validate([
             'User_ID'  => 'required|exists:users,ID',
@@ -88,7 +88,7 @@ class PostCommentApi extends Controller
 
         return response()->json([
             'message' => 'Tạo bình luận thành công',
-            'data'    => $comment
+            'comment' => $comment
         ], 201);
     }
 }

@@ -5,19 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject; // Thêm dòng này
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject // Sửa lại dòng này
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'user'; // Tên bảng là 'user' (khác với mặc định 'users')
-    protected $primaryKey = 'ID'; // Đặt đúng tên cột khóa chính
+    protected $table = 'user'; // Đúng tên bảng
+    protected $primaryKey = 'ID'; // Đúng tên cột khóa chính
 
-    public $timestamps = false; // Không dùng created_at, updated_at tự động
-
-    public $incrementing = true; // Nếu ID là auto-increment
-    protected $keyType = 'int'; // Kiểu dữ liệu của ID là int
+    public $timestamps = false; // Nếu không dùng created_at, updated_at tự động
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'Role_ID',
@@ -30,9 +29,9 @@ class User extends Authenticatable implements JWTSubject // Sửa lại dòng n�
         'Avatar',
         'Status',
         'Address',
-        'ward',      // Thêm dòng này
-        'district',  // Thêm dòng này
-        'province',  // Thêm dòng này
+        'ward',
+        'district',
+        'province',
         'Created_at',
         'Updated_at',
     ];
@@ -47,22 +46,19 @@ class User extends Authenticatable implements JWTSubject // Sửa lại dòng n�
         'Status' => 'boolean',
         'Created_at' => 'datetime',
         'Updated_at' => 'datetime',
-        'Password' => 'hashed', // Laravel 10+ mới hỗ trợ tự hash khi dùng fill()
     ];
 
-    // Một user thuộc một vai trò
     public function role()
     {
         return $this->belongsTo(Role::class, 'Role_ID', 'Role_ID');
     }
 
-    // Tùy chọn: Cho phép route model binding hoạt động chính xác
     public function getRouteKeyName()
     {
-        return 'ID'; // Dùng 'ID' thay vì mặc định 'id'
+        return 'ID';
     }
 
-    // Thêm 2 phương thức dưới đây cho JWT
+    // JWT methods
     public function getJWTIdentifier()
     {
         return $this->getKey();

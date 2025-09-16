@@ -26,6 +26,7 @@ function ArticleAuthorBox({ author }) {
           border: "2px solid #0154b9",
           background: "#fff"
         }}
+        onError={e => { e.target.src = "/default-avatar.png"; }}
       />
       <div>
         <div style={{ fontWeight: 700, fontSize: 18, color: "#0154b9" }}>{author.name}</div>

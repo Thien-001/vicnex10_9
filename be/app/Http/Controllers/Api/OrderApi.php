@@ -78,26 +78,16 @@ class OrderApi extends Controller
 
         // Tạo chi tiết đơn hàng
         foreach ($request->input('order_details', []) as $item) {
-            $product = Product::where('Product_ID', $item['Product_ID'])->first();
-
-            OrderDetail::create([
-                'order_id'      => $order->id,
-                'Product_ID'    => $item['Product_ID'],
-                'product_name'  => $product ? $product->Product_Name : null,
-                'quantity'      => $item['quantity'],
-                'price'         => $item['price'],
-                'discount_price'=> $item['discount_price'] ?? 0,
-                'total_price'   => $item['total_price'],
-            ]);
-
-            // Cập nhật lại số lượng sản phẩm
-            if ($product) {
-                $product->quantity = max(0, $product->quantity - $item['quantity']);
-                $product->save();
+            // Trừ kho sản phẩm gốc
+            if (isset($item['Product_ID'])) {
+                $product = Product::where('Product_ID', $item['Product_ID'])->first();
+                if ($product) {
+                    $product->quantity = max(0, $product->quantity - $item['quantity']);
+                    $product->save();
+                }
             }
 
-            // Nếu có biến thể, cập nhật số lượng biến thể ở đây (nếu có bảng ProductVariant)
-            // Ví dụ:
+            // Trừ kho biến thể nếu có
             if (isset($item['variant_id'])) {
                 $variant = ProductVariant::find($item['variant_id']);
                 if ($variant) {

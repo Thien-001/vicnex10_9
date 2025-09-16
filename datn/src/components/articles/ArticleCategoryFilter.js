@@ -1,29 +1,58 @@
 import React from "react";
 
 const ArticleCategoryFilter = ({ categories, selected, onChange }) => (
-  <select
-    value={selected}
-    onChange={e => onChange(e.target.value)}
+  <div
     style={{
-      padding: "10px 18px",
-      borderRadius: 8,
-      border: "1.5px solid #b6d4fa",
-      fontSize: 16,
-      minWidth: 180,
-      background: "#fff",
-      color: "#0154b9",
-      fontWeight: 600,
-      marginRight: 12,
-      boxShadow: "0 1px 4px rgba(1,84,185,0.04)",
+      display: "flex",
+      gap: 12,
+      marginBottom: 24,
+      flexWrap: "wrap",
     }}
   >
-    <option value="all">Tất cả chuyên mục</option>
+    <button
+      onClick={() => onChange("all")}
+      style={{
+        padding: "8px 20px",
+        borderRadius: 20,
+        border: "none",
+        background: selected === "all" ? "#0154b9" : "#e3f2fd",
+        color: selected === "all" ? "#fff" : "#0154b9",
+        fontWeight: 600,
+        fontSize: 16,
+        cursor: "pointer",
+        boxShadow:
+          selected === "all"
+            ? "0 2px 8px rgba(1,84,185,0.08)"
+            : "none",
+        transition: "background 0.2s",
+      }}
+    >
+      Tất cả chuyên mục
+    </button>
     {categories.map((cat, idx) => (
-      <option key={cat.id ?? idx} value={cat.id}>
+      <button
+        key={cat.id ?? idx}
+        onClick={() => onChange(cat.id)}
+        style={{
+          padding: "8px 20px",
+          borderRadius: 20,
+          border: "none",
+          background: selected === cat.id ? "#0154b9" : "#e3f2fd",
+          color: selected === cat.id ? "#fff" : "#0154b9",
+          fontWeight: 600,
+          fontSize: 16,
+          cursor: "pointer",
+          boxShadow:
+            selected === cat.id
+              ? "0 2px 8px rgba(1,84,185,0.08)"
+              : "none",
+          transition: "background 0.2s",
+        }}
+      >
         {cat.name}
-      </option>
+      </button>
     ))}
-  </select>
+  </div>
 );
 
 export default ArticleCategoryFilter;

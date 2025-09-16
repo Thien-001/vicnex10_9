@@ -15,9 +15,9 @@ function ArticleSidebar({ onCategorySelect }) {
       <ArticleCategoryList onSelect={onCategorySelect} />
       <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: "#0154b9" }}>Bài nổi bật</h3>
       <ul style={{ paddingLeft: 18, margin: 0 }}>
-        <li><a href="#" style={{ color: "#0154b9", fontSize: 15 }}>Cách chọn vợt cầu lông phù hợp</a></li>
-        <li><a href="#" style={{ color: "#0154b9", fontSize: 15 }}>5 bài tập tăng sức bền</a></li>
-        <li><a href="#" style={{ color: "#0154b9", fontSize: 15 }}>Mẹo phòng thủ hiệu quả</a></li>
+        <li><a href="#" style={{ color: "#0154b9", fontSize: 15, textDecoration: "none" }}>Cách chọn vợt cầu lông phù hợp</a></li>
+        <li><a href="#" style={{ color: "#0154b9", fontSize: 15, textDecoration: "none" }}>5 bài tập tăng sức bền</a></li>
+        <li><a href="#" style={{ color: "#0154b9", fontSize: 15, textDecoration: "none" }}>Mẹo phòng thủ hiệu quả</a></li>
       </ul>
     </aside>
   );

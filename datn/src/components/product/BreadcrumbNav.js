@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-function BreadcrumbNav({ category, product }) {
+function BreadcrumbNav({ category, product, article }) {
   const location = useLocation();
 
   let breadcrumbs = [
@@ -18,8 +18,30 @@ function BreadcrumbNav({ category, product }) {
   else if (location.pathname === "/cart") {
     breadcrumbs.push({ name: "Giỏ hàng", path: null });
   }
-  // Trang sản phẩm
-  else {
+  // Trang bài viết tổng
+  else if (location.pathname === "/article") {
+    breadcrumbs.push({ name: "Bài viết", path: null });
+  }
+  // Trang chi tiết bài viết
+  else if (location.pathname.startsWith("/article/")) {
+    breadcrumbs.push({ name: "Bài viết", path: "/article" });
+    if (article) {
+      breadcrumbs.push({ name: article.Title || article.title, path: location.pathname });
+    }
+  }
+  // Trang sản phẩm tổng
+  else if (location.pathname === "/product") {
+    breadcrumbs.push({ name: "Sản phẩm", path: null });
+  }
+  // Trang chuyên mục sản phẩm
+  else if (location.pathname.startsWith("/san-pham/")) {
+    breadcrumbs.push({ name: "Sản phẩm", path: "/product" });
+    if (category) {
+      breadcrumbs.push({ name: category.Name || category.name, path: location.pathname });
+    }
+  }
+  // Trang chi tiết sản phẩm
+  else if (location.pathname.startsWith("/product/")) {
     breadcrumbs.push({ name: "Sản phẩm", path: "/product" });
     if (category) {
       breadcrumbs.push({ name: category.Name || category.name, path: `/san-pham/${category.Slug || category.slug}` });
@@ -27,6 +49,35 @@ function BreadcrumbNav({ category, product }) {
     if (product) {
       breadcrumbs.push({ name: product.Name || product.name, path: location.pathname });
     }
+  }
+  // Trang vợt cầu lông
+  else if (location.pathname.startsWith("/product/vot-cau-long")) {
+    breadcrumbs.push({ name: "Sản phẩm", path: "/product" });
+    breadcrumbs.push({ name: "Vợt cầu lông", path: location.pathname });
+  }
+  // Trang tìm kiếm
+  else if (location.pathname.startsWith("/search")) {
+    breadcrumbs.push({ name: "Tìm kiếm", path: null });
+  }
+  // Trang tài khoản
+  else if (location.pathname.startsWith("/account")) {
+    breadcrumbs.push({ name: "Tài khoản", path: null });
+  }
+  // Trang đăng nhập
+  else if (location.pathname === "/login") {
+    breadcrumbs.push({ name: "Đăng nhập", path: null });
+  }
+  // Trang đăng ký
+  else if (location.pathname === "/register") {
+    breadcrumbs.push({ name: "Đăng ký", path: null });
+  }
+  // Trang lỗi 404
+  else if (location.pathname === "/404") {
+    breadcrumbs.push({ name: "Không tìm thấy trang", path: null });
+  }
+  // Mặc định: Sản phẩm
+  else {
+    breadcrumbs.push({ name: "Sản phẩm", path: "/product" });
   }
 
   return (
@@ -40,9 +91,8 @@ function BreadcrumbNav({ category, product }) {
         {`
           .breadcrumb-nav {
             position: sticky;
-            top: 100px; /* chỉnh lại cho đúng tổng chiều cao header + nav */
+            top: 100px;
             z-index: 1002;
-            // background: #fff;
             padding: 8px 0;
           }
         `}

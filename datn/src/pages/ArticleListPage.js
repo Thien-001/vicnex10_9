@@ -68,7 +68,7 @@ function ArticleListPage() {
       <BreadcrumbNav items={breadcrumb} />
       <div
         style={{
-          maxWidth: 1200,
+          maxWidth: 1700,
           margin: "32px auto",
           padding: "0 16px",
           display: "flex",

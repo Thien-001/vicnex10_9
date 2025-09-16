@@ -19,11 +19,12 @@ function ArticleShare({ article }) {
           justifyContent: "center",
           marginRight: 8,
           textDecoration: "none",
-          fontSize: 18
+          fontSize: 18,
+          boxShadow: "0 1px 4px rgba(24,119,242,0.12)"
         }}
         title="Chia sẻ Facebook"
       >
-        <i className="bx bxl-facebook"></i> {/* Hoặc dùng icon SVG */}
+        <i className="bx bxl-facebook"></i>
       </a>
       {/* Thêm các nút chia sẻ khác nếu muốn */}
     </div>

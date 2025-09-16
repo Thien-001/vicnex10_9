@@ -80,7 +80,7 @@ class VoucherApiController extends Controller
     {
         $code = $request->input('code');
         $isBooking = $request->input('is_booking', false);
-        $cartCategories = $request->input('cart_categories', []);
+        $cartCategoryIds = $request->input('cart_category_ids', []);
 
         $voucher = Voucher::where('code', $code)
             ->where(function($q) {
@@ -92,23 +92,17 @@ class VoucherApiController extends Controller
             return response()->json(['valid' => false, 'message' => 'Mã không hợp lệ hoặc đã hết hạn']);
         }
 
-        // --- Chuẩn hóa danh mục ---
-        $appliesTo = trim(mb_strtolower($voucher->applies_to));
-        $cartCategoriesNorm = array_map(function($cat) {
-            return trim(mb_strtolower($cat));
-        }, $cartCategories);
-
+        $appliesTo = $voucher->applies_to; // "all", "booking", hoặc "1,2,3"
+        $allowedIds = $appliesTo === 'all' ? [] : array_map('intval', explode(',', $appliesTo));
         $canApply = false;
+
         if ($appliesTo === 'all') {
             $canApply = true;
         } elseif ($isBooking && $appliesTo === 'booking') {
             $canApply = true;
         } elseif (!$isBooking && $appliesTo !== 'booking' && $appliesTo !== 'all') {
-            $allowed = array_map(function($cat) {
-                return trim(mb_strtolower($cat));
-            }, explode(',', $voucher->applies_to));
-            foreach ($cartCategoriesNorm as $cat) {
-                if (in_array($cat, $allowed)) {
+            foreach ($cartCategoryIds as $catId) {
+                if (in_array((int)$catId, $allowedIds)) {
                     $canApply = true;
                     break;
                 }
@@ -119,11 +113,10 @@ class VoucherApiController extends Controller
             return response()->json(['valid' => false, 'message' => 'Voucher không áp dụng cho đơn hàng này']);
         }
 
-        // Trả về thêm trường category_names (mảng) để FE dùng
         return response()->json([
             'valid' => true,
             'voucher' => $voucher,
-            'category_names' => $appliesTo === 'all' ? [] : $allowed
+            'category_ids' => $appliesTo === 'all' ? [] : $allowedIds
         ]);
     }
 }

@@ -20,7 +20,13 @@ function ArticleHeader({ article }) {
       <div style={{ color: "#0154b9", fontWeight: 600, fontSize: 16, marginBottom: 8 }}>
         {article.category}
       </div>
-      <h1 style={{ fontSize: 34, fontWeight: 800, margin: "0 0 12px" }}>{article.title}</h1>
+      <h1 style={{
+        fontSize: 34,
+        fontWeight: 800,
+        margin: "0 0 12px",
+        letterSpacing: 0.5,
+        color: "#222"
+      }}>{article.title}</h1>
       <div style={{ color: "#888", fontSize: 15 }}>{article.date}</div>
     </div>
   );

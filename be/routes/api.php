@@ -153,3 +153,7 @@ Route::get('/contacts', [ContactMessageController::class, 'index']); // (tuỳ c
 
 // Expert Reviews
 Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiController::class, 'index']);
+
+
+Route::get('posts/{post}/comments', [CommentApiController::class, 'postComments']);
+Route::post('posts/{post}/comments', [CommentApiController::class, 'storePostComment']);

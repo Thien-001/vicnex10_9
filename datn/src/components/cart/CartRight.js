@@ -26,10 +26,14 @@ function CartRight({ cartItems }) {
   // Xác định danh mục voucher áp dụng (giả sử backend trả về voucherInfo.category_name)
   let discount = 0;
   if (voucherInfo) {
-    // Lọc các sản phẩm thuộc đúng danh mục
-    const eligibleItems = cartItems.filter(
-      item => item.category?.Name === voucherInfo.category_name
-    );
+    // Lọc sản phẩm hợp lệ theo voucher (dùng ID)
+    const eligibleItems = voucherInfo
+      ? cartItems.filter(item =>
+          item.category?.Categories_ID === voucherInfo.category_id ||
+          (Array.isArray(voucherInfo.category_ids) && voucherInfo.category_ids.includes(item.category?.Categories_ID))
+        )
+      : [];
+
     const eligibleSubtotal = eligibleItems.reduce((sum, item) => {
       const price =
         Number(item.Discount_price) > 0
@@ -67,34 +71,24 @@ function CartRight({ cartItems }) {
       return;
     }
 
-    // Log toàn bộ cartItems để xem cấu trúc thực tế
-    console.log("CartRight cartItems:", cartItems);
-
-    // Log thử từng item để xem có trường category không
-    cartItems.forEach((item, idx) => {
-      console.log(`item[${idx}]:`, item);
-      if (item.category) {
-        console.log(`item[${idx}].category:`, item.category);
-        console.log(`item[${idx}].category.Name:`, item.category.Name);
-      }
-    });
-
-    // Lấy đúng trường tên danh mục
-    const cartCategories = cartItems.map(
-      item => item.category?.Name || ""
-    );
-
-    // Log kết quả cartCategories
-    console.log("cartCategories:", cartCategories);
+    const isBooking = cartItems.length === 1 && cartItems[0].Courts_ID;
+    let cartCategoryIds = [];
+    if (!isBooking && cartItems.length > 0) {
+      cartCategoryIds = cartItems.map(item => item.category?.Categories_ID);
+    }
 
     try {
       const res = await axios.post("http://localhost:8000/api/vouchers/check", {
         code: voucher,
-        is_booking: false,
-        cart_categories: cartCategories,
+        is_booking: isBooking,
+        cart_category_ids: cartCategoryIds,
       });
       if (res.data.valid) {
-        setVoucherInfo(res.data.voucher);
+        setVoucherInfo({
+          ...res.data.voucher,
+          category_id: res.data.category_id,
+          category_ids: res.data.category_ids,
+        });
         setVoucherMsg("Áp dụng mã thành công!");
       } else {
         setVoucherInfo(null);
@@ -105,6 +99,14 @@ function CartRight({ cartItems }) {
       setVoucherMsg("Có lỗi khi kiểm tra mã.");
     }
   };
+
+  // Lọc sản phẩm đủ điều kiện giảm giá theo voucher
+  const eligibleItems = voucherInfo
+    ? cartItems.filter(item =>
+        item.category?.Categories_ID === voucherInfo.category_id ||
+        (Array.isArray(voucherInfo.category_ids) && voucherInfo.category_ids.includes(item.category?.Categories_ID))
+      )
+    : [];
 
   return (
     <div className="cart-right">
@@ -153,6 +155,34 @@ function CartRight({ cartItems }) {
               </div>
             )}
           </div>
+          {voucherInfo && eligibleItems.length > 0 && (
+            <div style={{ marginTop: 10, background: "#f6f8fc", borderRadius: 8, padding: "10px 16px" }}>
+              <div style={{ fontWeight: 600, color: "#0154b9", marginBottom: 6 }}>
+                Sản phẩm được áp dụng giảm giá:
+              </div>
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {eligibleItems.map(item => {
+                  const price = Number(item.Discount_price) > 0 ? Number(item.Discount_price) : Number(item.Price) || 0;
+                  const qty = Number(item.qty) || 1;
+                  let itemDiscount = 0;
+                  if (voucherInfo.discount_type === "percentage") {
+                    itemDiscount = Math.round((price * qty * voucherInfo.discount_value) / 100);
+                  } else if (voucherInfo.discount_type === "fixed") {
+                    // Chia đều cho các sản phẩm hợp lệ
+                    itemDiscount = Math.floor(Number(voucherInfo.discount_value) / eligibleItems.length);
+                  }
+                  return (
+                    <li key={item.Product_ID} style={{ color: "#222", fontSize: 15, marginBottom: 4 }}>
+                      {item.Name} <span style={{ color: "#888" }}>({item.category?.Name})</span>
+                      <span style={{ color: "#d32f2f", marginLeft: 8 }}>
+                        -₫{itemDiscount.toLocaleString()}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
           <button className="checkout-btn" onClick={handleCheckout}>
             Đặt Hàng
           </button>

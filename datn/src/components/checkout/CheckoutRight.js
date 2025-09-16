@@ -15,44 +15,40 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [loading, setLoading] = useState(false);
   const [shippingFee, setShippingFee] = useState(30000);
-  const [showQRModal, setShowQRModal] = useState(false);
-  const [orderInfo, setOrderInfo] = useState(null);
-  const [showVnpayModal, setShowVnpayModal] = useState(false);
-  const [vnpayUrl, setVnpayUrl] = useState("");
   const [showWarning, setShowWarning] = useState(false);
-  const [warningMsg, setWarningMsg] = useState("");
+const [warningMsg, setWarningMsg] = useState("");
+const [orderInfo, setOrderInfo] = useState(null);
+const [showQRModal, setShowQRModal] = useState(false);
 
   const hasProduct = cartItems && cartItems.length > 0;
+
   const subtotal = hasProduct
-    ? cartItems.reduce(
-        (sum, item) =>
-          sum +
-          (Number(item.Discount_price) > 0
+    ? cartItems.reduce((sum, item) => {
+        const price =
+          Number(item.Discount_price) > 0
             ? Number(item.Discount_price)
-            : Number(item.Price)) *
-          (item.qty || item.quantity || 1),
-        0
-      )
+            : Number(item.Price) || 0;
+        const qty = Number(item.qty) || 1;
+        return sum + price * qty;
+      }, 0)
     : 0;
 
-  // Hàm chuẩn hóa tên danh mục
-  const normalize = str => (str || "").toLowerCase().replace(/\s+/g, " ").trim();
-
-  // Lọc sản phẩm hợp lệ theo voucher (giống CartRight)
+  // Lọc sản phẩm hợp lệ theo voucher (dùng Categories_ID)
   const eligibleItems = voucherInfo
     ? cartItems.filter(item =>
-        normalize(item.category?.Name) === normalize(voucherInfo.category_name)
+        item.category?.Categories_ID === voucherInfo.category_id ||
+        (Array.isArray(voucherInfo.category_ids) && voucherInfo.category_ids.includes(item.category?.Categories_ID))
       )
     : [];
 
-  const eligibleSubtotal = eligibleItems.reduce(
-    (sum, item) => {
-      const price = Number(item.Discount_price) > 0 ? Number(item.Discount_price) : Number(item.Price) || 0;
-      const qty = Number(item.qty) || 1;
-      return sum + price * qty;
-    },
-    0
-  );
+  const eligibleSubtotal = eligibleItems.reduce((sum, item) => {
+    const price =
+      Number(item.Discount_price) > 0
+        ? Number(item.Discount_price)
+        : Number(item.Price) || 0;
+    const qty = Number(item.qty) || 1;
+    return sum + price * qty;
+  }, 0);
 
   let discount = 0;
   if (voucherInfo) {
@@ -63,7 +59,6 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
     }
   }
 
-  // Tính tổng thanh toán
   const total = subtotal + shippingFee - discount;
 
   // Hàm kiểm tra voucher
@@ -75,24 +70,23 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
       return;
     }
 
-    // Xác định loại đơn hàng
     const isBooking = cartItems.length === 1 && cartItems[0].Courts_ID;
-    let cartCategories = [];
+    let cartCategoryIds = [];
     if (!isBooking && cartItems.length > 0) {
-      cartCategories = cartItems.map(item => item.category?.Name || "");
+      cartCategoryIds = cartItems.map(item => item.category?.Categories_ID);
     }
 
     try {
       const res = await axios.post("http://localhost:8000/api/vouchers/check", {
         code: voucher,
         is_booking: isBooking,
-        cart_categories: cartCategories,
+        cart_category_ids: cartCategoryIds,
       });
-      // Đảm bảo nhận đủ trường giống CartRight
       if (res.data.valid) {
         setVoucherInfo({
           ...res.data.voucher,
-          category_name: res.data.category_name
+          category_id: res.data.category_id,
+          category_ids: res.data.category_ids,
         });
         setVoucherMsg("Áp dụng mã thành công!");
       } else {
@@ -310,67 +304,6 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
     setShippingFee(calculateShippingFee(subtotal, area, distanceKm));
   }, [form, subtotal]);
 
-  // Tạo nội dung chuyển khoản QR (dùng dấu - thay vì :)
-  const qrContent =
-    orderInfo && orderInfo.total_price && orderInfo.id
-      ? `https://img.vietqr.io/image/${BANK_CODE}-${ACCOUNT_NUMBER}-compact2.png?amount=${orderInfo.total_price}&addInfo=DH${orderInfo.id}`
-      : "";
-
-  // Xác định là đặt sân hay đặt sản phẩm
-  const isBooking = cartItems.length === 1 && cartItems[0].Courts_ID;
-
-  let bookingInfo = null;
-  let bookingTotal = 0;
-  if (isBooking) {
-    const booking = cartItems[0];
-    bookingInfo = (
-      <div
-        style={{
-          background: "linear-gradient(90deg, #e0f2fe 0%, #bae6fd 100%)",
-          borderRadius: 14,
-          padding: "22px 18px",
-          marginBottom: 22,
-          boxShadow: "0 4px 24px #0154b91a",
-          color: "#0154b9",
-          fontWeight: 600,
-          fontSize: 16,
-          lineHeight: 1.7,
-        }}
-      >
-        <div style={{ fontSize: 20, fontWeight: 800, color: "#0154b9", marginBottom: 8 }}>
-          🏸 {booking.CourtName}
-        </div>
-        <div style={{ color: "#1976d2", marginBottom: 2 }}>
-          <i className="fas fa-map-marker-alt"></i> <b>{booking.Location}</b>
-        </div>
-        <div>
-          <i className="fas fa-calendar-alt"></i> Ngày: <b>{booking.Booking_date}</b>
-        </div>
-        <div>
-          <i className="fas fa-clock"></i> Khung giờ: <b>{booking.Start_time?.slice(0,5)} - {booking.End_time?.slice(0,5)}</b>
-          &nbsp;|&nbsp; Số giờ: <b>{booking.Duration_hours}</b>
-        </div>
-        <div>
-          <i className="fas fa-money-bill-wave"></i> Giá/giờ: <b>{Number(booking.Price_per_hour).toLocaleString()}₫</b>
-        </div>
-        <div style={{ fontSize: 19, color: "#e53935", marginTop: 8 }}>
-          <i className="fas fa-coins"></i> Tổng tiền sân: <b>{Number(booking.Total_price).toLocaleString()}₫</b>
-        </div>
-        {booking.Note && (
-          <div style={{ marginTop: 8, color: "#374151", fontWeight: 400, fontStyle: "italic" }}>
-            <i className="fas fa-sticky-note"></i> Ghi chú: {booking.Note}
-          </div>
-        )}
-      </div>
-    );
-    bookingTotal = Number(booking.Total_price) || 0;
-  }
-
-  cartItems.forEach(item => {
-    console.log("item.category?.Name:", item.category?.Name);
-  });
-  console.log("voucherInfo.category_name:", voucherInfo?.category_name);
-
   return (
     <div className="checkout-right">
       <h3>Tóm Tắt Đơn Hàng</h3>
@@ -401,32 +334,18 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
           type="text"
           placeholder="Nhập mã giảm giá"
           value={voucher}
-          onChange={(e) => setVoucher(e.target.value)}
+          onChange={e => setVoucher(e.target.value)}
           disabled={!!voucherInfo}
         />
-        <button type="button" onClick={handleApplyVoucher}>
+        <button type="button" onClick={handleApplyVoucher} disabled={!!voucherInfo}>
           {voucherInfo ? "Đã áp dụng" : "Áp dụng"}
         </button>
         {voucherMsg && (
-          <div
-            style={{
-              color: voucherInfo ? "green" : "red",
-              marginTop: 4,
-            }}
-          >
-            {voucherMsg}
-          </div>
+          <div style={{ color: voucherInfo ? "green" : "red", marginTop: 4 }}>{voucherMsg}</div>
         )}
         {voucherInfo && (
-          <div
-            style={{
-              color: "#10b981",
-              fontSize: 13,
-              marginTop: 2,
-            }}
-          >
-            Mã: <b>{voucherInfo.code}</b> -{" "}
-            {voucherInfo.discount_type === "percentage"
+          <div style={{ color: "#10b981", fontSize: 13, marginTop: 2 }}>
+            Mã: <b>{voucherInfo.code}</b> - {voucherInfo.discount_type === "percentage"
               ? `Giảm ${voucherInfo.discount_value}%`
               : `Giảm ${Number(voucherInfo.discount_value).toLocaleString()}₫`}
             <br />
@@ -436,6 +355,34 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
           </div>
         )}
       </div>
+      {voucherInfo && eligibleItems.length > 0 && (
+        <div style={{ marginTop: 10, background: "#f6f8fc", borderRadius: 8, padding: "10px 16px" }}>
+          <div style={{ fontWeight: 600, color: "#0154b9", marginBottom: 6 }}>
+            Sản phẩm được áp dụng giảm giá:
+          </div>
+          <ul style={{ margin: 0, paddingLeft: 18 }}>
+            {eligibleItems.map(item => {
+              const price = Number(item.Discount_price) > 0 ? Number(item.Discount_price) : Number(item.Price) || 0;
+              const qty = Number(item.qty) || 1;
+              let itemDiscount = 0;
+              if (voucherInfo.discount_type === "percentage") {
+                itemDiscount = Math.round((price * qty * voucherInfo.discount_value) / 100);
+              } else if (voucherInfo.discount_type === "fixed") {
+                // Chia đều cho các sản phẩm hợp lệ
+                itemDiscount = Math.floor(Number(voucherInfo.discount_value) / eligibleItems.length);
+              }
+              return (
+                <li key={item.Product_ID} style={{ color: "#222", fontSize: 15, marginBottom: 4 }}>
+                  {item.Name} <span style={{ color: "#888" }}>({item.category?.Name})</span>
+                  <span style={{ color: "#d32f2f", marginLeft: 8 }}>
+                    -₫{itemDiscount.toLocaleString()}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       <div className="payment-method">
         <p>Phương Thức Thanh Toán</p>

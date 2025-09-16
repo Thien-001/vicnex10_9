@@ -7,11 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class PostComment extends Model
 {
     protected $table = 'post_comments';
-    protected $primaryKey = 'Comment_ID';
-    protected $fillable = [
-        'Post_ID',
-        'User_ID',
-        'text',
-    ];
+    protected $primaryKey = 'ID';
     public $timestamps = true;
+    protected $fillable = [
+        'Post_ID', 'User_ID', 'text'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'User_ID', 'ID');
+    }
+
+    public static $rules = [
+        'User_ID' => 'required|exists:user,ID',
+        'text'    => 'required|string',
+    ];
 }
