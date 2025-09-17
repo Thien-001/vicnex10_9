@@ -401,3 +401,10 @@ tbody tr:hover {
   cursor: pointer;
   color: #333;
 }
+
+.voucher-products-list {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 0;
+}

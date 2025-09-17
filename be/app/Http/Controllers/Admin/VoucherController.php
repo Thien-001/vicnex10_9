@@ -38,7 +38,7 @@ class VoucherController extends Controller
             $applies_to = $request->applies_to;
         } else {
             $applies_to = $request->has('applies_to_categories')
-                ? implode(',', $request->applies_to_categories)
+                ? implode(',', $request->applies_to_categories) // Lưu ID, không phải tên
                 : null;
         }
 
@@ -63,7 +63,6 @@ class VoucherController extends Controller
 
     public function update(Request $request, $id)
     {
-        // ✅ Bước 1: Validate dữ liệu đầu vào
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:vouchers,code,' . $id . ',id',
             'discount_type' => 'required|in:percentage,fixed',
@@ -73,15 +72,13 @@ class VoucherController extends Controller
             'applies_to' => 'nullable|string|max:255',
         ]);
 
-        // ✅ Bước 2: Tìm voucher theo ID
         $voucher = Voucher::findOrFail($id);
 
-        // ✅ Bước 3: Cập nhật thông tin từ dữ liệu đã validate
         if ($request->applies_to == 'all' || $request->applies_to == 'booking') {
             $applies_to = $request->applies_to;
         } else {
             $applies_to = $request->has('applies_to_categories')
-                ? implode(',', $request->applies_to_categories)
+                ? implode(',', $request->applies_to_categories) // Lưu ID, không phải tên
                 : null;
         }
 
@@ -94,7 +91,6 @@ class VoucherController extends Controller
             'applies_to' => $applies_to,
         ]);
 
-        // ✅ Bước 4: Chuyển hướng và hiển thị thông báo
         return redirect()->route('admin.vouchers.index')->with('success', 'Cập nhật thành công');
     }
 

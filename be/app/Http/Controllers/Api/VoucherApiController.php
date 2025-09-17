@@ -21,10 +21,13 @@ class VoucherApiController extends Controller
             'code' => 'required|unique:vouchers,code',
             'discount_type' => 'required|in:percentage,fixed',
             'discount_value' => 'required|numeric',
+            'min_order_value' => 'nullable|numeric',
+            'max_discount' => 'nullable|numeric',
             'max_uses' => 'nullable|integer',
             'expires' => 'nullable|date',
             'applies_to' => 'nullable|string',
             'paid_at' => 'nullable|date',
+            'description' => 'nullable|string',
         ]);
 
         $voucher = Voucher::create($validated);
@@ -53,10 +56,13 @@ class VoucherApiController extends Controller
             'code' => 'sometimes|required|unique:vouchers,code,' . $id . ',id',
             'discount_type' => 'sometimes|required|in:percentage,fixed',
             'discount_value' => 'sometimes|required|numeric',
+            'min_order_value' => 'nullable|numeric',
+            'max_discount' => 'nullable|numeric',
             'max_uses' => 'nullable|integer',
             'expires' => 'nullable|date',
             'applies_to' => 'nullable|string',
             'paid_at' => 'nullable|date',
+            'description' => 'nullable|string',
         ]);
 
         $voucher->update($validated);
@@ -92,15 +98,17 @@ class VoucherApiController extends Controller
             return response()->json(['valid' => false, 'message' => 'Mã không hợp lệ hoặc đã hết hạn']);
         }
 
-        $appliesTo = $voucher->applies_to; // "all", "booking", hoặc "1,2,3"
-        $allowedIds = $appliesTo === 'all' ? [] : array_map('intval', explode(',', $appliesTo));
+        // --- Chuẩn hóa danh mục ---
+        $appliesTo = $voucher->applies_to; // 'all', 'booking', hoặc chuỗi ID: "1,2,3"
         $canApply = false;
+        $allowedIds = [];
 
         if ($appliesTo === 'all') {
             $canApply = true;
         } elseif ($isBooking && $appliesTo === 'booking') {
             $canApply = true;
         } elseif (!$isBooking && $appliesTo !== 'booking' && $appliesTo !== 'all') {
+            $allowedIds = array_map('intval', explode(',', $appliesTo));
             foreach ($cartCategoryIds as $catId) {
                 if (in_array((int)$catId, $allowedIds)) {
                     $canApply = true;
@@ -113,9 +121,27 @@ class VoucherApiController extends Controller
             return response()->json(['valid' => false, 'message' => 'Voucher không áp dụng cho đơn hàng này']);
         }
 
+        // Kiểm tra giá trị đơn hàng tối thiểu nếu có
+        $minOrderValue = $voucher->min_order_value ?? 0;
+        $eligibleSubtotal = 0;
+        if ($appliesTo === 'all') {
+            // Tính tổng tất cả sản phẩm
+            $eligibleSubtotal = $request->input('cart_subtotal', 0);
+        } else {
+            // Tính tổng sản phẩm thuộc danh mục hợp lệ
+            $eligibleItems = $request->input('eligible_items', []);
+            foreach ($eligibleItems as $item) {
+                $eligibleSubtotal += $item['price'] * $item['qty'];
+            }
+        }
+        if ($minOrderValue > 0 && $eligibleSubtotal < $minOrderValue) {
+            return response()->json(['valid' => false, 'message' => 'Đơn hàng chưa đạt giá trị tối thiểu để áp dụng voucher']);
+        }
+
         return response()->json([
             'valid' => true,
             'voucher' => $voucher,
+            'category_id' => $appliesTo === 'all' ? null : $allowedIds[0] ?? null,
             'category_ids' => $appliesTo === 'all' ? [] : $allowedIds
         ]);
     }

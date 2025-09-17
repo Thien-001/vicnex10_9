@@ -82,8 +82,8 @@
                         @endphp
                         @foreach($categories as $cat)
                             <label>
-                                <input type="checkbox" name="applies_to_categories[]" value="{{ $cat->Name }}"
-                                    {{ in_array($cat->Name, $appliedCategories) ? 'checked' : '' }}>
+                                <input type="checkbox" name="applies_to_categories[]" value="{{ $cat->Categories_ID }}"
+                                    {{ in_array($cat->Categories_ID, $appliedCategories) ? 'checked' : '' }}>
                                 {{ $cat->Name }}
                             </label>
                         @endforeach

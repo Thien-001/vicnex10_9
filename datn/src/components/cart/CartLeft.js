@@ -118,29 +118,36 @@ function CartLeft({ cartItems, updateQuantity, removeItem, allVariants, loadingV
         </div>
       ) : (
         <>
-          <table className="cart-table">
-            <thead>
-              <tr>
-                <th>Sản phẩm</th>
-                <th>Đơn giá</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-                <th>Xoá</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cartItems.map((item) => (
-                <CartItem
-                  key={item.Product_ID + "-" + item.SKU}
-                  item={item}
-                  updateQuantity={handleUpdateQuantity}
-                  removeItem={handleRemoveItem}
-                  allVariants={allVariants}
-                  allProducts={allProducts} // Thêm dòng này!
-                />
-              ))}
-            </tbody>
-          </table>
+          <div
+            style={{
+              maxHeight: "720px",
+              overflowY: cartItems.length > 5 ? "auto" : "visible",
+            }}
+          >
+            <table className="cart-table">
+              <thead>
+                <tr>
+                  <th>Sản phẩm</th>
+                  <th>Đơn giá</th>
+                  <th>Số lượng</th>
+                  <th>Thành tiền</th>
+                  <th>Xoá</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cartItems.map((item) => (
+                  <CartItem
+                    key={item.Product_ID + "-" + item.SKU}
+                    item={item}
+                    updateQuantity={handleUpdateQuantity}
+                    removeItem={handleRemoveItem}
+                    allVariants={allVariants}
+                    allProducts={allProducts} // Thêm dòng này!
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
           <a href="/" className="back-link">
             ← Quay lại trang chủ
           </a>

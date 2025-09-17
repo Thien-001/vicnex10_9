@@ -152,7 +152,19 @@
                 </td>
                 <td>{{ $voucher->max_uses ?? 'Không giới hạn' }}</td>
                 <td>{{ $voucher->expires ?? 'Không có' }}</td>
-                <td>{{ $voucher->applies_to ?? 'Không rõ' }}</td>
+                <td>
+                    @if($voucher->applies_to == 'all')
+                        Tất cả
+                    @elseif($voucher->applies_to == 'booking')
+                        Đặt sân
+                    @else
+                        @php
+                            $ids = explode(',', $voucher->applies_to);
+                            $names = \App\Models\Category::whereIn('Categories_ID', $ids)->pluck('Name')->toArray();
+                        @endphp
+                        {{ implode(', ', $names) }}
+                    @endif
+                </td>
                 <td>{{ $voucher->paid_at ?? 'Chưa hết' }}</td>
                 <td class="action-buttons">
                     <a href="{{ route('admin.vouchers.edit', $voucher->id) }}" class="btn-edit">

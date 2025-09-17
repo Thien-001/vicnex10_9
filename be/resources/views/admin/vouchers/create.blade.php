@@ -76,7 +76,8 @@
                     <div class="category-checkbox-list">
                         @foreach($categories as $cat)
                             <label>
-                                <input type="checkbox" name="applies_to_categories[]" value="{{ $cat->Name }}">
+                                <input type="checkbox" name="applies_to_categories[]" value="{{ $cat->Categories_ID }}"
+                                    {{ is_array(old('applies_to_categories')) && in_array($cat->Categories_ID, old('applies_to_categories')) ? 'checked' : '' }}>
                                 {{ $cat->Name }}
                             </label>
                         @endforeach
