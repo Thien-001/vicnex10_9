@@ -101,6 +101,10 @@ const Header = ({ cartItems }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Lấy user từ localStorage
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? JSON.parse(userStr) : null;
+
   // Đếm số lượng sản phẩm trong giỏ hàng
   useEffect(() => {
     const updateCartCount = () => {
@@ -121,36 +125,26 @@ const Header = ({ cartItems }) => {
   // Fetch notifications
   useEffect(() => {
     const fetchNotifications = async () => {
-      console.log("Reload notification"); // Thêm dòng này ở đây
-      const userStr = localStorage.getItem("user");
-      if (!userStr) return;
-      const user = JSON.parse(userStr);
-      const res = await axios.get(`${API_URL}/api/notifications?user_id=${user.id}`);
-      const notifications = res.data.data || res.data || [];
-      setNotifications(notifications);
+      if (!user || !user.ID) return;
+      const res = await axios.get(`${API_URL}/api/notifications?user_id=${user.ID}`);
+      const notificationsData = res.data.data || [];
+      setNotifications(notificationsData);
 
-      // Đếm số lượng thông báo chưa đọc
-      const unreadCount = notifications.filter(notification => !notification.is_read).length;
+      const unreadCount = notificationsData.filter(notification => !notification.is_read).length;
       setUnreadCount(unreadCount);
     };
 
     fetchNotifications();
 
-    // Lắng nghe sự kiện notificationUpdated để reload thông báo khi có thay đổi
     window.addEventListener("notificationUpdated", fetchNotifications);
     return () => window.removeEventListener("notificationUpdated", fetchNotifications);
-  }, []);
+  }, [user]);
 
   const handleLogout = () => {
-    // Xóa token đăng nhập
     localStorage.removeItem("token");
-    // Xóa giỏ hàng ở localStorage
     localStorage.removeItem("cart");
-    // Xóa thông tin user
     localStorage.removeItem("user");
-    // Xóa giỏ hàng ở state/context nếu có
     setCartItems([]);
-    // ...các thao tác khác như chuyển hướng...
     navigate("/login");
   };
 
@@ -248,284 +242,197 @@ const Header = ({ cartItems }) => {
                   style={{ position: "relative", display: "flex", alignItems: "center", cursor: "pointer" }}
                   variants={fadeItemVariant}
                 >
-                  {(() => {
-                    const userStr = localStorage.getItem("user");
-                    if (!userStr) {
-                      return (
-                        <>
-                          <motion.i
-                            className="fas fa-user"
-                            style={iconStyle}
-                            whileHover={{
-                              backgroundColor: "#0154b9",
-                              color: "#fff",
+                  {!user ? (
+                    <>
+                      <motion.i
+                        className="fas fa-user"
+                        style={iconStyle}
+                        whileHover={{
+                          backgroundColor: "#0154b9",
+                          color: "#fff",
+                        }}
+                        transition={{ duration: 0.3 }}
+                      />
+                      <span style={iconTextStyle}>TÀI KHOẢN</span>
+                      <AnimatePresence>
+                        {isUserDropdownOpen && (
+                          <motion.div
+                            className="user-dropdown"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            style={{
+                              position: "absolute",
+                              top: "120%",
+                              right: 0,
+                              background: "#fff",
+                              border: "1px solid #ccc",
+                              borderRadius: "10px",
+                              padding: "18px 0",
+                              boxShadow: "0 4px 16px rgba(1,84,185,0.10)",
+                              zIndex: 10,
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "0",
+                              minWidth: "220px",
                             }}
-                            transition={{ duration: 0.3 }}
-                          />
-                          <span style={iconTextStyle}>TÀI KHOẢN</span>
-                          <AnimatePresence>
-                            {isUserDropdownOpen && (
-                              <motion.div
-                                className="user-dropdown"
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
-                                style={{
-                                  position: "absolute",
-                                  top: "120%",
-                                  right: 0,
-                                  background: "#fff",
-                                  border: "1px solid #ccc",
-                                  borderRadius: "10px",
-                                  padding: "18px 0",
-                                  boxShadow: "0 4px 16px rgba(1,84,185,0.10)",
-                                  zIndex: 10,
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: "0",
-                                  minWidth: "220px",
-                                }}
-                              >
-                                <Link
-                                  to="/login"
-                                  style={{
-                                    padding: "10px 24px",
-                                    color: "#0154b9",
-                                    fontWeight: 600,
-                                    textDecoration: "none",
-                                    border: "none",
-                                    background: "none",
-                                    textAlign: "left",
-                                    borderRadius: 0,
-                                    transition: "background 0.2s",
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                                  onMouseLeave={e => e.currentTarget.style.background = "none"}
-                                >
-                                  Đăng nhập
-                                </Link>
-                                <Link
-                                  to="/register"
-                                  style={{
-                                    padding: "10px 24px",
-                                    color: "#0154b9",
-                                    fontWeight: 600,
-                                    textDecoration: "none",
-                                    border: "none",
-                                    background: "none",
-                                    textAlign: "left",
-                                    borderRadius: 0,
-                                    transition: "background 0.2s",
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                                  onMouseLeave={e => e.currentTarget.style.background = "none"}
-                                >
-                                  Đăng ký
-                                </Link>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </>
-                      );
-                    }
-                    try {
-                      const user = JSON.parse(userStr);
-                      return (
-                        <>
-                          {user.avatar ? (
-                            <img
-                              src={user.avatar}
-                              alt="Avatar"
+                          >
+                            <Link
+                              to="/login"
                               style={{
-                                width: 38,
-                                height: 38,
-                                borderRadius: "50%",
-                                objectFit: "cover",
-                                marginRight: 8,
-                                background: "#e3f0ff",
-                                border: "2px solid #0154b9",
+                                padding: "10px 24px",
+                                color: "#0154b9",
+                                fontWeight: 600,
+                                textDecoration: "none",
+                                border: "none",
+                                background: "none",
+                                textAlign: "left",
+                                borderRadius: 0,
+                                transition: "background 0.2s",
                               }}
-                            />
-                          ) : (
-                            <motion.i
-                              className="fas fa-user"
-                              style={iconStyle}
-                              whileHover={{
-                                backgroundColor: "#0154b9",
-                                color: "#fff",
+                              onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
+                              onMouseLeave={e => e.currentTarget.style.background = "none"}
+                            >
+                              Đăng nhập
+                            </Link>
+                            <Link
+                              to="/register"
+                              style={{
+                                padding: "10px 24px",
+                                color: "#0154b9",
+                                fontWeight: 600,
+                                textDecoration: "none",
+                                border: "none",
+                                background: "none",
+                                textAlign: "left",
+                                borderRadius: 0,
+                                transition: "background 0.2s",
                               }}
-                              transition={{ duration: 0.3 }}
-                            />
-                          )}
-                          <span style={iconTextStyle}>
-                            {user.Name ? user.Name.toUpperCase() : "TÀI KHOẢN"}
-                          </span>
-                          <AnimatePresence>
-                            {isUserDropdownOpen && (
-                              <motion.div
-                                className="user-dropdown"
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
-                                style={{
-                                  position: "absolute",
-                                  top: "120%",
-                                  right: 0,
-                                  background: "#fff",
-                                  border: "1px solid #ccc",
-                                  borderRadius: "10px",
-                                  padding: "18px 0",
-                                  boxShadow: "0 4px 16px rgba(1,84,185,0.10)",
-                                  zIndex: 10,
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: "0",
-                                  minWidth: "220px",
-                                }}
-                              >
-                                <Link
-                                  to="/profile"
-                                  style={{
-                                    padding: "10px 24px",
-                                    color: "#0154b9",
-                                    fontWeight: 600,
-                                    textDecoration: "none",
-                                    border: "none",
-                                    background: "none",
-                                    textAlign: "left",
-                                    borderRadius: 0,
-                                    transition: "background 0.2s",
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                                  onMouseLeave={e => e.currentTarget.style.background = "none"}
-                                >
-                                  <i className="fas fa-user" style={{ marginRight: 8 }}></i> Trang cá nhân
-                                </Link>
-                                {(user.Role_ID === 1 || user.Role_ID === 2) && (
-                                  <a
-                                    href="http://127.0.0.1:8000/admin"
-                                    style={{
-                                      padding: "10px 24px",
-                                      color: "#0154b9",
-                                      fontWeight: 600,
-                                      textDecoration: "none",
-                                      border: "none",
-                                      background: "none",
-                                      textAlign: "left",
-                                      borderRadius: 0,
-                                      transition: "background 0.2s",
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                                    onMouseLeave={e => e.currentTarget.style.background = "none"}
-                                  >
-                                    <i className="fas fa-cogs" style={{ marginRight: 8 }}></i> Quản lý
-                                  </a>
-                                )}
-                                <button
-                                  onClick={handleLogout}
-                                  style={{
-                                    padding: "10px 24px",
-                                    color: "#e74c3c",
-                                    fontWeight: 600,
-                                    background: "none",
-                                    border: "none",
-                                    textAlign: "left",
-                                    borderRadius: 0,
-                                    cursor: "pointer",
-                                    transition: "background 0.2s",
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = "#fbe9e7"}
-                                  onMouseLeave={e => e.currentTarget.style.background = "none"}
-                                >
-                                  <i className="fas fa-sign-out-alt" style={{ marginRight: 8 }}></i> Đăng xuất
-                                </button>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </>
-                      );
-                    } catch {
-                      return (
-                        <>
-                          <motion.i
-                            className="fas fa-user"
-                            style={iconStyle}
-                            whileHover={{
-                              backgroundColor: "#0154b9",
-                              color: "#fff",
+                              onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
+                              onMouseLeave={e => e.currentTarget.style.background = "none"}
+                            >
+                              Đăng ký
+                            </Link>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  ) : (
+                    <>
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt="Avatar"
+                          style={{
+                            width: 38,
+                            height: 38,
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            marginRight: 8,
+                            background: "#e3f0ff",
+                            border: "2px solid #0154b9",
+                          }}
+                        />
+                      ) : (
+                        <motion.i
+                          className="fas fa-user"
+                          style={iconStyle}
+                          whileHover={{
+                            backgroundColor: "#0154b9",
+                            color: "#fff",
+                          }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                      <span style={iconTextStyle}>
+                        {user.Name ? user.Name.toUpperCase() : "TÀI KHOẢN"}
+                      </span>
+                      <AnimatePresence>
+                        {isUserDropdownOpen && (
+                          <motion.div
+                            className="user-dropdown"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            style={{
+                              position: "absolute",
+                              top: "120%",
+                              right: 0,
+                              background: "#fff",
+                              border: "1px solid #ccc",
+                              borderRadius: "10px",
+                              padding: "18px 0",
+                              boxShadow: "0 4px 16px rgba(1,84,185,0.10)",
+                              zIndex: 10,
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "0",
+                              minWidth: "220px",
                             }}
-                            transition={{ duration: 0.3 }}
-                          />
-                          <span style={iconTextStyle}>TÀI KHOẢN</span>
-                          <AnimatePresence>
-                            {isUserDropdownOpen && (
-                              <motion.div
-                                className="user-dropdown"
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
+                          >
+                            <Link
+                              to="/profile"
+                              style={{
+                                padding: "10px 24px",
+                                color: "#0154b9",
+                                fontWeight: 600,
+                                textDecoration: "none",
+                                border: "none",
+                                background: "none",
+                                textAlign: "left",
+                                borderRadius: 0,
+                                transition: "background 0.2s",
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
+                              onMouseLeave={e => e.currentTarget.style.background = "none"}
+                            >
+                              <i className="fas fa-user" style={{ marginRight: 8 }}></i> Trang cá nhân
+                            </Link>
+                            {(user.Role_ID === 1 || user.Role_ID === 2) && (
+                              <a
+                                href="http://127.0.0.1:8000/admin"
                                 style={{
-                                  position: "absolute",
-                                  top: "120%",
-                                  right: 0,
-                                  background: "#fff",
-                                  border: "1px solid #ccc",
-                                  borderRadius: "10px",
-                                  padding: "18px 0",
-                                  boxShadow: "0 4px 16px rgba(1,84,185,0.10)",
-                                  zIndex: 10,
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: "0",
-                                  minWidth: "220px",
+                                  padding: "10px 24px",
+                                  color: "#0154b9",
+                                  fontWeight: 600,
+                                  textDecoration: "none",
+                                  border: "none",
+                                  background: "none",
+                                  textAlign: "left",
+                                  borderRadius: 0,
+                                  transition: "background 0.2s",
                                 }}
+                                onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
+                                onMouseLeave={e => e.currentTarget.style.background = "none"}
                               >
-                                <Link
-                                  to="/login"
-                                  style={{
-                                    padding: "10px 24px",
-                                    color: "#0154b9",
-                                    fontWeight: 600,
-                                    textDecoration: "none",
-                                    border: "none",
-                                    background: "none",
-                                    textAlign: "left",
-                                    borderRadius: 0,
-                                    transition: "background 0.2s",
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                                  onMouseLeave={e => e.currentTarget.style.background = "none"}
-                                >
-                                  Đăng nhập
-                                </Link>
-                                <Link
-                                  to="/register"
-                                  style={{
-                                    padding: "10px 24px",
-                                    color: "#0154b9",
-                                    fontWeight: 600,
-                                    textDecoration: "none",
-                                    border: "none",
-                                    background: "none",
-                                    textAlign: "left",
-                                    borderRadius: 0,
-                                    transition: "background 0.2s",
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                                  onMouseLeave={e => e.currentTarget.style.background = "none"}
-                                >
-                                  Đăng ký
-                                </Link>
-                              </motion.div>
+                                <i className="fas fa-cogs" style={{ marginRight: 8 }}></i> Quản lý
+                              </a>
                             )}
-                          </AnimatePresence>
-                        </>
-                      );
-                    }
-                  })()}
+                            <button
+                              onClick={handleLogout}
+                              style={{
+                                padding: "10px 24px",
+                                color: "#e74c3c",
+                                fontWeight: 600,
+                                background: "none",
+                                border: "none",
+                                textAlign: "left",
+                                borderRadius: 0,
+                                cursor: "pointer",
+                                transition: "background 0.2s",
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = "#fbe9e7"}
+                              onMouseLeave={e => e.currentTarget.style.background = "none"}
+                            >
+                              <i className="fas fa-sign-out-alt" style={{ marginRight: 8 }}></i> Đăng xuất
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  )}
                 </motion.div>
 
                 {/* GIỎ HÀNG */}
@@ -625,61 +532,45 @@ const Header = ({ cartItems }) => {
                     }}
                     transition={{ duration: 0.3 }}
                   />
-                  {/* Badge đỏ nếu có thông báo chưa đọc */}
+                  {/* Badge đỏ giống giỏ hàng */}
                   {unreadCount > 0 && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: 2,
-                        right: 6,
-                        background: "#e74c3c",
-                        color: "#fff",
-                        borderRadius: "50%",
-                        width: 18,
-                        height: 18,
-                        fontSize: 12,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 700,
-                        zIndex: 30,
-                        border: "2px solid #fff",
-                      }}
-                    >
-                      {unreadCount}
-                    </span>
+                    <span className="cart-count">{unreadCount}</span>
                   )}
                   <span style={iconTextStyle}>THÔNG BÁO</span>
                   {/* Dropdown thông báo */}
                   <AnimatePresence>
                     {isNotificationOpen && (
                       <motion.div
+                        className="notify-dropdown"
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        style={{
-                          position: "absolute",
-                          top: "120%",
-                          right: 0,
-                          background: "#fff",
-                          border: "1px solid #ddd",
-                          borderRadius: "8px",
-                          padding: "16px 18px",
-                          boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-                          zIndex: 20,
-                          minWidth: "320px",
-                          maxHeight: "400px",
-                          overflowY: "auto",
-                        }}
                       >
                         <h4 style={{ marginBottom: 10, color: "#0154b9" }}>Thông báo của bạn</h4>
                         {Array.isArray(notifications) && notifications.length > 0 ? (
                           notifications.map((item, idx) => (
-                            <div key={idx} style={{ marginBottom: 12, borderBottom: "1px solid #eee", paddingBottom: 8 }}>
-                              <div style={{ fontWeight: 600, color: "#0051ff", fontSize: 15 }}>{item.Title}</div>
+                            <div
+                              key={idx}
+                              style={{
+                                marginBottom: 12,
+                                borderBottom: "1px solid #eee",
+                                paddingBottom: 8,
+                                fontWeight: item.is_read ? 400 : 700,
+                                background: item.is_read ? "#fff" : "#e0e7ff",
+                                borderRadius: 6,
+                                transition: "background 0.2s",
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <div style={{ color: "#0051ff", fontSize: 15 }}>{item.Title}</div>
                               <div style={{ fontSize: 13, color: "#777" }}>{item.Message}</div>
-                              <div style={{ fontSize: 12, color: "#aaa" }}>{new Date(item.created_at).toLocaleString()}</div>
+                              <div style={{ fontSize: 12, color: "#aaa" }}>
+                                {item.Created_at
+                                  ? new Date(item.Created_at).toLocaleString()
+                                  : (item.created_at ? new Date(item.created_at).toLocaleString() : "")}
+                              </div>
                             </div>
                           ))
                         ) : (
@@ -844,7 +735,7 @@ export default Header;
   gap: 36px;
 }
 @media (min-width: 901px) {
-  .nav-menu ul {
+ 
     gap: 36px;
   }
 } */

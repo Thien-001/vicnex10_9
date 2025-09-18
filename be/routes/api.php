@@ -146,6 +146,7 @@ Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAs
 Route::post('/notifications/mark-read', [NotificationController::class, 'markManyAsRead']); // Đánh dấu đã đọc nhiều thông báo
 Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']); // Xóa 1 thông báo
 Route::post('/notifications/delete-many', [NotificationController::class, 'destroyMany']); // Xóa nhiều thông báo
+Route::post('/notifications', [NotificationController::class, 'store']); // Tạo mới thông báo (admin/hệ thống)
 
 // Contact Messages
 Route::post('/contact', [ContactMessageController::class, 'store']);

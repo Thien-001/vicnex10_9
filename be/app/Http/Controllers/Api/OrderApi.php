@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Mail\OrderSuccessMail;
 use Illuminate\Support\Facades\Mail;
@@ -45,6 +46,7 @@ class OrderApi extends Controller
             'order_details.*.quantity' => 'required|integer|min:1',
             'order_details.*.price' => 'required|numeric|min:0',
             'order_details.*.total_price' => 'required|numeric|min:0',
+            'order_details.*.variant_id' => 'nullable|integer', // THÊM DÒNG NÀY
         ]);
 
         // Lấy thông tin từ request
@@ -89,12 +91,43 @@ class OrderApi extends Controller
 
             // Trừ kho biến thể nếu có
             if (isset($item['variant_id'])) {
+                \Log::info('Xử lý biến thể:', $item); // Log dữ liệu biến thể nhận được
                 $variant = ProductVariant::find($item['variant_id']);
                 if ($variant) {
-                    $variant->quantity = max(0, $variant->quantity - $item['quantity']);
+                    \Log::info('Trước khi trừ kho biến thể:', [
+                        'variant_id' => $item['variant_id'],
+                        'quantity_trong_kho' => $variant->Quantity,
+                        'quantity_dat_hang' => $item['quantity']
+                    ]);
+                    if ($variant->Quantity < $item['quantity']) {
+                        \Log::error('Không đủ kho biến thể:', [
+                            'variant_id' => $item['variant_id'],
+                            'quantity_trong_kho' => $variant->Quantity,
+                            'quantity_dat_hang' => $item['quantity']
+                        ]);
+                        return response()->json(['error' => 'Sản phẩm biến thể đã hết hàng!'], 400);
+                    }
+                    // TRỪ KHO BIẾN THỂ
+                    \Log::info('Trước khi trừ kho:', ['variant_id' => $item['variant_id'], 'quantity' => $variant->Quantity]);
+                    $variant->Quantity = max(0, $variant->Quantity - $item['quantity']);
                     $variant->save();
+                    \Log::info('Sau khi trừ kho:', ['variant_id' => $item['variant_id'], 'quantity' => $variant->Quantity]);
+                } else {
+                    \Log::error('Không tìm thấy biến thể:', ['variant_id' => $item['variant_id']]);
                 }
             }
+
+            // Tạo chi tiết đơn hàng
+            OrderDetail::create([
+                'order_id'      => $order->id,
+                'Product_ID'    => $item['Product_ID'],
+                'quantity'      => $item['quantity'],
+                'price'         => $item['price'],
+                'discount_price'=> $item['discount_price'] ?? 0,
+                'total_price'   => $item['total_price'],
+                'product_name'  => $item['product_name'] ?? '',
+                'variant_id'    => $item['variant_id'] ?? null,
+            ]);
         }
 
         // Lấy lại đơn hàng đầy đủ thông tin

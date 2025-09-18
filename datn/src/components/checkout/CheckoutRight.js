@@ -164,14 +164,29 @@ const [showQRModal, setShowQRModal] = useState(false);
 
     setLoading(true);
 
-    const order_details = cartItems.map((item) => ({
-      Product_ID: item.Product_ID,
-      quantity: item.quantity,
-      price: item.Price,
-      discount_price: item.discount_price || 0,
-      total_price:
-        (Number(item.Price) - (item.discount_price || 0)) * item.quantity,
-    }));
+    // Log từng sản phẩm trong giỏ hàng
+    console.log("cartItems chi tiết:", cartItems);
+
+    // Log chi tiết từng sản phẩm trong giỏ hàng
+    cartItems.forEach((item, idx) => {
+      console.log(`Sản phẩm ${idx}:`, item);
+    });
+
+    const order_details = cartItems.map((item) => {
+  const obj = {
+    Product_ID: Number(item.Product_ID),
+    quantity: Number(item.quantity),
+    price: Number(item.Price),
+    discount_price: Number(item.discount_price || 0),
+    total_price: Number((Number(item.Price) - Number(item.discount_price || 0)) * Number(item.quantity)),
+  };
+  // SỬA: Thêm variant_id nếu tồn tại (kể cả giá trị 0)
+  if ('variant_id' in item) {
+    obj.variant_id = Number(item.variant_id);
+  }
+  console.log("order_details obj:", obj);
+  return obj;
+});
 
     const user = JSON.parse(localStorage.getItem("user"));
     const orderData = {
@@ -184,6 +199,12 @@ const [showQRModal, setShowQRModal] = useState(false);
       payment_method: paymentMethod,
       order_details,
     };
+
+    console.log("orderData gửi lên:", orderData);
+    console.log("order_details gửi lên:", orderData.order_details);
+    orderData.order_details.forEach((item, idx) => {
+      console.log(`Sản phẩm ${idx}:`, item);
+    });
 
     try {
       // Gửi đơn hàng lên backend
@@ -252,14 +273,18 @@ const [showQRModal, setShowQRModal] = useState(false);
 
     setLoading(true);
 
-    const order_details = cartItems.map((item) => ({
-      Product_ID: item.Product_ID,
-      quantity: item.quantity,
-      price: item.Price,
-      discount_price: item.discount_price || 0,
-      total_price:
-        (Number(item.Price) - (item.discount_price || 0)) * item.quantity,
-    }));
+    const order_details = cartItems.map((item) => {
+      const obj = {
+        Product_ID: item.Product_ID,
+        quantity: item.quantity,
+        price: item.Price,
+        discount_price: item.discount_price || 0,
+        total_price:
+          (Number(item.Price) - (item.discount_price || 0)) * item.quantity,
+      };
+      if (item.variant_id) obj.variant_id = item.variant_id;
+      return obj;
+    });
 
     const user = JSON.parse(localStorage.getItem("user"));
     const orderData = {

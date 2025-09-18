@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "react-scripts start"
+    "start": "react-scripts start",
+    "dev": "concurrently \"cd be && php artisan serve\" \"cd datn && npm start\""
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -14,5 +15,8 @@
     "react-scripts": "^5.0.1",
     "react-toastify": "^11.0.5",
     "sweetalert2": "^11.22.2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

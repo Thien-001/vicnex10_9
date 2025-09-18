@@ -196,6 +196,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         Price: variant.Price || variant.price || product.Price,
         Discount_price: variant.Discount_price || variant.discount_price || product.Discount_price,
         quantity: 1,
+        variant_id: variant.Variant_ID || variant.id, // THÊM DÒNG NÀY
       };
     } else {
       // Sản phẩm gốc: ưu tiên lấy Discount_price nếu có

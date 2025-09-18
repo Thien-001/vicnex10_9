@@ -1188,6 +1188,9 @@ function UserProfile() {
             }}
             onClick={e => e.stopPropagation()}
           >
+            {/* Thêm dòng này để kiểm tra dữ liệu */}
+            {console.log("selectedOrder:", selectedOrder)}
+            {console.log("selectedOrder.order_details:", selectedOrder?.order_details)}
             <button
               onClick={() => setSelectedOrder(null)}
               style={{

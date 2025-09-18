@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OrderDetail extends Model
 {
     protected $table = 'order_detail'; // Sửa lại tên bảng cho đúng
-    protected $primaryKey = 'order_detail_id';
+    protected $primaryKey = 'id';
     public $timestamps = false;
 
     protected $fillable = [
@@ -20,6 +20,7 @@ class OrderDetail extends Model
         'quantity',
         'total',
         'created_at',
+        'variant_id', // THÊM DÒNG NÀY
     ];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class OrderDetail extends Model
         'total'      => 'float',
         'quantity'   => 'integer',
         'created_at' => 'datetime',
+        'variant_id' => 'integer', // THÊM DÒNG NÀY
     ];
 
     // Chi tiết đơn hàng thuộc về 1 đơn hàng

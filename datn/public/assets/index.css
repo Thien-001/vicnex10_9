@@ -1499,3 +1499,39 @@ body {
     border-radius: 10px;
   }
 }
+
+.notify-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  min-width: 480px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px 18px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.notify-dropdown-title {
+  margin-bottom: 10px;
+  color: #0154b9;
+  font-size: 17px;
+  font-weight: 600;
+}
+.notify-dropdown-item {
+  margin-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  font-weight: 400;
+  background: #fff;
+  border-radius: 6px;
+  transition: background 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.notify-dropdown-item.unread {
+  font-weight: 700;
+  background: #e0e7ff;
+}
