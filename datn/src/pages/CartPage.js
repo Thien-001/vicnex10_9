@@ -52,7 +52,7 @@ function CartPage() {
   const updateQuantity = (productId, sku, newQty) => {
     const updated = cartItems.map((item) =>
       String(item.Product_ID) === String(productId) && String(item.SKU) === String(sku)
-        ? { ...item, qty: newQty } // Sửa lại thành qty
+        ? { ...item, quantity: newQty } // Đúng tên trường!
         : item
     );
     setCartItems(updated);

@@ -148,6 +148,18 @@ const Header = ({ cartItems }) => {
     navigate("/login");
   };
 
+  const handleNotificationDropdownOpen = async () => {
+    setIsNotificationOpen(true);
+    if (unreadCount > 0 && user && user.ID) {
+      // Gọi API đánh dấu tất cả thông báo là đã đọc
+      await axios.post(`${API_URL}/api/notifications/read-all`, { user_id: user.ID });
+      setUnreadCount(0);
+      // Optionally, cập nhật lại danh sách thông báo
+      const res = await axios.get(`${API_URL}/api/notifications?user_id=${user.ID}`);
+      setNotifications(res.data.data || []);
+    }
+  };
+
   // Render
   return (
     <header className="header">
@@ -520,7 +532,7 @@ const Header = ({ cartItems }) => {
                   whileTap={{ scale: 0.95 }}
                   variants={fadeItemVariant}
                   transition={{ type: "spring", stiffness: 300 }}
-                  onMouseEnter={() => setIsNotificationOpen(true)}
+                  onMouseEnter={handleNotificationDropdownOpen}
                   onMouseLeave={() => setIsNotificationOpen(false)}
                 >
                   <motion.i

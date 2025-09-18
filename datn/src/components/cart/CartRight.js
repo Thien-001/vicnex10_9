@@ -11,7 +11,7 @@ function CartRight({ cartItems }) {
 
   const subtotal = cartItems.reduce((sum, item) => {
     const price = Number(item.Discount_price) > 0 ? Number(item.Discount_price) : Number(item.Price) || 0;
-    const qty = Number(item.qty) || 1;
+    const qty = Number(item.quantity) || 1; // SỬA Ở ĐÂY
     return sum + price * qty;
   }, 0);
 
@@ -27,7 +27,7 @@ function CartRight({ cartItems }) {
 
   const eligibleSubtotal = eligibleItems.reduce((sum, item) => {
     const price = Number(item.Discount_price) > 0 ? Number(item.Discount_price) : Number(item.Price) || 0;
-    const qty = Number(item.qty) || 1;
+    const qty = Number(item.quantity) || 1; // SỬA Ở ĐÂY
     return sum + price * qty;
   }, 0);
 
@@ -89,7 +89,7 @@ function CartRight({ cartItems }) {
     <div className="cart-right">
       <h3>Tóm Tắt Đơn Hàng</h3>
       <div style={{ fontSize: 15, color: "#0154b9", marginBottom: 8 }}>
-        Giỏ hàng có <b>{cartItems.length}</b> sản phẩm
+        Giỏ hàng có <b>{cartItems.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0)}</b> sản phẩm
       </div>
       <div className="summary-row">
         <span>Tổng tiền sản phẩm:</span>

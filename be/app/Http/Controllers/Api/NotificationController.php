@@ -50,6 +50,17 @@ class NotificationController extends Controller
         return response()->json(['success' => true]);
     }
 
+    // Đánh dấu tất cả thông báo của user là đã đọc
+    public function readAll(Request $request)
+    {
+        $userId = $request->user() ? $request->user()->id : $request->input('user_id');
+        if (!$userId) {
+            return response()->json(['error' => 'Thiếu user_id'], 400);
+        }
+        Notification::where('User_ID', $userId)->update(['is_read' => 1]);
+        return response()->json(['success' => true]);
+    }
+
     // Xóa 1 thông báo
     public function destroy($id, Request $request)
     {

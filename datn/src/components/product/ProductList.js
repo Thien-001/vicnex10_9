@@ -192,14 +192,14 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
       item = {
         ...product,
         selectedVariant: variant,
-        SKU: variant.SKU || variant.sku,
-        Price: variant.Price || variant.price || product.Price,
-        Discount_price: variant.Discount_price || variant.discount_price || product.Discount_price,
+        SKU: variant.SKU,
+        Price: variant.Price,
+        Discount_price: variant.Discount_price,
         quantity: 1,
-        variant_id: variant.Variant_ID || variant.id, // THÊM DÒNG NÀY
+        variant_id: variant.Variant_ID,
       };
     } else {
-      // Sản phẩm gốc: ưu tiên lấy Discount_price nếu có
+      // Sản phẩm gốc
       item = {
         ...product,
         Price: product.Discount_price || product.Price,
@@ -207,19 +207,30 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         quantity: 1,
       };
     }
+
+    // Sửa logic kiểm tra tồn tại:
     const exist = cart.find(
-      (i) => i.Product_ID === product.Product_ID && (!variant || JSON.stringify(i.selectedVariant) === JSON.stringify(variant))
+      (i) =>
+        i.Product_ID === product.Product_ID &&
+        (variant
+          ? i.variant_id === variant.Variant_ID
+          : !i.variant_id)
     );
+
     let updated;
     if (exist) {
       updated = cart.map((i) =>
-        i.Product_ID === product.Product_ID && (!variant || JSON.stringify(i.selectedVariant) === JSON.stringify(variant))
+        i.Product_ID === product.Product_ID &&
+        (variant
+          ? i.variant_id === variant.Variant_ID
+          : !i.variant_id)
           ? { ...i, quantity: (i.quantity || 1) + 1 }
           : i
       );
     } else {
       updated = [...cart, item];
     }
+
     localStorage.setItem("cart", JSON.stringify(updated));
     window.dispatchEvent(new Event("cartUpdated"));
     setShowVariantPopup(false);

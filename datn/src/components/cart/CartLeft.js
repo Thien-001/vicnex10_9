@@ -130,7 +130,6 @@ function CartLeft({ cartItems, updateQuantity, removeItem, allVariants, loadingV
                   <th>Sản phẩm</th>
                   <th>Đơn giá</th>
                   <th>Số lượng</th>
-                  <th>Thành tiền</th>
                   <th>Xoá</th>
                 </tr>
               </thead>

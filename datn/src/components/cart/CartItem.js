@@ -10,7 +10,7 @@ export default function CartItem({ item, updateQuantity, removeItem, loadingVari
       : "/htm_css/img/product/font-size 18px;.png";
   const discountPrice = Number(item.Discount_price) || 0;
   const price = discountPrice > 0 ? discountPrice : Number(item.Price) || 0;
-  const qty = Number(item.qty) || 1;
+  const quantity = Number(item.quantity) || 1; // SỬA Ở ĐÂY
 
   const variantName = item.Variant_name || item.variant_name || "";
   const sku = item.SKU || item.sku || "";
@@ -57,18 +57,16 @@ export default function CartItem({ item, updateQuantity, removeItem, loadingVari
       </td>
       <td className="quantity">
         <button
-          onClick={() => updateQuantity(item.Product_ID, sku, qty - 1)}
-          disabled={loadingVariants || qty <= 1}
+          onClick={() => updateQuantity(item.Product_ID, sku, quantity - 1)}
+          disabled={loadingVariants || quantity <= 1}
         >-</button>
-        <input type="number" value={qty} readOnly disabled={loadingVariants} />
+        <input type="number" value={quantity} readOnly disabled={loadingVariants} />
         <button
-          onClick={() => updateQuantity(item.Product_ID, sku, qty + 1)}
+          onClick={() => updateQuantity(item.Product_ID, sku, quantity + 1)}
           disabled={loadingVariants}
         >+</button>
       </td>
-      <td>
-        {(price * qty).toLocaleString()} đ
-      </td>
+      {/* Bỏ cột thành tiền */}
       <td>
         <button className="delete-btn" onClick={() => removeItem(item.Product_ID, item.SKU)}>🗑️</button>
       </td>

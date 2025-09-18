@@ -141,12 +141,15 @@ Route::post('/products/{productId}/ratings', [ProductRatingController::class, 's
 Route::get('/top-reviews', [ProductRatingController::class, 'topReviews']); // <-- Thêm dòng này
 
 // Notifications
-Route::get('/notifications', [NotificationController::class, 'index']); // Lấy danh sách thông báo (có phân trang)
+Route::get('/notifications', [NotificationController::class, 'index']); // Lấy danh sách thông báo
 Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']); // Đánh dấu đã đọc 1 thông báo
 Route::post('/notifications/mark-read', [NotificationController::class, 'markManyAsRead']); // Đánh dấu đã đọc nhiều thông báo
 Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']); // Xóa 1 thông báo
 Route::post('/notifications/delete-many', [NotificationController::class, 'destroyMany']); // Xóa nhiều thông báo
-Route::post('/notifications', [NotificationController::class, 'store']); // Tạo mới thông báo (admin/hệ thống)
+Route::post('/notifications', [NotificationController::class, 'store']); // Tạo mới thông báo
+
+// Đánh dấu tất cả thông báo là đã đọc cho user
+Route::post('/notifications/read-all', [NotificationController::class, 'readAll']); // SỬA ĐÚNG CONTROLLER
 
 // Contact Messages
 Route::post('/contact', [ContactMessageController::class, 'store']);
@@ -158,3 +161,4 @@ Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiControll
 
 Route::get('posts/{post}/comments', [CommentApiController::class, 'postComments']);
 Route::post('posts/{post}/comments', [CommentApiController::class, 'storePostComment']);
+
