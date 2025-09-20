@@ -1054,12 +1054,16 @@ function UserProfile() {
                             <tr key={idx} style={{ background: idx % 2 === 0 ? "#f9fafb" : "#fff" }}>
                               <td style={{ padding: 6 }}>
                                 <img
-                                  src={item.product_image || "/img/no-image.png"}
-                                  alt={item.product_name || "Sản phẩm"}
+                                  src={
+                                    item.product && item.product.Image
+                                      ? `http://localhost:8000/${item.product.Image}`
+                                      : "/img/no-image.png"
+                                  }
+                                  alt={item.product_name || item.product?.Name || "Sản phẩm"}
                                   style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid #eee" }}
                                 />
                               </td>
-                              <td style={{ padding: 6 }}>{item.product_name || item.Product_Name || "Sản phẩm"}</td>
+                              <td style={{ padding: 6 }}>{item.product_name || item.product?.Name || "Sản phẩm"}</td>
                               <td style={{ padding: 6, textAlign: "center" }}>{item.quantity}</td>
                               <td style={{ padding: 6 }}>
                                 {Number(item.price).toLocaleString()}₫
@@ -1292,12 +1296,16 @@ function UserProfile() {
                     <tr key={idx} style={{ background: idx % 2 === 0 ? "#f9fafb" : "#fff" }}>
                       <td style={{ padding: 6 }}>
                         <img
-                          src={item.product_image || "/img/no-image.png"}
-                          alt={item.product_name || "Sản phẩm"}
+                          src={
+                            item.product && item.product.Image
+                              ? `http://localhost:8000/${item.product.Image}`
+                              : "/img/no-image.png"
+                          }
+                          alt={item.product_name || item.product?.Name || "Sản phẩm"}
                           style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid #eee" }}
                         />
                       </td>
-                      <td style={{ padding: 6 }}>{item.product_name || item.Product_Name || "Sản phẩm"}</td>
+                      <td style={{ padding: 6 }}>{item.product_name || item.product?.Name || "Sản phẩm"}</td>
                       <td style={{ padding: 6, textAlign: "center" }}>{item.quantity}</td>
                       <td style={{ padding: 6 }}>
                         {Number(item.price).toLocaleString()}₫

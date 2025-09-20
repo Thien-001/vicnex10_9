@@ -109,7 +109,8 @@ export default function FlashSale() {
                       {countdowns[fs.id]?.seconds || "00"}
                     </span>
                     {countdowns[fs.id]?.days === 0 &&
-                      parseInt(countdowns[fs.id]?.hours) < 1 && (
+                      parseInt(countdowns[fs.id]?.hours) < 1 &&
+                      countdowns[fs.id]?.status !== "Đã kết thúc" && (
                         <span className="flashsale-ending-soon">
                           Sắp kết thúc!
                         </span>

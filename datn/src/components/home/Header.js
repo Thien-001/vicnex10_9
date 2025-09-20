@@ -699,16 +699,15 @@ const Header = ({ cartItems }) => {
       </motion.div>
 
       {/* Nút hamburger menu (chỉ hiện trên mobile) */}
-      <button
+      {/* <button
         className="mobile-menu-btn"
         onClick={() => setIsMobileMenuOpen(true)}
-        style={{ display: "none" }}
       >
-        <i className="fas fa-bars"></i>
-      </button>
+        <i className="fas fa-bars" style={{ fontSize: 18 }}></i>
+      </button> */}
 
       {/* Menu dọc cho mobile */}
-      {isMobileMenuOpen && (
+      {/* {isMobileMenuOpen && (
         <div className="mobile-nav-menu" onClick={() => setIsMobileMenuOpen(false)}>
           <div className="mobile-nav-content" onClick={e => e.stopPropagation()}>
             <button className="mobile-nav-close" onClick={() => setIsMobileMenuOpen(false)}>
@@ -735,7 +734,7 @@ const Header = ({ cartItems }) => {
             </ul>
           </div>
         </div>
-      )}
+      )} */}
     </header>
   );
 };

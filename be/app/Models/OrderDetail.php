@@ -15,6 +15,7 @@ class OrderDetail extends Model
         'order_id',
         'Product_ID',
         'product_name',
+        'product_image', // THÊM DÒNG NÀY
         'SKU',
         'price',
         'quantity',
@@ -38,9 +39,8 @@ class OrderDetail extends Model
     }
 
     // Chi tiết đơn hàng thuộc về 1 sản phẩm
-    public function product(): BelongsTo
+    public function product()
     {
-        // Sửa lại 'id' thành 'Product_ID' cho đúng với bảng products
         return $this->belongsTo(Product::class, 'Product_ID', 'Product_ID');
     }
 }
