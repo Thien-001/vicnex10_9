@@ -190,7 +190,8 @@ class ProductApiController extends Controller
         if ($search) {
             $query->where('Name', 'LIKE', '%' . $search . '%');
         }
-        $products = $query->orderBy('Product_ID', 'desc')->limit(8)->get();
+        // Bỏ limit(8) để trả về tất cả sản phẩm
+        $products = $query->orderBy('Product_ID', 'desc')->get();
 
         return response()->json(['data' => $products]);
     }

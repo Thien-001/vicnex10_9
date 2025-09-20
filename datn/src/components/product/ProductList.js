@@ -50,6 +50,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
   const [balance, setBalance] = useState("");
   const [playStyle, setPlayStyle] = useState("");
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const pageSize = 20; // 5 hàng × 4 sản phẩm
 
   const navigate = useNavigate();
 
@@ -58,10 +59,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
       try {
         setLoading(true);
         setError(null);
-        console.log('🚀 Fetching products with filters:', filters); // Debug log
         const res = await fetchProducts(page, filters);
-        console.log('📦 API response:', res.data); // Debug log
-        
         let data = res.data.data || res.data;
         if (page === 1) {
           data = [...data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -84,9 +82,8 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         );
         setProducts(productsWithRatings);
       } catch (err) {
-        console.error("Lỗi gọi API:", err);
         setError("Không thể tải sản phẩm. Vui lòng thử lại sau.");
-        setProducts([]); // Set empty array on error
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -130,6 +127,10 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
   }
   // Nếu không có sort, mặc định đã là newest lên đầu do đã sort khi fetch
 
+  // Phân trang: mỗi trang 20 sản phẩm (5 hàng × 4 sản phẩm)
+  const productsToShow = sortedProducts.slice((page - 1) * pageSize, page * pageSize);
+  const emptyBoxes = productsToShow.length % 4 === 0 ? 0 : 4 - (productsToShow.length % 4);
+
   // Loading state
   if (loading) {
     return (
@@ -162,7 +163,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     );
   }
 
-  if (!sortedProducts || sortedProducts.length === 0) {
+  if (!productsToShow || productsToShow.length === 0) {
     return <p className="product-list-empty">Không tìm thấy sản phẩm phù hợp.</p>;
   }
 
@@ -188,7 +189,6 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     let item;
     if (variant) {
-      // Nếu có biến thể
       item = {
         ...product,
         selectedVariant: variant,
@@ -199,7 +199,6 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         variant_id: variant.Variant_ID,
       };
     } else {
-      // Sản phẩm gốc
       item = {
         ...product,
         Price: product.Discount_price || product.Price,
@@ -208,7 +207,6 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
       };
     }
 
-    // Sửa logic kiểm tra tồn tại:
     const exist = cart.find(
       (i) =>
         i.Product_ID === product.Product_ID &&
@@ -240,7 +238,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
   return (
     <main className="product-list-main">
-      {sortedProducts.map((product) => {
+      {productsToShow.map((product) => {
         const hasVariant = product.variants && product.variants.length > 0;
         const hasStock = hasVariant
           ? product.variants.some(v => Number(v.Quantity) > 0)
@@ -343,6 +341,14 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
           </div>
         );
       })}
+      {/* Thêm box trống nếu hàng cuối chưa đủ 4 sản phẩm */}
+      {Array.from({ length: emptyBoxes }).map((_, idx) => (
+        <div
+          key={`empty-${idx}`}
+          className="product-list-item"
+          style={{ visibility: "hidden" }}
+        />
+      ))}
 
       {/* Popup chọn biến thể giống ProductOptions */}
       {showVariantPopup && selectedProduct && (

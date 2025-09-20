@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\CommentRatingApiController;
 use App\Http\Controllers\Api\ProductRatingController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ContactMessageController;
+use App\Http\Controllers\Auth\RegisterController;
 
 // Products
 Route::get('/products', [ProductApiController::class, 'index']);
@@ -71,6 +72,9 @@ Route::post('/users/{id}/update-profile', [UserApiController::class, 'updateProf
 
 // Login
 Route::post('/login', [UserApiController::class, 'login']);
+
+// Đăng ký tài khoản (API)
+Route::post('/register', [RegisterController::class, 'register']);
 
 // Vouchers, Posts, Courts, Orders, etc.
 Route::resource('vouchers', VoucherApiController::class);

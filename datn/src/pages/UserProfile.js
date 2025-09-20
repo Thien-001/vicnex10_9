@@ -461,6 +461,10 @@ function UserProfile() {
     // eslint-disable-next-line
   }, [user, wards]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   if (!user) return (
     <>
       <Header />
