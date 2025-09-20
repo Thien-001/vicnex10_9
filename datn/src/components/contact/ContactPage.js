@@ -1,6 +1,38 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const popupStyle = {
+  position: "fixed",
+  top: 0, left: 0, right: 0, bottom: 0,
+  background: "rgba(0,0,0,0.18)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 9999
+};
+const popupContentStyle = {
+  background: "#fff",
+  padding: "32px 24px",
+  borderRadius: "14px",
+  boxShadow: "0 2px 16px #0154b944",
+  textAlign: "center",
+  fontSize: "1.15rem",
+  color: "#d70018",
+  position: "relative",
+  minWidth: 280,
+  maxWidth: "90vw",
+  animation: "popupFadeIn 0.25s"
+};
+const popupCloseStyle = {
+  position: "absolute",
+  top: 8, right: 16,
+  fontSize: "1.6rem",
+  color: "#0154b9",
+  cursor: "pointer",
+  fontWeight: "bold",
+  transition: "color 0.18s"
+};
+
 const ContactPage = () => {
   const [form, setForm] = useState({
     name: "",
@@ -11,11 +43,13 @@ const ContactPage = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
     setSuccess("");
+    setShowPopup(false);
   };
 
   const handleSubmit = async (e) => {
@@ -23,10 +57,12 @@ const ContactPage = () => {
     // Validate cơ bản
     if (!form.name || !form.phone || !form.email || !form.subject || !form.message) {
       setError("Vui lòng điền đầy đủ thông tin!");
+      setShowPopup(true);
       return;
     }
     if (!/\S+@\S+\.\S+/.test(form.email)) {
       setError("Email không hợp lệ!");
+      setShowPopup(true);
       return;
     }
     try {
@@ -47,8 +83,23 @@ const ContactPage = () => {
       });
     } catch (err) {
       setError("Gửi liên hệ thất bại. Vui lòng thử lại sau!");
+      setShowPopup(true);
     }
   };
+
+  // Thêm keyframes cho popup hiệu ứng
+  React.useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes popupFadeIn {
+        from { opacity: 0; transform: scale(0.92);}
+        to { opacity: 1; transform: scale(1);}
+      }
+      .contact-popup-close:hover { color: #d70018 !important; }
+    `;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
 
   return (
     <>
@@ -168,8 +219,53 @@ const ContactPage = () => {
           </h2>
         </div>
       </div>
+      {showPopup && (
+        <div style={popupStyle}>
+          <div style={popupContentStyle}>
+            <span
+              style={popupCloseStyle}
+              className="contact-popup-close"
+              onClick={() => setShowPopup(false)}
+            >
+              &times;
+            </span>
+            <p>{error}</p>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
 export default ContactPage;
+
+/* Thêm CSS vào index.css:
+.contact-popup {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.contact-popup-content {
+  background: #fff;
+  padding: 32px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0154b944;
+  text-align: center;
+  font-size: 1.15rem;
+  color: #d70018;
+  position: relative;
+  min-width: 280px;
+}
+.contact-popup-close {
+  position: absolute;
+  top: 8px; right: 16px;
+  font-size: 1.5rem;
+  color: #0154b9;
+  cursor: pointer;
+  font-weight: bold;
+}
+*/

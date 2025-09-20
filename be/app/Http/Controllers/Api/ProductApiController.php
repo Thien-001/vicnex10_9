@@ -178,4 +178,20 @@ class ProductApiController extends Controller
         $count = \App\Models\ProductRating::where('Product_ID', $productId)->count();
         return response()->json(['avg' => $avg ?? 0, 'count' => $count]);
     }
+
+    /**
+     * Tìm kiếm sản phẩm theo tên (gợi ý cho ô tìm kiếm)
+     * Trả về tối đa 8 sản phẩm có tên chứa từ khóa, sắp xếp mới nhất
+     */
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $query = Product::query();
+        if ($search) {
+            $query->where('Name', 'LIKE', '%' . $search . '%');
+        }
+        $products = $query->orderBy('Product_ID', 'desc')->limit(8)->get();
+
+        return response()->json(['data' => $products]);
+    }
 }

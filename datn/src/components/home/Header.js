@@ -1,8 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-
+import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 // API URL
 const API_URL = "http://localhost:8000";
 
@@ -87,6 +86,19 @@ const categories = [
   { title: "Phụ kiện cầu lông", links: brandList, type: "phu-kien" },
 ];
 
+const storeList = [
+  { name: "Vicnex Hà Nội", address: "Số 1 Tràng Tiền, Hoàn Kiếm, Hà Nội" },
+  { name: "Vicnex Hồ Gươm", address: "Số 5 Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội" },
+  { name: "Vicnex Vincom Bà Triệu", address: "191 Bà Triệu, Hai Bà Trưng, Hà Nội" },
+  { name: "Vicnex Landmark 81", address: "720A Điện Biên Phủ, Bình Thạnh, TP.HCM" },
+  { name: "Vicnex Bitexco", address: "2 Hải Triều, Quận 1, TP.HCM" },
+  { name: "Vicnex Crescent Mall", address: "101 Tôn Dật Tiên, Quận 7, TP.HCM" },
+  { name: "Vicnex Đà Nẵng", address: "36 Bạch Đằng, Hải Châu, Đà Nẵng" },
+  { name: "Vicnex Vincom Hải Phòng", address: "4 Lê Thánh Tông, Ngô Quyền, Hải Phòng" },
+  { name: "Vicnex Nha Trang", address: "44 Trần Phú, Nha Trang, Khánh Hòa" },
+  { name: "Vicnex Cần Thơ", address: "1 Hòa Bình, Ninh Kiều, Cần Thơ" },
+];
+
 const Header = ({ cartItems }) => {
   const navigate = useNavigate();
   // State
@@ -100,6 +112,12 @@ const Header = ({ cartItems }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef();
+  const [isStoreDropdownOpen, setIsStoreDropdownOpen] = useState(false);
+
 
   // Lấy user từ localStorage
   const userStr = localStorage.getItem("user");
@@ -140,6 +158,32 @@ const Header = ({ cartItems }) => {
     return () => window.removeEventListener("notificationUpdated", fetchNotifications);
   }, [user]);
 
+  // Gợi ý sản phẩm khi nhập
+  useEffect(() => {
+    if (searchValue.trim().length < 1) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    axios
+      .get(`${API_URL}/api/products?search=${encodeURIComponent(searchValue.trim())}`)
+      .then(res => {
+        setSuggestions(res.data.data || []);
+        setShowSuggestions(true);
+      });
+  }, [searchValue]);
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("cart");
@@ -157,6 +201,14 @@ const Header = ({ cartItems }) => {
       // Optionally, cập nhật lại danh sách thông báo
       const res = await axios.get(`${API_URL}/api/notifications?user_id=${user.ID}`);
       setNotifications(res.data.data || []);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchValue.trim()) {
+      setShowSuggestions(false);
+      navigate(`/product?search=${encodeURIComponent(searchValue.trim())}`);
     }
   };
 
@@ -198,41 +250,165 @@ const Header = ({ cartItems }) => {
             </motion.div>
 
             {/* Cửa hàng */}
-            <motion.div className="top-center" variants={fadeItemVariant}>
+            <motion.div className="top-center" variants={fadeItemVariant}
+              onMouseEnter={() => setIsStoreDropdownOpen(true)}
+              onMouseLeave={() => setIsStoreDropdownOpen(false)}
+              style={{ position: "relative", cursor: "pointer" }}
+            >
               <i className="fas fa-map-marker-alt"></i>
               <span>HỆ THỐNG CỬA HÀNG</span>
+              <AnimatePresence>
+                {isStoreDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    style={{
+                      position: "absolute",
+                      top: "120%",
+                      left: 0,
+                      background: "#fff",
+                      border: "1px solid #e3eafc",
+                      borderRadius: "12px",
+                      boxShadow: "0 8px 32px #0154b922",
+                      zIndex: 9999,
+                      minWidth: "320px",
+                      padding: "12px 0",
+                    }}
+                  >
+                    {storeList.map((store, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: "10px 22px",
+                          borderBottom: idx < storeList.length - 1 ? "1px solid #f3f6fa" : "none",
+                          fontWeight: 600,
+                          color: "#0154b9",
+                          transition: "background 0.18s",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
+                        onMouseLeave={e => e.currentTarget.style.background = "none"}
+                      >
+                        <div style={{ fontSize: "1.05rem" }}>{store.name}</div>
+                        <div style={{ fontSize: "0.97rem", color: "#555", fontWeight: 400 }}>{store.address}</div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
 
             {/* Tìm kiếm */}
             <motion.div
               className="top-search"
               variants={fadeItemVariant}
-              animate={{
-                boxShadow: isFocused
-                  ? "0 0 12px rgba(1, 84, 185, 0.3)"
-                  : "0 0 0 rgba(0,0,0,0)",
-                scale: isFocused ? 1.05 : 1,
-              }}
-              transition={{
-                scale: { type: "spring", stiffness: 260, damping: 20 },
-                boxShadow: { duration: 0.3 },
-              }}
+              ref={searchRef}
+              style={{ position: "relative" }}
             >
-              <motion.input
-                type="text"
-                placeholder="Tìm sản phẩm..."
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                initial={{ width: "100%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 0.2 }}
-              />
-              <motion.button
-                whileHover={{ rotate: 15, scale: 1.2 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <i className="fas fa-search"></i>
-              </motion.button>
+              <form onSubmit={handleSearch} style={{ display: "flex", width: "100%" }}>
+                <motion.input
+                  type="text"
+                  placeholder="Tìm sản phẩm..."
+                  value={searchValue}
+                  onChange={e => {
+                    setSearchValue(e.target.value);
+                    setShowSuggestions(true); // Luôn mở dropdown khi nhập
+                  }}
+                  autoComplete="off"
+                  style={{ flex: 1 }}
+                />
+                <motion.button
+                  type="submit"
+                  whileHover={{ rotate: 15, scale: 1.2 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  style={{ marginLeft: 6, background: "none", border: "none", cursor: "pointer" }}
+                >
+                  <i className="fas fa-search"></i>
+                </motion.button>
+              </form>
+              {/* Dropdown gợi ý sản phẩm */}
+              {showSuggestions && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "110%",
+                    left: 0,
+                    right: 0,
+                    background: "#fff",
+                    border: "1px solid #e3eafc",
+                    borderRadius: "14px",
+                    boxShadow: "0 8px 32px #0154b922",
+                    zIndex: 99999,
+                    minWidth: "320px",
+                    padding: "8px 0",
+                    maxHeight: "340px",
+                    overflowY: "auto",
+                    marginTop: 4,
+                    fontSize: "1rem",
+                    animation: "fadeIn 0.18s",
+                  }}
+                >
+                  {suggestions.length > 0 ? (
+                    suggestions.map(product => (
+                      <Link
+                        key={product.Product_ID}
+                        to={`/product/${product.slug}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 14,
+                          padding: "10px 18px",
+                          color: "#0154b9",
+                          textDecoration: "none",
+                          borderBottom: "1px solid #f3f6fa",
+                          fontWeight: 600,
+                          transition: "background 0.18s, color 0.18s",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
+                        onMouseLeave={e => e.currentTarget.style.background = "none"}
+                        onClick={() => setShowSuggestions(false)}
+                      >
+                        <img
+                          src={product.Image ? `${API_URL}/${product.Image}` : "/img/no-image.png"}
+                          alt={product.Name}
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 10,
+                            objectFit: "cover",
+                            border: "1px solid #e3eafc",
+                            background: "#f8fbff",
+                            boxShadow: "0 2px 8px #0154b911",
+                          }}
+                        />
+                        <span style={{
+                          flex: 1,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          fontWeight: 600,
+                          fontSize: "1rem",
+                        }}>
+                          {product.Name}
+                        </span>
+                      </Link>
+                    ))
+                  ) : (
+                    <div style={{
+                      color: "#888",
+                      padding: "16px 18px",
+                      textAlign: "center",
+                      fontSize: "1.05rem",
+                      fontWeight: 500,
+                    }}>
+                      Không có sản phẩm phù hợp
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
 
             {/* ICON NHÓM PHẢI */}
@@ -250,7 +426,8 @@ const Header = ({ cartItems }) => {
                 <motion.div
                   className="icon-item"
                   onMouseEnter={() => setIsUserDropdownOpen(true)}
-                  onMouseLeave={() => setIsUserDropdownOpen(false)}
+                  onMouseLeave={() => setIsUserDropdownOpen(false)
+                  }
                   style={{ position: "relative", display: "flex", alignItems: "center", cursor: "pointer" }}
                   variants={fadeItemVariant}
                 >

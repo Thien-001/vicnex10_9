@@ -162,3 +162,5 @@ Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiControll
 Route::get('posts/{post}/comments', [CommentApiController::class, 'postComments']);
 Route::post('posts/{post}/comments', [CommentApiController::class, 'storePostComment']);
 
+
+Route::get('/products', [ProductApiController::class, 'search']);
