@@ -33,10 +33,15 @@ class DashboardController extends Controller
             ->count();
 
         // Thống kê lịch đặt sân mới trong tháng hiện tại
-        $newCourtBookings = DB::table('court_booking')
-            ->whereMonth('create_at', $month)
-            ->whereYear('create_at', $year)
-            ->count();
+        // $newCourtBookings = DB::table('court_booking')
+        //     ->whereMonth('create_at', $month)
+        //     ->whereYear('create_at', $year)
+        //     ->count();
+        // 👉 Tổng tiền bán trong ngày (chỉ đơn completed)
+            $todayRevenue = DB::table('orders')
+                ->where('status', 'completed')
+                ->whereDate('created_at', Carbon::today())
+                ->sum('total_price');
 
         // Thống kê tổng số đơn hàng
         $totalOrders = DB::table('orders')->count();
@@ -140,7 +145,7 @@ $orderStatusStats = DB::table('orders')
     'orderThisMonth',
     'revenueThisMonth',
     'newUsers',
-    'newCourtBookings',
+    'todayRevenue',
     'totalOrders',
     'totalUsers',
     'totalRevenue',

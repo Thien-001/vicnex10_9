@@ -168,8 +168,8 @@
 				<li>
 					<i class='bx bxs-calendar-check' ></i>
 					<span class="text">
-						<h3>{{ $newCourtBookings }}</h3>
-						<p>Lịch đặt sân mới</p>
+						<h3>{{ number_format($todayRevenue, 0, ',', '.') }}đ</h3>
+						<p>Doanh thu trong ngày</p>
 					</span>
 				</li>
 
@@ -179,7 +179,7 @@
 <div class="tk-dashboard">
     <!-- Revenue -->
     <div class="tk-card">
-      <h3>Revenue (Doanh thu)</h3>
+      <h3>Doanh thu</h3>
       <canvas id="revenueChart"></canvas>
     </div>
 
@@ -197,7 +197,7 @@
       </div>
 
       <div class="tk-card">
-        <h3>Orders (Đơn hàng)</h3>
+        <h3>Đơn hàng</h3>
         <canvas id="ordersChart"></canvas>
       </div>
 
@@ -238,7 +238,7 @@
           </table>
         </div>
         <div class="tk-card">
-          <h3>Sản phẩm còn lại</h3>
+          <h3>Sản phẩm này sắp hết hàng</h3>
           <table>
             <thead>
               <tr>
