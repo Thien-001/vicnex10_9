@@ -20,4 +20,8 @@ class Role extends Model
     {
         return $this->hasMany(User::class, 'Role_ID');
     }
+    // Định nghĩa hằng số role
+    const ADMIN = 1;
+    const STAFF = 2;
+    const USER  = 3;
 }

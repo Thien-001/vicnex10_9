@@ -60,11 +60,14 @@
             <label for="Quantity">Số lượng</label>
             @if($product->variants()->exists())
                 <input type="number" class="form-control" value="{{ $product->variants->sum('Quantity') }}" disabled>
+                {{-- Hidden field luôn gửi về server --}}
+                <input type="hidden" name="Quantity" value="{{ $product->variants->sum('Quantity') }}">
                 <small class="text-muted">Số lượng này được tính tự động theo biến thể</small>
             @else
                 <input type="number" name="Quantity" class="form-control" value="{{ old('Quantity', $product->Quantity) }}">
             @endif
         </div>
+
         <div class="form-group">
             <label for="brand_id">Thương hiệu</label>
             <select id="brand_id" name="brand_id" required>

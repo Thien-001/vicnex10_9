@@ -84,19 +84,27 @@ class CategoryController extends Controller
 
 
     // Xóa danh mục
-   public function destroy($id)
+public function destroy($id)
 {
     $category = Category::findOrFail($id);
 
-    // Xoá ảnh nếu có
+    // Kiểm tra nếu danh mục có sản phẩm thì không cho xóa
+    if ($category->products()->count() > 0) {
+        return redirect()->route('admin.categories.index')
+            ->with('error', 'Danh mục này đang có sản phẩm, không thể xóa!');
+    }
+
+    // Xóa ảnh nếu có
     if ($category->Image && file_exists(public_path($category->Image))) {
         unlink(public_path($category->Image));
     }
 
     $category->delete();
 
-    return redirect()->route('admin.categories.index')->with('success', 'Xoá danh mục thành công!');
+    return redirect()->route('admin.categories.index')
+        ->with('success', 'Xoá danh mục thành công!');
 }
+
 
 
 }

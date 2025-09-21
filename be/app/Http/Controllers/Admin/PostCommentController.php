@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
+use App\Models\PostComment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,12 +11,12 @@ class PostCommentController extends Controller
 {
     public function index()
     {
-        $comments = Comment::with('post', 'user')->paginate(10);
+        $comments = PostComment::with('post', 'user')->paginate(10);
         return view('admin.postreview.index', compact('comments'));
     }
 public function updateStatus(Request $request, $id)
 {
-    $comment = Comment::findOrFail($id);
+    $comment = PostComment::findOrFail($id);
     $comment->Status = $request->input('status');
     $comment->Update_at = now();
     $comment->save();
@@ -40,19 +40,19 @@ public function updateStatus(Request $request, $id)
             'Status' => 'boolean',
         ]);
 
-        Comment::create($validated);
+        PostComment::create($validated);
         return redirect()->route('comments.index')->with('success', 'Tạo bình luận thành công!');
     }
 
     public function show($id)
     {
-        $comment = Comment::with('post', 'user')->findOrFail($id);
+        $comment = PostComment::with('post', 'user')->findOrFail($id);
         return view('comments.show', compact('comment'));
     }
 
     public function edit($id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = PostComment::findOrFail($id);
         $posts = Post::all();
         $users = User::all();
         return view('comments.edit', compact('comment', 'posts', 'users'));
@@ -60,7 +60,7 @@ public function updateStatus(Request $request, $id)
 
     public function update(Request $request, $id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = PostComment::findOrFail($id);
 
         $validated = $request->validate([
             'Post_ID' => 'required|exists:posts,Post_ID',
@@ -77,7 +77,7 @@ public function updateStatus(Request $request, $id)
 
     public function destroy($id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = PostComment::findOrFail($id);
         $comment->delete();
         return redirect()->route('comments.index')->with('success', 'Xóa bình luận thành công!');
     }

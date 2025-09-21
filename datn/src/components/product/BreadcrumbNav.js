@@ -90,10 +90,10 @@ function BreadcrumbNav({ category, product, article }) {
       <style>
         {`
           .breadcrumb-nav {
-            position: sticky;
+            // position: sticky;
             top: 100px;
             z-index: 1002;
-            padding: 8px 0;
+            // padding: 8px 0;
           }
         `}
       </style>

@@ -13,14 +13,14 @@
         padding: 36px 32px 28px 32px;
     }
     .banner-form-container h2 {
-        color: #0154b9;
+        /* color: #0154b9; */
         font-weight: 700;
         margin-bottom: 28px;
         text-align: center;
     }
     .form-label {
         font-weight: 600;
-        color: #0154b9;
+        /* color: #0154b9; */
     }
     .form-control, .form-check-input {
         border-radius: 7px;
@@ -45,19 +45,22 @@
     .btn-success:hover {
         background: linear-gradient(90deg,#3bb2ff 0%,#0154b9 100%);
     }
-    .btn-secondary {
-        background: #e0e7ff;
-        color: #0154b9;
-        border-radius: 8px;
-        font-weight: 700;
-        padding: 10px 24px;
-        border: none;
-        transition: background 0.2s, color 0.2s;
-    }
-    .btn-secondary:hover {
-        background: #0154b9;
-        color: #fff;
-    }
+    .banner-form-container .btn-secondary {
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+    border: none;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.banner-form-container .btn-secondary:hover {
+    background: #4a65d1;
+    /* color: #003c7a; */
+}
     .current-banner-img {
         display: block;
         margin: 0 auto 16px auto;
@@ -105,18 +108,23 @@
             <label for="position" class="form-label">Vị trí</label>
             <input type="number" class="form-control" id="position" name="position" value="{{ $banner->position }}" min="1">
         </div>
-        <div class="mb-3">
+        {{-- <div class="mb-3">
             <label for="button_text" class="form-label">Nội dung nút (nếu có)</label>
             <input type="text" class="form-control" id="button_text" name="button_text" value="{{ $banner->button_text }}">
-        </div>
+        </div> --}}
         <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="is_active" name="is_active" {{ $banner->is_active ? 'checked' : '' }}>
             <label class="form-check-label" for="is_active">Hiển thị banner</label>
         </div>
-        <div class="text-center">
+        <div class="form-actions">
+            <button type="submit">Cập nhật</button>
+            <a href="{{ route('admin.banner.index') }}" class="btn btn-secondary px-4">Quay lại</a>
+
+        </div>
+        {{-- <div class="text-center">
             <button type="submit" class="btn btn-success">Cập nhật</button>
             <a href="{{ route('admin.banner.index') }}" class="btn btn-secondary">Quay lại</a>
-        </div>
+        </div> --}}
     </form>
 </div>
 @endsection

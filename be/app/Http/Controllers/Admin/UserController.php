@@ -91,62 +91,92 @@ class UserController extends Controller
     }
 
     // Cập nhật user đã có
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+public function update(Request $request, $id)
+{
+    $user = User::findOrFail($id);
 
+    // Nếu là khách hàng => chỉ cho phép update Status
+    if ($user->Role_ID == \App\Models\Role::USER) {
         $validated = $request->validate([
-            'Name'          => 'required|string|max:255',
-            'Email'         => [
-                'required',
-                'email',
-                Rule::unique('user', 'Email')->ignore($user->ID, 'ID'),
-            ],
-            'Password'      => 'nullable|string|min:6|confirmed',
-            'Phone'         => 'nullable|string|max:20',
-            'Gender'        => 'nullable|in:male,female,other',
-            'Date_of_birth' => 'nullable|date',
-            'Status'        => 'nullable|boolean',
-            'Address'       => 'nullable|string|max:500',
-            'ward'          => 'nullable|string|max:100',
-            'district'      => 'nullable|string|max:100',
-            'province'      => 'nullable|string|max:100',
-            'Role_ID'       => 'required|exists:roles,Role_ID',
+            'Status' => 'required|boolean',
         ]);
 
-        $data = $validated;
-        unset($data['Password']);
-
-        $user->fill($data);
-
-        if ($request->filled('Password')) {
-            $user->Password = bcrypt($request->Password);
-        }
-
-        $user->Status = $request->Status ?? 0;
+        $user->Status = $validated['Status'];
         $user->Updated_at = now();
-
-        // Xử lý ảnh upload
-        if ($request->hasFile('Avatar')) {
-            $file = $request->file('Avatar');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/users'), $filename);
-            $user->Avatar = url('uploads/users/' . $filename);
-        }
-
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật user thành công!');
+        return redirect()->route('admin.users.index')->with('success', 'Cập nhật trạng thái thành công!');
     }
+
+    // Nếu là Admin/Staff => update đầy đủ
+    $validated = $request->validate([
+        'Name'          => 'required|string|max:255',
+        'Email'         => [
+            'required',
+            'email',
+            Rule::unique('user', 'Email')->ignore($user->ID, 'ID'),
+        ],
+        'Password'      => 'nullable|string|min:6|confirmed',
+        'Phone'         => 'nullable|string|max:20',
+        'Gender'        => 'nullable|in:male,female,other',
+        'Date_of_birth' => 'nullable|date',
+        'Status'        => 'nullable|boolean',
+        'Address'       => 'nullable|string|max:500',
+        'ward'          => 'nullable|string|max:100',
+        'district'      => 'nullable|string|max:100',
+        'province'      => 'nullable|string|max:100',
+        'Role_ID'       => 'required|exists:roles,Role_ID',
+    ]);
+
+    $data = $validated;
+    unset($data['Password']);
+
+    $user->fill($data);
+
+    if ($request->filled('Password')) {
+        $user->Password = bcrypt($request->Password);
+    }
+
+    $user->Status = $request->Status ?? 0;
+    $user->Updated_at = now();
+
+    // Xử lý ảnh upload
+    if ($request->hasFile('Avatar')) {
+        $file = $request->file('Avatar');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/users'), $filename);
+        $user->Avatar = url('uploads/users/' . $filename);
+    }
+
+    $user->save();
+
+    return redirect()->route('admin.users.index')->with('success', 'Cập nhật user thành công!');
+}
+
+
 
     // Xóa user khỏi hệ thống
-    public function destroy($id)
-    {
-        $user = User::findOrFail($id);
-        $user->delete();
+// Xoá user
+public function destroy($id)
+{
+    $user = User::findOrFail($id);
 
-        return redirect()->route('admin.users.index')->with('success', 'Xóa user thành công!');
+    if ($user->Role_ID == Role::USER) {
+        return redirect()->route('admin.users.index')
+            ->with('error', 'Không thể xóa tài khoản khách hàng, chỉ được cập nhật trạng thái!');
     }
+
+    if ($user->Role_ID == Role::ADMIN) {
+        return redirect()->route('admin.users.index')
+            ->with('error', 'Không thể xóa tài khoản admin!');
+    }
+
+    // Nhân viên thì được phép xoá
+    $user->delete();
+
+    return redirect()->route('admin.users.index')->with('success', 'Xóa user thành công!');
+}
+
 
     // Cập nhật profile cá nhân
     public function updateProfile(Request $request, $id)

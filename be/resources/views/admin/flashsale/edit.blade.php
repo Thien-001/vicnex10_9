@@ -11,14 +11,14 @@
     padding: 32px 28px;
 }
 .flashsale-form-container h2 {
-    color: #0154b9;
+    /* color: #0154b9; */
     font-weight: 700;
     margin-bottom: 28px;
     text-align: center;
 }
 .flashsale-form-container .form-label {
     font-weight: 500;
-    color: #0154b9;
+    /* color: #0154b9; */
 }
 .flashsale-form-container .form-control,
 .flashsale-form-container .form-select {
@@ -32,7 +32,7 @@
 }
 .flashsale-form-container .form-control:focus,
 .flashsale-form-container .form-select:focus {
-    border-color: #0154b9;
+    /* border-color: #0154b9; */
     background: #fff;
 }
 .flashsale-form-container .btn-primary {
@@ -50,19 +50,20 @@
     background: linear-gradient(90deg,#3bb2ff 0%,#0154b9 100%);
 }
 .flashsale-form-container .btn-secondary {
-    border-radius: 8px;
-    padding: 12px 32px;
-    font-size: 17px;
-    font-weight: 600;
-    background: #e0e7ff;
-    color: #0154b9;
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
     border: none;
-    margin-left: 8px;
-    transition: background 0.2s;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 .flashsale-form-container .btn-secondary:hover {
-    background: #c7d2fe;
-    color: #003c7a;
+    background: #4a65d1;
+    /* color: #003c7a; */
 }
 </style>
 <div class="flashsale-form-container">
@@ -114,8 +115,13 @@
                 <option value="0" {{ !$flashSale->is_show ? 'selected' : '' }}>Không hiển thị</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">Cập nhật</button>
-        <a href="{{ route('admin.flash-sales.index') }}" class="btn btn-secondary">Quay lại</a>
+        <div class="form-actions">
+            <button type="submit">Cập nhật</button>
+            <a href="{{ route('admin.flash-sales.index') }}" class="btn btn-secondary">Quay lại</a>
+
+        </div>
+        {{-- <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <a href="{{ route('admin.flash-sales.index') }}" class="btn btn-secondary">Quay lại</a> --}}
     </form>
 </div>
 @endsection

@@ -6,13 +6,13 @@
     .form-add {
         background: #fff;
         border-radius: 16px;
-        box-shadow: 0 2px 16px rgba(1,84,185,0.08);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
         padding: 32px 28px 24px 28px;
-        max-width: 900px;
+        /* max-width: 900px; */
         margin: 32px auto 0 auto;
     }
     .form-add h2 {
-        color: #0154b9;
+        /* color: #0154b9; */
         font-weight: 700;
         margin-bottom: 24px;
         font-size: 1.5rem;
@@ -23,7 +23,7 @@
     }
     .form-add label {
         font-weight: 600;
-        color: #0154b9;
+        /* color: #0154b9; */
         margin-bottom: 6px;
         display: block;
     }
@@ -56,7 +56,7 @@
         margin-top: 28px;
     }
     .form-add .form-actions button {
-        background: #0154b9;
+        background: #2ecc71;
         color: #fff;
         border: none;
         border-radius: 8px;
@@ -67,7 +67,7 @@
         cursor: pointer;
     }
     .form-add .form-actions button:hover {
-        background: #003e8a;
+        background: #27ae60;
     }
     .form-add .vnd-format {
         margin-left: 8px;
@@ -89,15 +89,15 @@
         margin-bottom: 10px;
     }
     .form-add .attribute-name {
-        font-size: 15px;
-        font-weight: 600;
-        color: #0154b9;
+        font-size: 18px;
+        font-weight: 700;
+        /* color: #0154b9; */
         margin-bottom: 6px;
     }
     .form-add .checkbox-group label {
         margin-right: 18px;
         margin-bottom: 6px;
-        font-weight: 400;
+        font-weight: 500;
         color: #222;
     }
     .form-add .product-flags {
@@ -105,7 +105,7 @@
         gap: 32px;
         margin: 18px 0 24px 0;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
     }
     .form-add .flag-block {
         display: flex;
@@ -182,6 +182,12 @@
             padding: 12px 10px;
         }
     }
+    .product-attributes h4{
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        /* color: #0154b9; */
+    }
     .variant-table {
         margin-top: 20px;
         background: #fff;
@@ -219,14 +225,14 @@
         margin: 12px 0 18px 0;
     }
     .bulk-inputs input[type="number"] {
-        width: 110px;
+        width: 250px;
         padding: 4px 6px;
         border: 1px solid #bdbdbd;
         border-radius: 4px;
         font-size: 14px;
     }
     .bulk-inputs button {
-        background: #0154b9;
+        background: #2ecc71;
         color: #fff;
         border: none;
         border-radius: 6px;
@@ -237,7 +243,7 @@
         transition: background 0.18s;
     }
     .bulk-inputs button:hover {
-        background: #d70018;
+        background: #27ae60;
     }
     .form-group-attribute {
         margin-bottom: 14px;
@@ -245,7 +251,7 @@
     .attribute-name {
         font-size: 15px;
         font-weight: 600;
-        color: #0154b9;
+        /* color: #0154b9; */
         margin-bottom: 6px;
     }
     .checkbox-group label {

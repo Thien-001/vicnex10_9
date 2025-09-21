@@ -10,7 +10,7 @@
     padding: 32px 28px;
 }
 .popup-table-container h2 {
-    color: #0154b9;
+    /* color: #0154b9; */
     font-weight: 700;
     margin-bottom: 28px;
     text-align: center;
@@ -93,9 +93,22 @@
         color: #e3e3e3;
     }
 </style>
+<div class="head-title">
+    <div class="left">
+        <h1>Popup</h1>
+        <ul class="breadcrumb">
+            <li><a href="#">Popup</a></li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li><a class="active" href="#">Danh sách Popup</a></li>
+        </ul>
+    </div>
+    <a href="{{ route('admin.popup.create') }}" class="btn-download">
+        <span class="text">+ Thêm popup mới</span>
+    </a>
+</div>
 <div class="popup-table-container">
     <h2>Danh sách Popup</h2>
-    <a href="{{ route('admin.popup.create') }}" class="btn btn-success mb-3">Thêm popup</a>
+    {{-- <a href="{{ route('admin.popup.create') }}" class="btn btn-success mb-3">+ Thêm popup</a> --}}
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif

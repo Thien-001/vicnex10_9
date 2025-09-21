@@ -54,6 +54,10 @@
     .group-separator {
         width: 30px;
     }
+    .table-dark tr th{
+    color: #fff;
+    background-color: #997979;
+}
 </style>
 
 <div class="head-title">

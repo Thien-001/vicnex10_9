@@ -406,7 +406,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-
+        $quantityRule = $product->variants()->exists() ? 'nullable|integer|min:0' : 'required|integer|min:0';
         $validated = $request->validate([
             'Categories_ID' => 'required|exists:categories,Categories_ID',
             'Name' => 'required|string|max:255',
@@ -550,24 +550,39 @@ class ProductController extends Controller
     }
 
     public function destroy($id)
-    {
-        $product = Product::findOrFail($id);
+{
+    $product = Product::findOrFail($id);
 
-        if ($product->Image && file_exists(public_path($product->Image))) {
-            unlink(public_path($product->Image));
-        }
-
-        foreach ($product->images as $image) {
-            if ($image->Image_path && file_exists(public_path($image->Image_path))) {
-                unlink(public_path($image->Image_path));
-            }
-            $image->delete();
-        }
-
-        $product->delete();
-
-        return redirect()->route('admin.products.index')->with('success', 'Xóa sản phẩm thành công!');
+    // Kiểm tra nếu sản phẩm hoặc biến thể của nó đã có trong đơn hàng
+    if ($product->orderDetails()->exists() || $product->variants()->whereHas('orderDetails')->exists()) {
+        return redirect()->route('admin.products.index')
+            ->with('error', 'Sản phẩm hoặc biến thể của sản phẩm đã được bán, không thể xóa!');
     }
+
+    // Xóa ảnh chính
+    if ($product->Image && file_exists(public_path($product->Image))) {
+        unlink(public_path($product->Image));
+    }
+
+    // Xóa ảnh phụ
+    foreach ($product->images as $image) {
+        if ($image->Image_path && file_exists(public_path($image->Image_path))) {
+            unlink(public_path($image->Image_path));
+        }
+        $image->delete();
+    }
+
+    // Xóa các biến thể trước khi xóa sản phẩm
+    foreach ($product->variants as $variant) {
+        $variant->delete();
+    }
+
+    // Xóa sản phẩm
+    $product->delete();
+
+    return redirect()->route('admin.products.index')->with('success', 'Xóa sản phẩm thành công!');
+}
+
 
     public function deleteImage($id)
     {
@@ -590,5 +605,5 @@ class ProductController extends Controller
 
         return view('admin.products.show', compact('product'));
     }
-    
+
 }

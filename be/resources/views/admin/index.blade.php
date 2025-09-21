@@ -398,7 +398,7 @@ legendContainer.innerHTML = legendHTML;
 </div>
 
 {{-- Lịch đặt sân gần đây --}}
-<div class="dashboard-table">
+{{-- <div class="dashboard-table">
     <h3>Lịch đặt sân gần đây</h3>
     <table>
         <thead>
@@ -431,7 +431,7 @@ legendContainer.innerHTML = legendHTML;
             @endforeach
         </tbody>
     </table>
-</div>
+</div> --}}
 
 <!-- Modal chi tiết -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">

@@ -95,12 +95,12 @@
                     <td>{{ $contact->Note }}</td>
                     <td>{{ \Carbon\Carbon::parse($contact->Created_at)->format('d/m/Y H:i') }}</td>
                     <td class="action-buttons">
-                        <a href="{{ route('admin.contact.edit', $contact->Contact_ID) }}" class="admin-button-table">Sửa</a>
-                        <form action="{{ route('admin.contact.destroy', $contact->Contact_ID) }}" method="POST" style="display:inline;">
+                        <a href="{{ route('admin.contact.edit', $contact->Contact_ID) }}" class="admin-button-table">cập nhật</a>
+                        {{-- <form action="{{ route('admin.contact.destroy', $contact->Contact_ID) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="admin-button-table btn-delete" onclick="return confirm('Xóa liên hệ này?')">Xóa</button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
                 @empty

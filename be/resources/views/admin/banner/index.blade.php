@@ -13,7 +13,7 @@
         padding: 32px 28px;
     }
     .banner-table-container h2 {
-        color: #0154b9;
+        /* color: #0154b9; */
         font-weight: 700;
         margin-bottom: 28px;
         text-align: center;
@@ -72,7 +72,7 @@
     }
     .bg-primary {
         background: #e0e7ff;
-        color: #0154b9;
+        /* color: #0154b9; */
     }
     .bg-info {
         background: #bae6fd;
@@ -104,9 +104,25 @@
         color: #e3e3e3;
     }
 </style>
+<div class="head-title">
+    <div class="left">
+        <h1>Banner</h1>
+        <ul class="breadcrumb">
+            <li><a href="#">Banner</a></li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li><a class="active" href="#">Danh sách Banner</a></li>
+        </ul>
+    </div>
+    <a href="{{ route('admin.banner.create') }}" class="btn-download">
+        <span class="text">+ Thêm Banner mới</span>
+    </a>
+</div>
+@if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 <div class="banner-table-container">
     <h2>Quản lý Banner</h2>
-    <a href="{{ route('admin.banner.create') }}" class="btn btn-primary">Thêm Banner mới</a>
+    {{-- <a href="{{ route('admin.banner.create') }}" class="btn btn-primary">+ Thêm Banner mới</a> --}}
     <table class="banner-table">
         <thead>
             <tr>
@@ -114,7 +130,7 @@
                 <th>Link</th>
                 <th>Vị trí</th>
                 <th>Trạng thái</th>
-                <th>Nút</th>
+                {{-- <th>Nút</th> --}}
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -145,7 +161,7 @@
                         <span class="badge bg-secondary1">Ẩn</span>
                     @endif
                 </td>
-                <td>{{ $banner->button_text }}</td>
+                {{-- <td>{{ $banner->button_text }}</td> --}}
                 <td>
                     <a href="{{ route('admin.banner.edit', $banner->id) }}" class="btn btn-sm btn-warning">Sửa</a>
                     <form action="{{ route('admin.banner.destroy', $banner->id) }}" method="POST" style="display:inline-block;">

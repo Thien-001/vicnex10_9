@@ -11,7 +11,7 @@
         padding: 32px 28px;
     }
     .flashsale-table-container h2 {
-        color: #0154b9;
+        /* color: #0154b9; */
         font-weight: 700;
         margin-bottom: 28px;
         text-align: center;
@@ -93,9 +93,25 @@
         color: #e3e3e3;
     }
 </style>
+<div class="head-title">
+    <div class="left">
+        <h1>Flash Sale</h1>
+        <ul class="breadcrumb">
+            <li><a href="#">Flash Sale</a></li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li><a class="active" href="#">Danh sách Flash Sale</a></li>
+        </ul>
+    </div>
+    <a href="{{ route('admin.flash-sales.create') }}" class="btn-download">
+        <span class="text">+ Thêm Flash Sale mới</span>
+    </a>
+</div>
+@if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 <div class="flashsale-table-container">
     <h2>Quản lý Flash Sale</h2>
-    <a href="{{ route('admin.flash-sales.create') }}" class="btn btn-primary">Thêm Flash Sale mới</a>
+    {{-- <a href="{{ route('admin.flash-sales.create') }}" class="btn btn-primary">+ Thêm Flash Sale mới</a> --}}
     <table class="flashsale-table">
         <thead>
             <tr>

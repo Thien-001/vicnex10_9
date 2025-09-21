@@ -23,18 +23,23 @@
                 <option value="3">Ảnh phụ 2</option>
             </select>
         </div>
-        <div class="mb-3">
+        {{-- <div class="mb-3">
             <label for="button_text" class="form-label">Nội dung nút (nếu có)</label>
             <input type="text" class="form-control" id="button_text" name="button_text" placeholder="Ví dụ: Xem ngay">
-        </div>
+        </div> --}}
         <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="is_active" name="is_active" checked>
             <label class="form-check-label" for="is_active">Hiển thị banner</label>
         </div>
-        <div class="d-flex justify-content-center gap-3 mt-4">
-            <button type="submit" class="btn btn-success px-4">Lưu</button>
+        <div class="form-actions">
+            <button type="submit">Thêm</button>
             <a href="{{ route('admin.banner.index') }}" class="btn btn-secondary px-4">Quay lại</a>
+
         </div>
+        {{-- <div class="d-flex justify-content-center gap-3 mt-4">
+            <button type="submit" class="btn btn-success px-4">Thêm</button>
+            <a href="{{ route('admin.banner.index') }}" class="btn btn-secondary px-4">Quay lại</a>
+        </div> --}}
     </form>
 </div>
 @endsection
@@ -49,7 +54,7 @@
     padding: 38px 32px 32px 32px;
 }
 .banner-form-container h2 {
-    color: #0154b9;
+    /* color: #0154b9; */
     font-weight: 700;
     margin-bottom: 32px;
     text-align: center;
@@ -57,7 +62,7 @@
 }
 .form-label {
     font-weight: 600;
-    color: #0154b9;
+    /* color: #0154b9; */
     margin-bottom: 6px;
 }
 .form-control, .form-check-input {
@@ -101,14 +106,7 @@
     background: linear-gradient(90deg,#3bb2ff 0%,#0154b9 100%);
     color: #fff;
 }
-.btn-secondary {
-    background: #e0e7ff;
-    color: #0154b9;
-}
-.btn-secondary:hover {
-    background: #0154b9;
-    color: #fff;
-}
+
 @media (max-width: 600px) {
     .banner-form-container {
         padding: 18px 6px 18px 6px;
@@ -117,5 +115,21 @@
         padding: 10px 18px;
         font-size: 15px;
     }
+}
+.banner-form-container .btn-secondary {
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+    border: none;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.banner-form-container .btn-secondary:hover {
+    background: #4a65d1;
+    /* color: #003c7a; */
 }
 </style>

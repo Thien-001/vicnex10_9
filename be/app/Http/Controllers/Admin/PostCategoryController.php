@@ -56,9 +56,17 @@ class PostCategoryController extends Controller
     }
 
     public function destroy($id)
-    {
-        $category = PostCategory::findOrFail($id);
-        $category->delete();
-        return redirect()->route('admin.post_categories.index')->with('success', 'Xóa danh mục thành công!');
+{
+    $category = PostCategory::findOrFail($id);
+
+    if ($category->posts()->exists()) {
+        return redirect()->route('admin.post_categories.index')
+            ->with('error', 'Danh mục đang có bài viết, không thể xóa!');
     }
+
+    $category->delete();
+
+    return redirect()->route('admin.post_categories.index')->with('success', 'Xóa danh mục thành công!');
+}
+
 }

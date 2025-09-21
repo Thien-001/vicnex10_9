@@ -52,10 +52,18 @@ class RoleController extends Controller
     }
 
     public function destroy($id)
-    {
-        $role = Role::findOrFail($id);
-        $role->delete();
+{
+    $role = Role::findOrFail($id);
 
-        return redirect()->route('admin.roles.index')->with('success', 'Xóa vai trò thành công!');
+    // Nếu role đã có user thì không cho xóa
+    if ($role->users()->exists()) {
+        return redirect()->route('admin.roles.index')
+            ->with('error', 'Vai trò này đang được gán cho tài khoản, không thể xóa!');
     }
+
+    $role->delete();
+
+    return redirect()->route('admin.roles.index')->with('success', 'Xóa vai trò thành công!');
+}
+
 }

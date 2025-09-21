@@ -19,7 +19,12 @@ class PostComment extends Model
     }
 
     public static $rules = [
-        'User_ID' => 'required|exists:user,ID',
+        'User_ID' => 'required|exists:users,ID',
         'text'    => 'required|string',
     ];
+    public function post()
+{
+    return $this->belongsTo(Post::class, 'Post_ID', 'Post_ID');
+}
+
 }

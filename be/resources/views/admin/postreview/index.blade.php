@@ -15,11 +15,13 @@
         <span class="text">Download PDF</span>
     </a>
 </div>
+
 @if (session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
     </div>
 @endif
+
 @if ($errors->any())
     <div class="alert alert-danger">
         <ul>
@@ -42,30 +44,30 @@
             </tr>
         </thead>
         <tbody>
-@foreach($comments as $index => $comment)
-    <tr>
-        <td>{{ $index + 1 }}</td>
-        <td>{{ $comment->user->Name ?? 'Không xác định' }}</td>
-        <td>{{ $comment->Content }}</td>
-        <td>
-            {{-- Hiển thị đúng tiêu đề bài viết nếu là bình luận bài viết --}}
-            @if($comment->post)
-                {{ $comment->post->Title }}
-            @else
-                <span class="text-danger">Không có tiêu đề</span>
-            @endif
-        </td>
-        <td class="action-buttons">
-            <form action="{{ route('comments.destroy', $comment->Comment_ID) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="admin-button-table btn-delete" onclick="return confirm('Xóa bình luận này?')">Xóa</button>
-            </form>
-        </td>
-    </tr>
-@endforeach
+        @foreach($comments as $index => $comment)
+            <tr>
+                <td>{{ $comments->firstItem() + $index }}</td>
+                <td>{{ $comment->user->Name ?? 'Không xác định' }}</td>
+                <td>{{ $comment->content }}</td>
+                <td>
+                    @if($comment->post)
+                        {{ $comment->post->Title }}
+                    @else
+                        <span class="text-danger">Không có tiêu đề</span>
+                    @endif
+                </td>
+                <td class="action-buttons">
+                    <form action="{{ route('comments.destroy', $comment->ID) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="admin-button-table btn-delete" onclick="return confirm('Xóa bình luận này?')">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        @endforeach
         </tbody>
     </table>
+
     {{ $comments->links() }}
 </div>
 @endsection

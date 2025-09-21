@@ -2,7 +2,7 @@
 @section('content')
 <style>
 .popup-form-container {
-    /* max-width: 600px; */
+    max-width: 1000px;
     margin: 36px auto;
     background: #fff;
     border-radius: 16px;
@@ -30,11 +30,20 @@
     background: linear-gradient(90deg,#3bb2ff 0%,#0154b9 100%);
 }
 .popup-form-container .btn-secondary {
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+    border: none;
+    margin-top: 10px;
     border-radius: 8px;
-    font-weight: 700;
-    padding: 10px 28px;
-    font-size: 16px;
-    margin-left: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.popup-form-container .btn-secondary:hover {
+    background: #4a65d1;
+    /* color: #003c7a; */
 }
 #content{
     width: 100%;
@@ -71,8 +80,13 @@
                 Hiển thị popup
             </label>
         </div>
-        <button type="submit" class="btn btn-success">Cập nhật</button>
-        <a href="{{ route('admin.popup.index') }}" class="btn btn-secondary">Quay lại</a>
+        <div class="form-actions">
+            <button type="submit">Cập nhật</button>
+            <a href="{{ route('admin.popup.index') }}" class="btn btn-secondary">Quay lại</a>
+
+        </div>
+        {{-- <button type="submit" class="btn btn-success">Cập nhật</button>
+        <a href="{{ route('admin.popup.index') }}" class="btn btn-secondary">Quay lại</a> --}}
     </form>
 </div>
 <script>

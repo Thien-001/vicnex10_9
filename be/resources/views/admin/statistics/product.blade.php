@@ -56,6 +56,10 @@
 .button-so-sanh button:hover {
     background-color: #218838;
 }
+.table-dark tr th{
+    color: #fff;
+    background-color: #997979;
+}
 
 
 </style>
