@@ -101,12 +101,6 @@ const ProductGrid = ({ type = "is_hot" }) => {
                 >
                   Mua Ngay
                 </button>
-                <button
-                  className="product-list-cart-btn"
-                  onClick={(e) => handleAddToCart(product, e)}
-                >
-                  🛒 Thêm vào giỏ hàng
-                </button>
               </div>
               <div className="product-grid-ribbons">
                 {product.is_hot && (

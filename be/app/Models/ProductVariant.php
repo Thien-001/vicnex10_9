@@ -10,7 +10,7 @@ class ProductVariant extends Model
 {
     protected $table = 'product_variants';
     protected $primaryKey = 'Variant_ID';
-    public $timestamps = false; // vì bạn đang dùng Created_at / Update_at tùy chỉnh
+    public $timestamps = false; // Vì bạn dùng Created_at / Update_at tùy chỉnh
 
     protected $fillable = [
         'Product_ID',
@@ -19,29 +19,46 @@ class ProductVariant extends Model
         'Price',
         'Discount_price',
         'Quantity',
+        'Image',
         'Status',
         'Created_at',
-        'Update_at', // 🛠 sửa lại cho đúng tên cột trong migration
+        'Update_at',
+    ];
+
+    protected $casts = [
+        'Price' => 'decimal:2',
+        'Discount_price' => 'decimal:2',
+        'Quantity' => 'integer',
+        'Status' => 'integer',
+        'Created_at' => 'datetime',
+        'Update_at' => 'datetime'
     ];
 
     /**
-     * Sản phẩm mà biến thể này thuộc về
+     * SỬA: Bỏ return type vì Laravel cũ có thể không support
      */
-    public function product(): BelongsTo
+    public function product()
     {
-        return $this->belongsTo(Product::class, 'Product_ID');
+        return $this->belongsTo(Product::class, 'Product_ID', 'Product_ID');
     }
 
-    /**
-     * Các giá trị thuộc tính gắn với biến thể
-     */
-    public function values(): BelongsToMany
+    public function values()
     {
         return $this->belongsToMany(
             ProductValue::class,
-            'product_variant_values', // ✅ sửa lại đúng tên bảng bạn đã tạo
+            'product_variant_values',
             'Variant_ID',
             'Values_ID'
         );
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('Status', 1);
+    }
+
+    public function scopeInStock($query)
+    {
+        return $query->where('Quantity', '>', 0);
     }
 }

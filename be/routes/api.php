@@ -33,10 +33,42 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Auth\RegisterController;
 
-// Products
-Route::get('/products', [ProductApiController::class, 'index']);
+// THÊM ROUTE DEBUG - ĐẶT Ở ĐẦU TRƯỚC CÁC ROUTE KHÁC
+Route::get('/debug-variants', function() {
+    try {
+        // Test direct query
+        $directVariants = \DB::table('product_variants')->where('Product_ID', 61)->get();
+        
+        // Test model query
+        $product = \App\Models\Product::find(61);
+        $modelVariants = $product ? $product->variants : null;
+        
+        // Test with eager loading
+        $productWithVariants = \App\Models\Product::with('variants')->find(61);
+        
+        return response()->json([
+            'direct_db_count' => $directVariants->count(),
+            'direct_db_data' => $directVariants->toArray(),
+            'model_variants_count' => $modelVariants ? $modelVariants->count() : 0,
+            'model_variants_data' => $modelVariants ? $modelVariants->toArray() : null,
+            'eager_loaded_count' => $productWithVariants && $productWithVariants->variants ? $productWithVariants->variants->count() : 0,
+            'eager_loaded_data' => $productWithVariants && $productWithVariants->variants ? $productWithVariants->variants->toArray() : null,
+            'relation_loaded' => $productWithVariants ? $productWithVariants->relationLoaded('variants') : false
+        ], 200, [], JSON_PRETTY_PRINT);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+});
+
+// Products - ĐẶT THEO THỨ TỰ ƯU TIÊN
+Route::get('/products/search', [ProductApiController::class, 'search']); // SEARCH TRƯỚC
 Route::get('/products/{id}', [ProductApiController::class, 'show']);
 Route::get('/products/slug/{slug}', [ProductApiController::class, 'getProductBySlug']);
+Route::get('/products', [ProductApiController::class, 'index']); // INDEX SAU
 
 // Categories
 Route::get('/categories', [CategoryApiController::class, 'index']);
@@ -161,10 +193,3 @@ Route::get('/contacts', [ContactMessageController::class, 'index']); // (tuỳ c
 
 // Expert Reviews
 Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiController::class, 'index']);
-
-
-Route::get('posts/{post}/comments', [CommentApiController::class, 'postComments']);
-Route::post('posts/{post}/comments', [CommentApiController::class, 'storePostComment']);
-
-
-Route::get('/products', [ProductApiController::class, 'search']);

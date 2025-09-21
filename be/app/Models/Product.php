@@ -22,13 +22,12 @@ class Product extends Model
 
     // Các cột có thể gán dữ liệu hàng loạt
     protected $fillable = [
-        'Categories_ID',
         'Name',
         'SKU',
         'Brand',
-        'brand_id', // Thêm dòng này nếu lưu ID thương hiệu
-        'Description',
+        'Categories_ID',
         'Image',
+        'Description',
         'Price',
         'Discount_price',
         'Quantity',

@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+
 // API URL
 const API_URL = "http://localhost:8000";
 
 // Style dùng chung cho icon
 const iconStyle = {
   fontSize: 22,
-  color: "#0154b9", // <-- màu trắng
-  background: "#fff", // nền xanh đậm cho nổi bật
+  color: "#0154b9",
+  background: "#fff",
   borderRadius: "50%",
   width: 38,
   height: 38,
@@ -86,22 +87,8 @@ const categories = [
   { title: "Phụ kiện cầu lông", links: brandList, type: "phu-kien" },
 ];
 
-const storeList = [
-  { name: "Vicnex Hà Nội", address: "Số 1 Tràng Tiền, Hoàn Kiếm, Hà Nội" },
-  { name: "Vicnex Hồ Gươm", address: "Số 5 Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội" },
-  { name: "Vicnex Vincom Bà Triệu", address: "191 Bà Triệu, Hai Bà Trưng, Hà Nội" },
-  { name: "Vicnex Landmark 81", address: "720A Điện Biên Phủ, Bình Thạnh, TP.HCM" },
-  { name: "Vicnex Bitexco", address: "2 Hải Triều, Quận 1, TP.HCM" },
-  { name: "Vicnex Crescent Mall", address: "101 Tôn Dật Tiên, Quận 7, TP.HCM" },
-  { name: "Vicnex Đà Nẵng", address: "36 Bạch Đằng, Hải Châu, Đà Nẵng" },
-  { name: "Vicnex Vincom Hải Phòng", address: "4 Lê Thánh Tông, Ngô Quyền, Hải Phòng" },
-  { name: "Vicnex Nha Trang", address: "44 Trần Phú, Nha Trang, Khánh Hòa" },
-  { name: "Vicnex Cần Thơ", address: "1 Hòa Bình, Ninh Kiều, Cần Thơ" },
-];
-
-const Header = ({ cartItems }) => {
+const Header = (props) => {
   const navigate = useNavigate();
-  // State
   const [isFocused, setIsFocused] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isProductOpen, setIsProductOpen] = useState(false);
@@ -117,7 +104,7 @@ const Header = ({ cartItems }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef();
   const [isStoreDropdownOpen, setIsStoreDropdownOpen] = useState(false);
-
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
 
   // Lấy user từ localStorage
   const userStr = localStorage.getItem("user");
@@ -160,7 +147,7 @@ const Header = ({ cartItems }) => {
 
   // Gợi ý sản phẩm khi nhập
   useEffect(() => {
-    if (searchValue.trim().length < 1) {
+    if (searchValue.trim().length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -212,6 +199,24 @@ const Header = ({ cartItems }) => {
     }
   };
 
+  // Đọc/lưu theme vào localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-mode");
+      document.body.classList.remove("light-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+      document.body.classList.add("light-mode");
+    }
+  }, []);
+
+  const handleThemeChange = (mode) => {
+    document.body.classList.toggle("dark-mode", mode === "dark");
+    document.body.classList.toggle("light-mode", mode === "light");
+    localStorage.setItem("theme", mode);
+  };
+
   // Render
   return (
     <header className="header">
@@ -250,54 +255,9 @@ const Header = ({ cartItems }) => {
             </motion.div>
 
             {/* Cửa hàng */}
-            <motion.div className="top-center" variants={fadeItemVariant}
-              onMouseEnter={() => setIsStoreDropdownOpen(true)}
-              onMouseLeave={() => setIsStoreDropdownOpen(false)}
-              style={{ position: "relative", cursor: "pointer" }}
-            >
+            <motion.div className="top-center" variants={fadeItemVariant}>
               <i className="fas fa-map-marker-alt"></i>
               <span>HỆ THỐNG CỬA HÀNG</span>
-              <AnimatePresence>
-                {isStoreDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    style={{
-                      position: "absolute",
-                      top: "120%",
-                      left: 0,
-                      background: "#fff",
-                      border: "1px solid #e3eafc",
-                      borderRadius: "12px",
-                      boxShadow: "0 8px 32px #0154b922",
-                      zIndex: 9999,
-                      minWidth: "320px",
-                      padding: "12px 0",
-                    }}
-                  >
-                    {storeList.map((store, idx) => (
-                      <div
-                        key={idx}
-                        style={{
-                          padding: "10px 22px",
-                          borderBottom: idx < storeList.length - 1 ? "1px solid #f3f6fa" : "none",
-                          fontWeight: 600,
-                          color: "#0154b9",
-                          transition: "background 0.18s",
-                          cursor: "pointer",
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                        onMouseLeave={e => e.currentTarget.style.background = "none"}
-                      >
-                        <div style={{ fontSize: "1.05rem" }}>{store.name}</div>
-                        <div style={{ fontSize: "0.97rem", color: "#555", fontWeight: 400 }}>{store.address}</div>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
 
             {/* Tìm kiếm */}
@@ -329,84 +289,49 @@ const Header = ({ cartItems }) => {
                 </motion.button>
               </form>
               {/* Dropdown gợi ý sản phẩm */}
-              {showSuggestions && (
+              {showSuggestions && suggestions.length > 0 && (
                 <div
                   style={{
                     position: "absolute",
                     top: "110%",
                     left: 0,
                     right: 0,
-                    background: "#fff",
-                    border: "1px solid #e3eafc",
-                    borderRadius: "14px",
-                    boxShadow: "0 8px 32px #0154b922",
+                    background: "#fffbe6",
+                    border: "2px solid #0154b9",
+                    borderRadius: "10px",
+                    boxShadow: "0 4px 24px #0154b922",
                     zIndex: 99999,
                     minWidth: "320px",
-                    padding: "8px 0",
-                    maxHeight: "340px",
-                    overflowY: "auto",
-                    marginTop: 4,
-                    fontSize: "1rem",
-                    animation: "fadeIn 0.18s",
+                    padding: "10px 0",
+                    maxHeight: "320px",
+                    overflowY: "auto"
                   }}
                 >
-                  {suggestions.length > 0 ? (
-                    suggestions.map(product => (
-                      <Link
-                        key={product.Product_ID}
-                        to={`/product/${product.slug}`}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 14,
-                          padding: "10px 18px",
-                          color: "#0154b9",
-                          textDecoration: "none",
-                          borderBottom: "1px solid #f3f6fa",
-                          fontWeight: 600,
-                          transition: "background 0.18s, color 0.18s",
-                          cursor: "pointer",
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
-                        onMouseLeave={e => e.currentTarget.style.background = "none"}
-                        onClick={() => setShowSuggestions(false)}
-                      >
-                        <img
-                          src={product.Image ? `${API_URL}/${product.Image}` : "/img/no-image.png"}
-                          alt={product.Name}
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 10,
-                            objectFit: "cover",
-                            border: "1px solid #e3eafc",
-                            background: "#f8fbff",
-                            boxShadow: "0 2px 8px #0154b911",
-                          }}
-                        />
-                        <span style={{
-                          flex: 1,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          fontWeight: 600,
-                          fontSize: "1rem",
-                        }}>
-                          {product.Name}
-                        </span>
-                      </Link>
-                    ))
-                  ) : (
-                    <div style={{
-                      color: "#888",
-                      padding: "16px 18px",
-                      textAlign: "center",
-                      fontSize: "1.05rem",
-                      fontWeight: 500,
-                    }}>
-                      Không có sản phẩm phù hợp
-                    </div>
-                  )}
+                  {suggestions.map(product => (
+                    <Link
+                      key={product.Product_ID}
+                      to={`/product/${product.slug}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        padding: "8px 18px",
+                        color: "#0154b9",
+                        textDecoration: "none",
+                        borderBottom: "1px solid #f0f0f0",
+                        fontWeight: 600,
+                        transition: "background 0.18s"
+                      }}
+                      onClick={() => setShowSuggestions(false)}
+                    >
+                      <img
+                        src={product.Image ? `${API_URL}/${product.Image}` : "/img/no-image.png"}
+                        alt={product.Name}
+                        style={{ width: 38, height: 38, borderRadius: 8, objectFit: "cover", border: "1px solid #eee" }}
+                      />
+                      <span>{product.Name}</span>
+                    </Link>
+                  ))}
                 </div>
               )}
             </motion.div>
@@ -865,12 +790,69 @@ const Header = ({ cartItems }) => {
               </motion.li>
             ))}
           </ul>
+          {/* Nút MENU với dropdown chọn sáng/tối */}
           <motion.div
             className="menu-header"
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 200 }}
+            onMouseEnter={() => setIsThemeDropdownOpen(true)}
+            onMouseLeave={() => setIsThemeDropdownOpen(false)}
+            style={{ position: "relative" }}
           >
             <i className="fas fa-bars"></i> MENU
+            <AnimatePresence>
+              {isThemeDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  style={{
+                    position: "absolute",
+                    top: "120%",
+                    left: 0,
+                    background: "#fff",
+                    border: "1px solid #e3eafc",
+                    borderRadius: "12px",
+                    boxShadow: "0 8px 32px #0154b922",
+                    zIndex: 9999,
+                    minWidth: "180px",
+                    padding: "12px 0",
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "10px 22px",
+                      fontWeight: 600,
+                      color: "#0154b9",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    onClick={() => handleThemeChange("light")}
+                    onMouseEnter={e => e.currentTarget.style.background = "#f6f8fc"}
+                    onMouseLeave={e => e.currentTarget.style.background = "none"}
+                  >
+                    <i className="fas fa-sun" style={{ marginRight: 8, color: "#FFD700" }}></i> Sáng
+                  </div>
+                  <div
+                    style={{
+                      padding: "10px 22px",
+                      fontWeight: 600,
+                      color: "#222e3a",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    onClick={() => handleThemeChange("dark")}
+                    onMouseEnter={e => e.currentTarget.style.background = "#e3eafc"}
+                    onMouseLeave={e => e.currentTarget.style.background = "none"}
+                  >
+                    <i className="fas fa-moon" style={{ marginRight: 8, color: "#3bb2ff" }}></i> Tối
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </nav>
       </motion.div>

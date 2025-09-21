@@ -24,6 +24,10 @@ function HomePage() {
   const [showModal, setShowModal] = useState(true);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
     fetch(`${API_URL}/api/popup`)
       .then((res) => res.json())
       .then((data) => setPopup(data))
