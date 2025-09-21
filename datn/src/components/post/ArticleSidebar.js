@@ -9,7 +9,8 @@ function ArticleSidebar({ onCategorySelect }) {
         borderRadius: 12,
         padding: 28,
         marginBottom: 32,
-        boxShadow: "0 2px 12px rgba(1,84,185,0.06)"
+        boxShadow: "0 2px 12px rgba(1,84,185,0.06)",
+
       }}
     >
       <ArticleCategoryList onSelect={onCategorySelect} />

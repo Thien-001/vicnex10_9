@@ -4,6 +4,7 @@ import Footer from "../components/home/Footer";
 import ArticleList from "../components/articles/ArticleList";
 import ArticleSidebar from "../components/articles/ArticleSidebar";
 import BreadcrumbNav from "../components/product/BreadcrumbNav";
+import SectionHeading from "../components/home/SectionHeading";
 
 // Thêm các component mới
 import ArticleCategoryFilter from "../components/articles/ArticleCategoryFilter";
@@ -66,19 +67,22 @@ function ArticleListPage() {
     <>
       <Header />
       <BreadcrumbNav items={breadcrumb} />
+      <SectionHeading
+        title="TẤT CẢ BÀI VIẾT"
+        subtitle="Khám phá kiến thức và tin tức mới nhất về cầu lông!"
+      />
       <div
         style={{
           maxWidth: 1700,
           margin: "32px auto",
           padding: "0 16px",
           display: "flex",
-          gap: 32
+          gap: 32,
         }}
       >
+        
         <main style={{ flex: 3 }}>
-          <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 24 }}>
-            Bài viết
-          </h1>
+          
           {/* Bắt đầu: Bộ lọc và tìm kiếm */}
           <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
             <ArticleCategoryFilter
@@ -86,7 +90,9 @@ function ArticleListPage() {
               selected={selectedCategory}
               onChange={setSelectedCategory}
             />
-            <ArticleSearchBox value={search} onChange={setSearch} />
+       <ArticleSearchBox value={search} onChange={setSearch} />
+
+           
           </div>
           {/* Kết thúc: Bộ lọc và tìm kiếm */}
 

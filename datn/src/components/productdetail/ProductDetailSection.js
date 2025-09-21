@@ -11,85 +11,141 @@ function ProductDetailSection({ product }) {
 
   // Lấy review khi có productId
   useEffect(() => {
-    if (!product?.id) return;
-    setLoading(true);
-    axios
-      .get(`/api/expert-reviews?product_id=${product.id}`)
-      .then((res) => {
-        setReviews(res.data);
-      })
-      .finally(() => setLoading(false));
-  }, [product?.id]);
+    const fetchExpertReviews = async () => {
+      if (!product?.Product_ID) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        console.log("🔍 Fetching expert reviews for product:", product.Product_ID);
+        
+        const response = await axios.get(`http://localhost:8000/api/expert-reviews?product_id=${product.Product_ID}`);
+        console.log("📊 Expert reviews response:", response.data);
+        
+        if (response.data) {
+          // Nếu response.data là array
+          if (Array.isArray(response.data)) {
+            setReviews(response.data);
+          }
+          // Nếu response.data có property data
+          else if (response.data.data && Array.isArray(response.data.data)) {
+            setReviews(response.data.data);
+          }
+          // Nếu response.data có property reviews
+          else if (response.data.reviews && Array.isArray(response.data.reviews)) {
+            setReviews(response.data.reviews);
+          }
+          else {
+            console.log("⚠️ Unexpected expert reviews data structure");
+            setReviews([]);
+          }
+        } else {
+          setReviews([]);
+        }
+        
+      } catch (error) {
+        console.error("❌ Error fetching expert reviews:", error);
+        setReviews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // CSS cho ExpertReviews (có thể chuyển sang file css ngoài nếu muốn)
+    fetchExpertReviews();
+  }, [product?.Product_ID]);
+
+  // CSS cho ExpertReviews
   const expertStyles = `
     .expert-reviews {
       background: #f4f9fd;
       border-radius: 12px;
       box-shadow: 0 2px 12px rgba(1,84,185,0.07);
       margin: 0;
-      height: 100%;
+      height: fit-content;
       display: flex;
       flex-direction: column;
+      padding: 20px;
+      border: 1px solid #e3e8f0;
     }
     .expert-reviews h4 {
       color: #0154b9;
       font-size: 20px;
       font-weight: 700;
       margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .expert-reviews .review {
       display: flex;
       align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 22px;
-      border-bottom: 1px solid #e3e8f0;
-      padding-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 16px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #e8f2ff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .expert-reviews .review:last-child {
-      border-bottom: none;
       margin-bottom: 0;
-      padding-bottom: 0;
     }
     .expert-reviews .avatar {
-      width: 56px;
-      height: 56px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid #e3e8f0;
-      background: #fff;
+      background: #f8f9fa;
+      flex-shrink: 0;
     }
     .expert-reviews .info {
       flex: 1;
+      min-width: 0;
     }
     .expert-reviews .name {
       color: #0154b9;
       font-weight: 600;
-      font-size: 17px;
+      font-size: 15px;
+      margin-bottom: 2px;
     }
     .expert-reviews .title {
-      display: block;
       color: #6b7280;
-      font-size: 14px;
-      margin-top: 2px;
+      font-size: 12px;
+      margin-bottom: 6px;
+      display: block;
     }
     .expert-reviews .rating {
-      margin-top: 6px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
     }
     .expert-reviews .comment {
-      color: #222;
+      color: #374151;
       font-style: italic;
-      font-size: 15px;
-      display: block;
-      margin-top: 4px;
+      font-size: 13px;
+      line-height: 1.4;
+      margin: 0;
+    }
+    .expert-reviews .no-reviews {
+      text-align: center;
+      color: #6b7280;
+      font-style: italic;
+      padding: 20px;
+    }
+    .expert-reviews .loading {
+      text-align: center;
+      color: #6b7280;
+      padding: 20px;
     }
     @media (max-width: 900px) {
       .expert-reviews {
-        max-width: 100vw;
+        max-width: 100%;
         min-width: 0;
-        padding: 12px;
-        margin: 0 0 18px 0;
-        align-self: unset;
+        margin: 20px 0 0 0;
       }
     }
   `;
@@ -97,11 +153,27 @@ function ProductDetailSection({ product }) {
   // Kiểm tra product có details không
   const hasDetails =
     product &&
-    typeof product.details === "string" &&
-    product.details.trim().length > 0;
+    (
+      (typeof product.details === "string" && product.details.trim().length > 0) ||
+      (typeof product.Description === "string" && product.Description.trim().length > 0) ||
+      (typeof product.description === "string" && product.description.trim().length > 0)
+    );
+
+  const getProductDetails = () => {
+    return product?.details || product?.Description || product?.description || "";
+  };
 
   return (
-    <div className="product-detail-section" style={{ display: "flex", gap: 32, alignItems: "stretch" }}>
+    <div className="product-detail-section" style={{ 
+      display: "flex", 
+      gap: 50, 
+      alignItems: "stretch",
+      margin: "32px 0",
+      maxWidth: "1900px",
+      marginLeft: "200px",
+      marginRight: "auto",
+      padding: "0 20px"
+    }}>
       {/* Product Description */}
       <div
         className="product-description"
@@ -115,7 +187,7 @@ function ProductDetailSection({ product }) {
           maxWidth: 900,
           display: "flex",
           flexDirection: "column",
-          height: "100%",
+          height: "fit-content",
         }}
       >
         <h2
@@ -125,9 +197,12 @@ function ProductDetailSection({ product }) {
             fontSize: 24,
             marginBottom: 18,
             letterSpacing: 0.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 8
           }}
         >
-          Chi Tiết Sản Phẩm
+          📋 Chi Tiết Sản Phẩm
         </h2>
         <div
           className="product-description-content"
@@ -136,22 +211,22 @@ function ProductDetailSection({ product }) {
             overflow: expanded ? "visible" : "hidden",
             position: "relative",
             transition: "max-height 0.3s",
-            fontSize: 17,
-            color: "#222",
-            lineHeight: 1.7,
+            fontSize: 16,
+            color: "#374151",
+            lineHeight: 1.6,
           }}
         >
           {hasDetails ? (
             <div
               style={{ wordBreak: "break-word" }}
-              dangerouslySetInnerHTML={{ __html: product.details }}
+              dangerouslySetInnerHTML={{ __html: getProductDetails() }}
             />
           ) : (
-            <p style={{ color: "#888", fontStyle: "italic" }}>
+            <p style={{ color: "#6b7280", fontStyle: "italic", textAlign: "center", padding: "40px 0" }}>
               Chưa có thông tin chi tiết sản phẩm.
             </p>
           )}
-          {!expanded && hasDetails && (
+          {!expanded && hasDetails && getProductDetails().length > 800 && (
             <div
               style={{
                 position: "absolute",
@@ -160,14 +235,14 @@ function ProductDetailSection({ product }) {
                 width: "100%",
                 height: 80,
                 background:
-                  "linear-gradient(to bottom, rgba(255,255,255,0), #fff 90%)",
+                  "linear-gradient(to bottom, rgba(245,249,255,0), #f5f9ff 90%)",
                 pointerEvents: "none",
                 borderRadius: "0 0 16px 16px",
               }}
             />
           )}
         </div>
-        {hasDetails && (
+        {hasDetails && getProductDetails().length > 800 && (
           <button
             className="see-more-btn"
             style={{
@@ -179,15 +254,24 @@ function ProductDetailSection({ product }) {
               border: "none",
               borderRadius: 8,
               padding: "10px 32px",
-              fontWeight: 700,
-              fontSize: 16,
+              fontWeight: 600,
+              fontSize: 14,
               cursor: "pointer",
-              boxShadow: "0 2px 8px rgba(1,84,185,0.08)",
-              transition: "background 0.2s",
+              boxShadow: "0 2px 8px rgba(1,84,185,0.2)",
+              transition: "all 0.2s",
+              alignSelf: "flex-start"
             }}
             onClick={() => setExpanded(!expanded)}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-1px)";
+              e.target.style.boxShadow = "0 4px 12px rgba(1,84,185,0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 2px 8px rgba(1,84,185,0.2)";
+            }}
           >
-            {expanded ? "Rút gọn" : "Xem thêm"}
+            {expanded ? "Thu gọn ▲" : "Xem thêm ▼"}
           </button>
         )}
       </div>
@@ -196,46 +280,84 @@ function ProductDetailSection({ product }) {
       <>
         <style>{expertStyles}</style>
         <aside className="expert-reviews" style={{
-          flex: "1 1 320px",
-          minWidth: 280,
-          maxWidth: 420,
+          flex: "1 1 450px",         // TĂNG TỪ 350px LÊN 450px
+          minWidth: 400,             // TĂNG TỪ 300px LÊN 400px
+          maxWidth: 550,             // TĂNG TỪ 420px LÊN 550px
           margin: 0,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
+          height: "fit-content",
+          position: "sticky",
+          top: "20px"
         }}>
+          <h4>
+            👨‍💼 Chuyên gia nói gì?
+          </h4>
+          
           {loading ? (
-            <>Đang tải nhận xét chuyên gia...</>
+            <div className="loading">
+              <div style={{ marginBottom: "8px" }}>🔄</div>
+              Đang tải nhận xét chuyên gia...
+            </div>
           ) : !reviews.length ? (
-            <>Chưa có nhận xét chuyên gia.</>
+            <div className="no-reviews">
+              <div style={{ fontSize: "32px", marginBottom: "8px" }}>💬</div>
+              Chưa có nhận xét từ chuyên gia
+            </div>
           ) : (
             <>
-              <h4>Chuyên gia nói gì về sản phẩm?</h4>
-              {reviews.slice(0, 5).map((review, idx) => (
+              {reviews.slice(0, 3).map((review, idx) => (
                 <div className="review" key={review.id || idx}>
                   <img
-                    src={review.expert_image || "/img/product/default.png"}
+                    src={review.expert_image || review.avatar || "/img/product/default-avatar.png"}
                     alt={review.expert_name || "Chuyên gia"}
                     className="avatar"
+                    onError={(e) => {
+                      e.target.src = "/img/product/default-avatar.png";
+                    }}
                   />
                   <div className="info">
-                    <strong className="name">{review.expert_name || "Chuyên gia"}</strong>
-                    {review.position && (
-                      <small className="title">{review.position}</small>
+                    <div className="name">
+                      {review.expert_name || review.name || "Chuyên gia"}
+                    </div>
+                    {(review.position || review.title) && (
+                      <small className="title">
+                        {review.position || review.title}
+                      </small>
                     )}
-                    {typeof review.rating === "number" && (
-                      <div className="rating stars">
-                        {Array.from({ length: review.rating }, (_, i) => (
-                          <span key={i} style={{ color: "#ffd700", fontSize: 18 }}>★</span>
+                    {typeof review.rating === "number" && review.rating > 0 && (
+                      <div className="rating">
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <span 
+                            key={i} 
+                            style={{ 
+                              color: i < review.rating ? "#ffd700" : "#e5e7eb", 
+                              fontSize: "14px" 
+                            }}
+                          >
+                            ★
+                          </span>
                         ))}
+                        <span style={{ marginLeft: "4px", fontSize: "12px", color: "#6b7280" }}>
+                          ({review.rating}/5)
+                        </span>
                       </div>
                     )}
+                    <p className="comment">
+                      "{review.content || review.comment || review.review || "Sản phẩm tốt, đáng tin cậy."}"
+                    </p>
                   </div>
-                  <em className="comment">
-                    "{review.content || "Không có nhận xét."}"
-                  </em>
                 </div>
               ))}
+              
+              {reviews.length > 3 && (
+                <div style={{
+                  textAlign: "center",
+                  marginTop: "12px",
+                  fontSize: "12px",
+                  color: "#6b7280"
+                }}>
+                  +{reviews.length - 3} nhận xét khác
+                </div>
+              )}
             </>
           )}
         </aside>

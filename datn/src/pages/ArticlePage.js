@@ -52,11 +52,13 @@ function ArticlePage() {
       <Header />
       <BreadcrumbNav />
       <div style={{
-        maxWidth: 1200,
+        maxWidth: 1900,
         margin: "0 auto",
         padding: "32px 16px",
         display: "flex",
-        gap: 32
+        gap: 32,
+        marginLeft: 70,
+      marginRight: 0
       }}>
         <main style={{ flex: 3 }}>
           <ArticleHeader article={{

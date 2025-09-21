@@ -60,8 +60,8 @@ function getStockInfo(product) {
       availableCount: availableVariants.length,
       totalCount: product.variants.length,
       displayText: availableVariants.length > 0 
-        ? `${availableVariants.length}/${product.variants.length} biến thể có sẵn`
-        : "Tất cả biến thể hết hàng"
+        ? `${availableVariants.length}/${product.variants.length} tùy chọn có sẵn`
+        : "Tất cả tùy chọn hết hàng"
     };
   } else {
     // Fallback về quantity chính của product
@@ -132,18 +132,36 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     fetchData();
   }, [page, filters]);
 
-  // Reset options khi mở popup
+  // Reset options khi mở popup - SỬA LẠI ĐỂ CHỌN VARIANT CÓ HÀNG ĐẦU TIÊN
   useEffect(() => {
     if (showVariantPopup && selectedProduct?.variants?.length > 0) {
       const variants = selectedProduct.variants;
-      const defaultOptions = {
-        weight: getOptionsByPosition(variants, 0)[0] || "",
-        stiffness: getOptionsByPosition(variants, 1)[0] || "",
-        balance: getOptionsByPosition(variants, 2)[0] || "",
-        tension: getOptionsByPosition(variants, 3)[0] || "",
-        playStyle: getOptionsByPosition(variants, 4)[0] || ""
-      };
-      setSelectedOptions(defaultOptions);
+      
+      // Tìm variant có hàng đầu tiên thay vì chọn variant đầu tiên
+      const availableVariant = variants.find(v => parseInt(v.Quantity || 0, 10) > 0);
+      
+      if (availableVariant) {
+        // Parse variant có hàng đầu tiên
+        const parts = parseVariantName(availableVariant.Variant_name);
+        const defaultOptions = {
+          weight: parts[0] || "",
+          stiffness: parts[1] || "",
+          balance: parts[2] || "",
+          tension: parts[3] || "",
+          playStyle: parts[4] || ""
+        };
+        setSelectedOptions(defaultOptions);
+      } else {
+        // Nếu không có variant nào có hàng, chọn variant đầu tiên để hiển thị
+        const defaultOptions = {
+          weight: getOptionsByPosition(variants, 0)[0] || "",
+          stiffness: getOptionsByPosition(variants, 1)[0] || "",
+          balance: getOptionsByPosition(variants, 2)[0] || "",
+          tension: getOptionsByPosition(variants, 3)[0] || "",
+          playStyle: getOptionsByPosition(variants, 4)[0] || ""
+        };
+        setSelectedOptions(defaultOptions);
+      }
     }
   }, [showVariantPopup, selectedProduct]);
 
@@ -239,7 +257,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     return <p className="product-list-empty">Không tìm thấy sản phẩm phù hợp.</p>;
   }
 
-  // IMPROVED ADD TO CART - Kiểm tra stock kỹ hơn
+  // IMPROVED ADD TO CART - SỬA LẠI LOGIC KIỂM TRA STOCK
   const handleAddToCart = (product) => {
     // Validate product
     if (!product || !product.Product_ID) {
@@ -256,16 +274,25 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     const stockInfo = getStockInfo(product);
     console.log("🛒 Add to cart - Stock info:", stockInfo);
     
-    if (!stockInfo.hasStock) {
-      alert("Sản phẩm đã hết hàng!");
-      return;
-    }
-
-    // Nếu có variants, mở popup chọn
+    // SỬA LẠI: Nếu có variants, kiểm tra xem có variant nào còn hàng không
     if (stockInfo.hasVariants) {
+      const hasAvailableVariants = product.variants.some(v => parseInt(v.Quantity || 0, 10) > 0);
+      
+      if (!hasAvailableVariants) {
+        alert("Tất cả tùy chọn của sản phẩm này đã hết hàng!");
+        return;
+      }
+      
+      // Mở popup chọn variant
       setSelectedProduct(product);
       setShowVariantPopup(true);
     } else {
+      // Sản phẩm không có variants - kiểm tra stock chính
+      if (!stockInfo.hasStock) {
+        alert("Sản phẩm đã hết hàng!");
+        return;
+      }
+      
       // Thêm trực tiếp nếu không có variants
       addToCart(product);
     }
@@ -280,7 +307,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         // Kiểm tra variant có còn hàng không
         const variantQuantity = parseInt(variant.Quantity || 0, 10);
         if (variantQuantity <= 0) {
-          alert("Biến thể này đã hết hàng!");
+          alert("Tùy chọn này đã hết hàng!");
           return;
         }
         
@@ -478,9 +505,9 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                   }}
                 >
                   {!stockInfo.hasStock
-                    ? "Đã hết hàng"
+                    ? "😔 Hết hàng"
                     : stockInfo.hasVariants
-                      ? "Chọn biến thể"
+                      ? "🎯 Chọn tùy chọn"
                       : "🛒 Thêm vào giỏ hàng"}
                 </button>
                 
@@ -507,7 +534,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         );
       })}
 
-      {/* IMPROVED VARIANT POPUP */}
+      {/* POPUP CHỌN TÙY CHỌN SẢN PHẨM */}
       {showVariantPopup && selectedProduct && (
         <div className="variant-popup-overlay" style={{
           position: "fixed",
@@ -520,7 +547,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
           justifyContent: "center",
           alignItems: "center",
           zIndex: 1000,
-          marginTop: "50"
+          marginTop: "50px"
         }}>
           <div className="variant-popup" style={{
             backgroundColor: "white",
@@ -528,16 +555,14 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
             borderRadius: "8px",
             maxWidth: "600px",
             width: "90%"
-            // maxHeight: "80vh",
-            // overflow: "auto"
           }}>
             <h3 style={{ 
               fontSize: "25px",
               fontWeight: "700",
               color: "#000",
-            }}>Chọn biến thể cho {selectedProduct.Name}</h3>
+            }}>🏸 Lựa chọn phù hợp cho {selectedProduct.Name}</h3>
             
-            {/* Hiển thị tất cả biến thể có sẵn */}
+            {/* Hiển thị tất cả tùy chọn có sẵn */}
             <div style={{ 
               marginBottom: "16px", 
               padding: "8px", 
@@ -549,7 +574,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                 fontSize: "0.9em", 
                 color: "#666" 
               }}>
-                Biến thể có sẵn ({
+                📦 Các tùy chọn sẵn có ({
                   selectedProduct.variants?.filter(v => parseInt(v.Quantity || 0, 10) > 0).length || 0
                 }/{selectedProduct.variants?.length || 0}):
               </h4>
@@ -565,14 +590,14 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                         color: quantity > 0 ? "#28a745" : "#dc3545"
                       }}>
                         <span>{variant.Variant_name}</span>
-                        <span>SL: {quantity}</span>
+                        <span>{quantity > 0 ? `✅ Còn ${quantity}` : '❌ Hết hàng'}</span>
                       </div>
                     );
                   })}
                 </div>
               ) : (
                 <span style={{ fontSize: "0.8em", color: "#999" }}>
-                  Không có biến thể
+                  Chưa có tùy chọn nào
                 </span>
               )}
             </div>
@@ -582,9 +607,9 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
               <>
                 {/* Trọng lượng */}
                 {getOptionsByPosition(selectedProduct.variants, 0).length > 0 && (
-                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
-                    <p style={{ marginBottom: "8px", fontWeight: "500" }}>
-                      Trọng lượng:
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px", alignItems: "center" }}>
+                    <p style={{ marginBottom: "0", fontWeight: "500", minWidth: "120px" }}>
+                      ⚖️ Trọng lượng vợt:
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                       {getOptionsByPosition(selectedProduct.variants, 0).map(opt => (
@@ -610,9 +635,9 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Độ cứng */}
                 {getOptionsByPosition(selectedProduct.variants, 1).length > 0 && (
-                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
-                    <p style={{ marginBottom: "8px", fontWeight: "500" }}>
-                      Độ cứng:
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px", alignItems: "center" }}>
+                    <p style={{ marginBottom: "0", fontWeight: "500", minWidth: "120px" }}>
+                      🎯 Độ mềm dẻo:
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                       {getOptionsByPosition(selectedProduct.variants, 1).map(opt => (
@@ -638,9 +663,9 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Điểm cân bằng */}
                 {getOptionsByPosition(selectedProduct.variants, 2).length > 0 && (
-                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
-                    <p style={{ marginBottom: "8px", fontWeight: "500" }}>
-                      Điểm cân bằng:
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px", alignItems: "center" }}>
+                    <p style={{ marginBottom: "0", fontWeight: "500", minWidth: "120px" }}>
+                      🏸 Điểm cân bằng:
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                       {getOptionsByPosition(selectedProduct.variants, 2).map(opt => (
@@ -666,9 +691,9 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Lực căng */}
                 {getOptionsByPosition(selectedProduct.variants, 3).length > 0 && (
-                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
-                    <p style={{ marginBottom: "8px", fontWeight: "500" }}>
-                      Lực căng:
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px", alignItems: "center" }}>
+                    <p style={{ marginBottom: "0", fontWeight: "500", minWidth: "120px" }}>
+                      🔧 Lực căng dây:
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                       {getOptionsByPosition(selectedProduct.variants, 3).map(opt => (
@@ -694,9 +719,9 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Lối chơi */}
                 {getOptionsByPosition(selectedProduct.variants, 4).length > 0 && (
-                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
-                    <p style={{ marginBottom: "8px", fontWeight: "500" }}>
-                      Lối chơi:
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px", alignItems: "center" }}>
+                    <p style={{ marginBottom: "0", fontWeight: "500", minWidth: "120px" }}>
+                      🏆 Phong cách chơi:
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                       {getOptionsByPosition(selectedProduct.variants, 4).map(opt => (
@@ -722,20 +747,23 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
               </>
             )}
             
-            {/* Hiển thị thông tin variant đã chọn */}
+            {/* Hiển thị thông tin tùy chọn đã chọn */}
             {selectedVariant ? (
               <div style={{ 
                 margin: "16px 0", 
                 padding: "12px", 
-                backgroundColor: "#e8f5e8", 
+                backgroundColor: parseInt(selectedVariant.Quantity || 0, 10) > 0 ? "#e8f5e8" : "#fee", 
                 borderRadius: "4px",
-                border: "1px solid #28a745"
+                border: parseInt(selectedVariant.Quantity || 0, 10) > 0 ? "1px solid #28a745" : "1px solid #dc3545"
               }}>
-                <div style={{ color: "#0154b9", fontWeight: "500" }}>
-                  Biến thể đã chọn: {selectedVariant.Variant_name}
+                <div style={{ 
+                  color: parseInt(selectedVariant.Quantity || 0, 10) > 0 ? "#0154b9" : "#dc3545", 
+                  fontWeight: "500" 
+                }}>
+                  {parseInt(selectedVariant.Quantity || 0, 10) > 0 ? "✨" : "⚠️"} Lựa chọn của bạn: {selectedVariant.Variant_name}
                 </div>
                 <div style={{ marginTop: "8px", fontSize: "20px"}}>
-                  Giá: <strong style={{ color: "#d93025" }}>
+                  💰 Giá: <strong style={{ color: "#d93025" }}>
                     {Number(selectedVariant.Discount_price || selectedVariant.Price || 0).toLocaleString("vi-VN")}₫
                   </strong>
                 </div>
@@ -743,11 +771,44 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                   color: parseInt(selectedVariant.Quantity || 0, 10) > 0 ? "#28a745" : "#dc3545",
                   fontWeight: "bold"
                 }}>
-                  Số lượng còn lại: {selectedVariant.Quantity || 0}
+                  📦 Số lượng có sẵn: {selectedVariant.Quantity || 0}
+                  {parseInt(selectedVariant.Quantity || 0, 10) <= 0 && (
+                    <span style={{ marginLeft: "8px", fontSize: "0.9em" }}>
+                      - Tùy chọn này đã hết hàng
+                    </span>
+                  )}
                 </div>
                 <div style={{ color: "#666", fontSize: "0.9em" }}>
-                  SKU: {selectedVariant.SKU || 'N/A'}
+                  🏷️ Mã sản phẩm: {selectedVariant.SKU || 'N/A'}
                 </div>
+                
+                {/* Hiển thị gợi ý variants có hàng nếu variant hiện tại hết hàng */}
+                {parseInt(selectedVariant.Quantity || 0, 10) <= 0 && (
+                  <div style={{ 
+                    marginTop: "12px", 
+                    padding: "8px", 
+                    backgroundColor: "#fff3cd",
+                    borderRadius: "4px",
+                    border: "1px solid #ffc107"
+                  }}>
+                    <div style={{ color: "#856404", fontWeight: "500", marginBottom: "4px" }}>
+                      💡 Gợi ý tùy chọn có sẵn:
+                    </div>
+                    {selectedProduct.variants
+                      .filter(v => parseInt(v.Quantity || 0, 10) > 0)
+                      .slice(0, 3) // Hiển thị tối đa 3 variants
+                      .map((variant, index) => (
+                        <div key={index} style={{ 
+                          fontSize: "0.85em", 
+                          color: "#28a745",
+                          marginBottom: "2px"
+                        }}>
+                          ✅ {variant.Variant_name} (Còn {variant.Quantity})
+                        </div>
+                      ))
+                    }
+                  </div>
+                )}
               </div>
             ) : (
               <div style={{ 
@@ -758,7 +819,14 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                 border: "1px solid #ffc107",
                 color: "#856404"
               }}>
-                Vui lòng chọn các thông số để xem biến thể phù hợp
+                💡 Hãy chọn các thông số phù hợp với nhu cầu của bạn nhé!
+                
+                {/* Hiển thị số lượng variants có sẵn */}
+                {selectedProduct.variants && (
+                  <div style={{ marginTop: "8px", fontSize: "0.9em" }}>
+                    📊 Có {selectedProduct.variants.filter(v => parseInt(v.Quantity || 0, 10) > 0).length}/{selectedProduct.variants.length} tùy chọn còn hàng
+                  </div>
+                )}
               </div>
             )}
             
@@ -773,13 +841,13 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                 disabled={!selectedVariant || parseInt(selectedVariant.Quantity || 0, 10) <= 0}
                 onClick={() => {
                   if (!selectedVariant) {
-                    alert("Vui lòng chọn biến thể!");
+                    alert("Vui lòng chọn tùy chọn phù hợp!");
                     return;
                   }
                   
                   const quantity = parseInt(selectedVariant.Quantity || 0, 10);
                   if (quantity <= 0) {
-                    alert("Biến thể này đã hết hàng!");
+                    alert("Rất tiếc, tùy chọn này đã hết hàng!");
                     return;
                   }
                   
@@ -798,7 +866,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                     : "pointer"
                 }}
               >
-                Thêm vào giỏ hàng
+                🛒 Thêm vào giỏ hàng
               </button>
               <button
                 onClick={() => {
@@ -822,9 +890,8 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                   cursor: "pointer"
                 }}
               >
-                Hủy
+                ❌ Đóng
               </button>
-              
             </div>
           </div>
         </div>
