@@ -407,7 +407,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
               <div className="product-list-category">
                 {product?.category?.Name || ""}
               </div>
-              <div className="product-list-brand">
+              <div className="product-list-brand">Thương hiệu:
                 {product.Brand || ""}
               </div>
               
@@ -527,11 +527,15 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
             padding: "20px",
             borderRadius: "8px",
             maxWidth: "600px",
-            width: "90%",
-            maxHeight: "80vh",
-            overflow: "auto"
+            width: "90%"
+            // maxHeight: "80vh",
+            // overflow: "auto"
           }}>
-            <h3>Chọn biến thể cho {selectedProduct.Name}</h3>
+            <h3 style={{ 
+              fontSize: "25px",
+              fontWeight: "700",
+              color: "#000",
+            }}>Chọn biến thể cho {selectedProduct.Name}</h3>
             
             {/* Hiển thị tất cả biến thể có sẵn */}
             <div style={{ 
@@ -578,7 +582,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
               <>
                 {/* Trọng lượng */}
                 {getOptionsByPosition(selectedProduct.variants, 0).length > 0 && (
-                  <div style={{ marginBottom: "12px" }}>
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
                     <p style={{ marginBottom: "8px", fontWeight: "500" }}>
                       Trọng lượng:
                     </p>
@@ -606,7 +610,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Độ cứng */}
                 {getOptionsByPosition(selectedProduct.variants, 1).length > 0 && (
-                  <div style={{ marginBottom: "12px" }}>
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
                     <p style={{ marginBottom: "8px", fontWeight: "500" }}>
                       Độ cứng:
                     </p>
@@ -634,7 +638,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Điểm cân bằng */}
                 {getOptionsByPosition(selectedProduct.variants, 2).length > 0 && (
-                  <div style={{ marginBottom: "12px" }}>
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
                     <p style={{ marginBottom: "8px", fontWeight: "500" }}>
                       Điểm cân bằng:
                     </p>
@@ -662,7 +666,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Lực căng */}
                 {getOptionsByPosition(selectedProduct.variants, 3).length > 0 && (
-                  <div style={{ marginBottom: "12px" }}>
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
                     <p style={{ marginBottom: "8px", fontWeight: "500" }}>
                       Lực căng:
                     </p>
@@ -690,7 +694,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
 
                 {/* Lối chơi */}
                 {getOptionsByPosition(selectedProduct.variants, 4).length > 0 && (
-                  <div style={{ marginBottom: "12px" }}>
+                  <div style={{ marginBottom: "12px" , display: "flex", gap: "30px" }}>
                     <p style={{ marginBottom: "8px", fontWeight: "500" }}>
                       Lối chơi:
                     </p>
@@ -730,8 +734,8 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                 <div style={{ color: "#0154b9", fontWeight: "500" }}>
                   Biến thể đã chọn: {selectedVariant.Variant_name}
                 </div>
-                <div style={{ marginTop: "8px" }}>
-                  Giá: <strong>
+                <div style={{ marginTop: "8px", fontSize: "20px"}}>
+                  Giá: <strong style={{ color: "#d93025" }}>
                     {Number(selectedVariant.Discount_price || selectedVariant.Price || 0).toLocaleString("vi-VN")}₫
                   </strong>
                 </div>
@@ -766,30 +770,6 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
               justifyContent: "flex-end" 
             }}>
               <button
-                onClick={() => {
-                  setShowVariantPopup(false);
-                  setSelectedProduct(null);
-                  setSelectedVariant(null);
-                  setSelectedOptions({
-                    weight: "",
-                    stiffness: "",
-                    balance: "",
-                    tension: "",
-                    playStyle: ""
-                  });
-                }}
-                style={{
-                  padding: "10px 20px",
-                  border: "1px solid #6c757d",
-                  borderRadius: "4px",
-                  backgroundColor: "white",
-                  color: "#6c757d",
-                  cursor: "pointer"
-                }}
-              >
-                Hủy
-              </button>
-              <button
                 disabled={!selectedVariant || parseInt(selectedVariant.Quantity || 0, 10) <= 0}
                 onClick={() => {
                   if (!selectedVariant) {
@@ -820,6 +800,31 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
               >
                 Thêm vào giỏ hàng
               </button>
+              <button
+                onClick={() => {
+                  setShowVariantPopup(false);
+                  setSelectedProduct(null);
+                  setSelectedVariant(null);
+                  setSelectedOptions({
+                    weight: "",
+                    stiffness: "",
+                    balance: "",
+                    tension: "",
+                    playStyle: ""
+                  });
+                }}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  borderRadius: "4px",
+                  backgroundColor: "#d93025",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                Hủy
+              </button>
+              
             </div>
           </div>
         </div>
