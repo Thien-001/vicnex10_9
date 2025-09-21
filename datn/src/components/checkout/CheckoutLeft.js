@@ -323,8 +323,8 @@ function CheckoutLeft({ cartItems, form, setForm }) {
   const isBooking = cartItems.length === 1 && cartItems[0].Courts_ID;
 
   return (
-    <div className="checkout-left">
-      <h3>Thông Tin Giao Hàng</h3>
+    <div style={{ marginTop: "20px", marginBottom: "20px"}} className="checkout-left">
+      <h3 style={{ marginLeft: "20px", fontWeight:"700", fontSize: "25px" }}>Thông Tin Giao Hàng</h3>
       {(!cartItems || cartItems.length === 0) ? (
         <div
           style={{
@@ -520,18 +520,18 @@ function CheckoutLeft({ cartItems, form, setForm }) {
             📍 Lấy vị trí hiện tại
           </button> */}
 
-          <div style={{ margin: "12px 0", fontWeight: 600, color: "#0154b9" }}>
+          {/* <div style={{ margin: "12px 0", fontWeight: 600, color: "#0154b9" }}>
             Phí vận chuyển dự kiến: {shippingFee.toLocaleString()}₫
-          </div>
+          </div> */}
 
-          <div className="terms-box">
+          {/* <div className="terms-box">
             <p>Chính Sách & Điều Khoản</p>
             <small>
               Tôi đã đọc và đồng ý với{" "}
               <a href="/#">Điều khoản Sử Dụng</a> &{" "}
               <a href="/#">Chính Sách Bảo Mật</a>.
             </small>
-          </div>
+          </div> */}
 
           <div className="checkout-links">
             <a href="/" className="back-link">

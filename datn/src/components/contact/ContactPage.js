@@ -211,7 +211,14 @@ const ContactPage = () => {
               tabIndex={0}
             >
               QTSC 9 Building, Đ. Tô Ký, Tân Chánh Hiệp,
-              <p>Quận 12, Hồ Chí Minh, Việt Nam</p>
+              <p style={{
+                color: "#000",
+                textDecoration: "underline",
+                cursor: "pointer",
+                background: "#000",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent"
+              }}>Quận 12, Hồ Chí Minh, Việt Nam</p>
             </span>
           </h2>
           <h2 className="homnet-contact">

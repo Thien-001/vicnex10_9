@@ -281,8 +281,8 @@ const Header = (props) => {
                 />
                 <motion.button
                   type="submit"
-                  whileHover={{ rotate: 15, scale: 1.2 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  // whileHover={{ rotate: 15, scale: 1.2 }}
+                  // transition={{ type: "spring", stiffness: 300 }}
                   style={{ marginLeft: 6, background: "none", border: "none", cursor: "pointer" }}
                 >
                   <i className="fas fa-search"></i>
@@ -296,7 +296,7 @@ const Header = (props) => {
                     top: "110%",
                     left: 0,
                     right: 0,
-                    background: "#fffbe6",
+                    // background: "#fffbe6",
                     border: "2px solid #0154b9",
                     borderRadius: "10px",
                     boxShadow: "0 4px 24px #0154b922",
@@ -556,8 +556,8 @@ const Header = (props) => {
                     onMouseEnter={() => setIsCartDropdownOpen(true)}
                     onMouseLeave={() => setIsCartDropdownOpen(false)}
                     style={{ position: "relative", display: "flex", alignItems: "center" }}
-                    whileHover={{ scale: 1.1, rotate: 2 }}
-                    whileTap={{ scale: 0.95 }}
+                    // whileHover={{ scale: 1.1, rotate: 2 }}
+                    // whileTap={{ scale: 0.95 }}
                     variants={fadeItemVariant}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
@@ -630,8 +630,8 @@ const Header = (props) => {
                 <motion.div
                   className="icon-item"
                   style={{ position: "relative", display: "flex", alignItems: "center" }}
-                  whileHover={{ scale: 1.1, rotate: 2 }}
-                  whileTap={{ scale: 0.95 }}
+                  // whileHover={{ scale: 1.1, rotate: 2 }}
+                  // whileTap={{ scale: 0.95 }}
                   variants={fadeItemVariant}
                   transition={{ type: "spring", stiffness: 300 }}
                   onMouseEnter={handleNotificationDropdownOpen}

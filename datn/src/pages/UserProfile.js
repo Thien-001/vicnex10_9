@@ -584,7 +584,7 @@ function UserProfile() {
         >
           {activeTab === 1 && (
             <div>
-              <h2 style={{ color: "#0154b9", fontWeight: 700, marginBottom: 24 }}>Thông tin cá nhân</h2>
+              <h2 style={{ fontSize: "30px", fontWeight: 700, marginBottom: 24 }}>Thông tin cá nhân</h2>
               <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
                 <img
                   src={
@@ -609,19 +609,19 @@ function UserProfile() {
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}><b>Họ tên:</b> {user.name}</div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}><b>Email:</b> {user.email}</div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}><b>Số điện thoại:</b> {user.phone}</div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}><b>Giới tính:</b> {user.gender === "male" ? "Nam" : user.gender === "female" ? "Nữ" : "Khác"}</div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}><b>Ngày sinh:</b> {user.dob}</div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}><b>Địa chỉ:</b> {user.address}</div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}><b>Họ tên:</b> {user.name}</div>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}><b>Email:</b> {user.email}</div>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}><b>Số điện thoại:</b> {user.phone}</div>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}><b>Giới tính:</b> {user.gender === "male" ? "Nam" : user.gender === "female" ? "Nữ" : "Khác"}</div>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}><b>Ngày sinh:</b> {user.dob}</div>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}><b>Địa chỉ:</b> {user.address}</div>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}>
                     <b>Tỉnh/Thành phố:</b> {provinces.find(p => p.id === user.province_code)?.full_name || ""}
                   </div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}>
                     <b>Quận/Huyện:</b> {districts.find(d => d.id === user.district_code)?.full_name || ""}
                   </div>
-                  <div style={{ fontSize: 17, marginBottom: 12 }}>
+                  <div style={{ fontSize: 18, marginBottom: 12 }}>
                     <b>Phường/Xã:</b> {wards.find(w => w.id === user.ward_code)?.full_name || ""}
                   </div>
                 </div>
@@ -630,7 +630,7 @@ function UserProfile() {
           )}
           {activeTab === 2 && (
             <div>
-              <h2 style={{ color: "#0154b9", fontWeight: 700, marginBottom: 24 }}>Lịch sử đặt hàng</h2>
+              <h2 style={{ fontSize: "30px", fontWeight: 700, marginBottom: 24 }}>Lịch sử đặt hàng</h2>
               {orders.length === 0 ? (
                 <div style={{ color: "#888", fontSize: 16 }}>Bạn chưa có đơn hàng nào.</div>
               ) : (
@@ -726,18 +726,18 @@ function UserProfile() {
           )}
           {activeTab === 3 && (
             <div>
-              <h2 style={{ color: "#0154b9", fontWeight: 700, marginBottom: 24 }}>Thay đổi thông tin</h2>
+              <h2 style={{ fontSize: "30px", fontWeight: 700, marginBottom: 24 }}>Thay đổi thông tin</h2>
               <form onSubmit={handleUpdate}>
                 <div className="profile-field">
-                  <label>Họ tên:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Họ tên:</label>
                   <input name="name" value={editUser.name} onChange={handleEditChange} className="profile-input" />
                 </div>
                 <div className="profile-field">
-                  <label>Số điện thoại:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Số điện thoại:</label>
                   <input name="phone" value={editUser.phone} onChange={handleEditChange} className="profile-input" />
                 </div>
                 <div className="profile-field">
-                  <label>Giới tính:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Giới tính:</label>
                   <select name="gender" value={editUser.gender} onChange={handleEditChange} className="profile-input">
                     <option value="">Chọn giới tính</option>
                     <option value="male">Nam</option>
@@ -746,15 +746,15 @@ function UserProfile() {
                   </select>
                 </div>
                 <div className="profile-field">
-                  <label>Ngày sinh:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Ngày sinh:</label>
                   <input type="date" name="dob" value={editUser.dob} onChange={handleEditChange} className="profile-input" />
                 </div>
                 <div className="profile-field">
-                  <label>Địa chỉ:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Địa chỉ:</label>
                   <input name="address" value={editUser.address} onChange={handleEditChange} className="profile-input" />
                 </div>
                 <div className="profile-field">
-                  <label>Tỉnh/Thành phố:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Tỉnh/Thành phố:</label>
                   <select
                     name="province_code"
                     value={editUser.province_code || ""}
@@ -769,7 +769,7 @@ function UserProfile() {
                   </select>
                 </div>
                 <div className="profile-field">
-                  <label>Quận/Huyện:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Quận/Huyện:</label>
                   <select
                     name="district_code"
                     value={editUser.district_code || ""}
@@ -785,7 +785,7 @@ function UserProfile() {
                   </select>
                 </div>
                 <div className="profile-field">
-                  <label>Phường/Xã:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Phường/Xã:</label>
                   <select
                     name="ward_code"
                     value={editUser.ward_code || ""}
@@ -801,7 +801,7 @@ function UserProfile() {
                   </select>
                 </div>
                 <div className="profile-field">
-                  <label>Ảnh đại diện:</label>
+                  <label style={{ fontSize: "18px", fontWeight: 700, marginBottom: 24 }}>Ảnh đại diện:</label>
                   <input
                     type="file"
                     accept="image/*"
@@ -832,7 +832,7 @@ function UserProfile() {
                   ) : null}
                 </div>
                 <div style={{ marginTop: 32 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 600, color: "#0154b9", marginBottom: 18 }}>Đổi mật khẩu (tuỳ chọn)</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: "#000", marginBottom: 18 }}>Đổi mật khẩu (tuỳ chọn)</h3>
                   <input type="password" name="currentPassword" placeholder="Mật khẩu hiện tại" value={passwords.currentPassword} onChange={handlePasswordChange} className="profile-input" style={{ marginBottom: 12 }} />
                   <input type="password" name="newPassword" placeholder="Mật khẩu mới" value={passwords.newPassword} onChange={handlePasswordChange} className="profile-input" style={{ marginBottom: 12 }} />
                   <input type="password" name="confirmNewPassword" placeholder="Xác nhận mật khẩu mới" value={passwords.confirmNewPassword} onChange={handlePasswordChange} className="profile-input" style={{ marginBottom: 18 }} />
@@ -1192,7 +1192,8 @@ function UserProfile() {
               maxWidth: 600,
               boxShadow: "0 8px 32px rgba(1,84,185,0.18)",
               position: "relative",
-              border: "2px solid #e0e7ff"
+              border: "2px solid #e0e7ff",
+              zIndex: 1001,
             }}
             onClick={e => e.stopPropagation()}
           >
@@ -1216,7 +1217,7 @@ function UserProfile() {
                 lineHeight: "38px",
                 textAlign: "center",
                 fontWeight: 700,
-                boxShadow: "0 2px 8px #e0e7ff"
+                boxShadow: "0 2px 8px #e0e7ff",
               }}
               title="Đóng"
             >×</button>

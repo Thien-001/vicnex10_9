@@ -1067,85 +1067,6 @@ input[type="checkbox"] {
   background: var(--secondary-color);
 }
 
-/* ==== FOOTER ==== */
-.footer {
-  background: linear-gradient(90deg, #0066cc 0%, #007bff 100%);
-  color: #fff;
-  padding: 48px 20px 36px 20px;
-  box-shadow: 0 -2px 12px rgba(0,86,179,0.08);
-}
-
-.footer-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-
-.footer-col {
-  flex: 1;
-  min-width: 250px;
-}
-
-.footer-col h4 {
-  font-size: 19px;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
-
-.footer-col p,
-.footer-col li,
-.footer-col a {
-  font-size: 15px;
-  color: #fff;
-  line-height: 1.7;
-}
-
-.footer-col ul {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-col a {
-  text-decoration: underline;
-  color: #fff;
-  transition: color 0.2s;
-}
-
-.footer-col a:hover {
-  color: #ffd700;
-}
-
-.footer-col input[type="email"] {
-  width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 6px;
-}
-
-.footer-col button {
-  padding: 8px 16px;
-  background: white;
-  color: #0066cc;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-.footer-col button:hover {
-  background: #ffd700;
-  color: #003087;
-}
-
-.logo {
-  width: 60px;
-  margin-bottom: 10px;
-}
 
 
 main {
@@ -1209,7 +1130,7 @@ main {
   font-size: 18px;
   font-weight: 700;
   color: #0154b9;
-  text-align: center;      /* Đổi từ left sang center */
+  text-align: left;      /* Đổi từ left sang center */
   margin-bottom: 2px;
   min-height: 36px;
   display: -webkit-box;
@@ -1726,7 +1647,7 @@ main {
 
 .product-list-image {
   width: 100%;
-  height: 140px;
+  height: 250px;
   object-fit: cover;
   border-radius: 14px 14px 0 0;
   margin: 0;
@@ -1736,10 +1657,10 @@ main {
 }
 
 .product-list-name {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #0154b9;
-  text-align: center;
+  /* text-align: center; */
   margin-bottom: 2px;
   min-height: 36px;
   display: -webkit-box;
@@ -1769,7 +1690,7 @@ main {
 
 .product-list-price {
   margin-bottom: 4px;
-  font-size: 15px;
+  font-size: 20px;
   text-align: left;
   display: flex;
   align-items: baseline;
@@ -1779,7 +1700,7 @@ main {
 .product-list-price-sale {
   color: #d70018;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 20px;
   background: #fff0f2;
   border-radius: 6px;
   padding: 2px 8px;
@@ -1787,7 +1708,7 @@ main {
 
 .product-list-price-old {
   color: #bfc9d1;
-  font-size: 13px;
+  font-size: 18px;
   text-decoration: line-through;
 }
 
@@ -1813,14 +1734,14 @@ main {
   margin-top: 6px;
   justify-content: flex-start;
 }
-
+/* 
 .product-list-cart-btn,
 .product-list-compare-btn {
   background: #f5f9ff;
   color: #0154b9;
   border: 1px solid #bfc9d1;
   border-radius: 7px;
-  padding: 5px 10px;
+  padding: 15px 10px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -1846,6 +1767,68 @@ main {
   background: #0154b9;
   color: #fff;
   border-color: #0154b9;
+} */
+/* Giỏ hàng - xanh lá */
+.product-list-cart-btn {
+  background: #4caf50;   /* xanh lá */
+  color: #fff;
+  border: 1px solid #4caf50;
+  border-radius: 7px;
+  padding: 15px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, border 0.18s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  outline: none;
+  letter-spacing: 0.1px;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.product-list-cart-btn:disabled {
+  background: #c8e6c9;
+  color: #fff;
+  border-color: #c8e6c9;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.product-list-cart-btn:hover:not(:disabled) {
+  background: #388e3c; /* xanh lá đậm hơn */
+  border-color: #388e3c;
+}
+
+
+/* So sánh - xanh dương */
+.product-list-compare-btn {
+  background: #0154b9;  /* xanh dương */
+  color: #fff;
+  border: 1px solid #0154b9;
+  border-radius: 7px;
+  padding: 15px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, border 0.18s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  outline: none;
+  letter-spacing: 0.1px;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.product-list-compare-btn:disabled {
+  background: #b3cde7;
+  color: #fff;
+  border-color: #b3cde7;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.product-list-compare-btn:hover:not(:disabled) {
+  background: #013e8c; /* xanh dương đậm hơn */
+  border-color: #013e8c;
 }
 
 .product-list-fav {
