@@ -3,47 +3,57 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="footer">
-      <div className="footer-container">
-        {/* Cột logo riêng */}
-        <div className="footer-logo-col">
-          <div className="footer-logo-row">
-            <img src="/img/logo/Logo_vicnec.png" alt="Logo VicNex" />
-          </div>
+      <div className="footer-top">
+        {/* Logo */}
+        <div className="logo-footer">
+          <img src="/img/logo/logormbg.png" alt="Logo VicNex" />
         </div>
-        {/* Các cột còn lại */}
-        <div className="footer-col">
-          <h4>Chính sách & Hỗ trợ</h4>
+
+        {/* Shop menu */}
+        <div className="shop-online-footer">
+          <h3>Shop Vicnex</h3>
           <ul>
-            <li>📦 Giao hàng toàn quốc</li>
-            <li>🔁 Chính sách đổi trả</li>
-            <li>🛡️ Bảo hành 1 đổi 1</li>
-            <li>❓ Câu hỏi thường gặp</li>
-            <li>
-              <Link to="/policy">📄 Chính sách & Quy định</Link>
-            </li>
+            <li><Link to="/">Trang chủ</Link></li>
+            <li><Link to="/products">Sản phẩm</Link></li>
+            <li><Link to="/about">Giới thiệu</Link></li>
+            <li><Link to="/news">Tin tức</Link></li>
+            <li><Link to="/contact">Liên hệ</Link></li>
           </ul>
         </div>
-        <div className="footer-col">
-          <h4>Liên hệ & Địa chỉ</h4>
-          <p>📞 <b>0123 456 789</b></p>
-          <p>📧 support@shop.com</p>
-          <p>📍 123 Đường ABC, Quận X, TP.HCM</p>
+
+        {/* Hỗ trợ khách hàng */}
+        <div className="support-footer">
+          <h3>Hỗ trợ khách hàng</h3>
+          <ul>
+            <li><Link to="/return-policy">Chính sách đổi trả</Link></li>
+            <li><Link to="/warranty-policy">Chính sách bảo hành</Link></li>
+            <li><Link to="/shipping-policy">Chính sách giao hàng</Link></li>
+            <li><Link to="/faq">Câu hỏi thường gặp</Link></li>
+          </ul>
         </div>
-        <div className="footer-col">
-          <h4>Kết nối với VicNex</h4>
-          <div className="social-icons">
-            <a href="/#">Facebook</a>
-            <a href="/#">YouTube</a>
-            <a href="/#">Zalo</a>
-          </div>
-          <form>
-            <input type="email" placeholder="Nhập email của bạn..." />
-            <button type="submit">Đăng ký nhận tin</button>
-          </form>
+
+        {/* Liên hệ */}
+        <div className="contact-footer">
+          <h3>Liên hệ</h3>
+          <p>📍 QTSC 9 Building, Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, HCM</p>
+          <p>📞 (0123) 456-789</p>
+          <p>📧 shopvicnex@gmail.com</p>
+        </div>
+
+        {/* Kết nối */}
+        <div className="social-footer">
+          <h3>Kết nối với chúng tôi</h3>
+          <ul>
+            <li><a href="/#">Facebook</a></li>
+            <li><a href="/#">Twitter</a></li>
+            <li><a href="/#">Instagram</a></li>
+          </ul>
         </div>
       </div>
+
+      {/* Footer bottom */}
       <div className="footer-bottom">
-        © {new Date().getFullYear()} VicNex. All rights reserved.
+        <p>&copy; {new Date().getFullYear()} SHOP Vicnex. All rights reserved.</p>
       </div>
     </footer>
   );

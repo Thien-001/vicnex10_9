@@ -99,7 +99,7 @@ function ProductRating({ productId, user }) {
       marginLeft: "auto",
       marginRight: "auto"
     }}>
-      <h3 style={{ color: "#0154b9", marginBottom: 12 }}>Đánh giá sản phẩm</h3>
+      <h3 style={{ color: "#000", marginBottom: 12, fontWeight: "700" }}>Đánh giá sản phẩm</h3>
       {hasPurchased ? (
         <>
           <div style={{ fontSize: 22, marginBottom: 8 }}>
@@ -197,13 +197,13 @@ function ProductRating({ productId, user }) {
         </>
       ) : (
         <div style={{textAlign: "center", margin: "24px 0"}}>
-          <p style={{fontWeight: 600, color: "#0154b9", marginBottom: 12}}>
+          <p style={{fontWeight: 600, color: "#000", marginBottom: 12}}>
             Mua hàng ngay để trải nghiệm sản phẩm của chúng mình!
           </p>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             style={{
-              background: "#0154b9",
+              background: "#e74c3c",
               color: "#fff",
               border: "none",
               borderRadius: 6,
@@ -217,11 +217,11 @@ function ProductRating({ productId, user }) {
           </button>
         </div>
       )}
-      <div style={{ marginTop: 16, color: "#0154b9" }}>
-        <b>Điểm trung bình:</b> {Number(avg).toFixed(1)} / 5 ({count} lượt đánh giá)
+      <div style={{ marginTop: 16, color: "#F7DC6F", fontSize: 18, fontWeight: 500 }}>
+        <b style={{color: "#000" }}>Điểm trung bình:</b> {Number(avg).toFixed(1)} / 5 ({count} lượt đánh giá)
       </div>
       <div style={{ marginTop: 32 }}>
-        <h4 style={{ color: "#0154b9", marginBottom: 12 }}>Các đánh giá gần đây</h4>
+        <h4 style={{ color: "#000", marginBottom: 12 }}>Các đánh giá gần đây</h4>
         {reviews.length === 0 && <div style={{ color: "#888" }}>Chưa có đánh giá nào.</div>}
         {reviews.map((rv, idx) => (
           <div key={idx} style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 18 }}>

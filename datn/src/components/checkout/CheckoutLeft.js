@@ -239,32 +239,11 @@ function CheckoutLeft({ cartItems, form, setForm }) {
     }
   };
 
-  // Hàm tính phí ship (bạn có thể copy từ CheckoutRight hoặc dùng chung)
-  function calculateShippingFee(subtotal, area, distanceKm) {
-    if (subtotal >= 500000) return 0;
-    let areaFee = 40000;
-    if (area === "noithanh") areaFee = 20000;
-    else if (area === "ngoaithanh") areaFee = 40000;
-    else if (area === "tinhxa") areaFee = 60000;
-
-    let distanceFee = 40000;
-    if (distanceKm <= 5) distanceFee = 15000;
-    else if (distanceKm <= 10) distanceFee = 25000;
-
-    return Math.max(areaFee, distanceFee);
-  }
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  // Giả sử bạn xác định area và distanceKm từ form hoặc mặc định
-  const area = form.area || "ngoaithanh"; // hoặc map từ province_code
-  const distanceKm = form.distance_km || 10; // hoặc mặc định
-  const shippingFee = calculateShippingFee(subtotal, area, distanceKm);
-
   const isBooking = cartItems.length === 1 && cartItems[0].Courts_ID;
 
   return (
-    <div className="checkout-left">
-      <h3>Thông Tin Giao Hàng</h3>
+    <div style={{ marginTop: "20px", marginBottom: "20px"}} className="checkout-left">
+      <h3 style={{ marginLeft: "20px", fontWeight:"700", fontSize: "25px" }}>Thông Tin Giao Hàng</h3>
       {(!cartItems || cartItems.length === 0) ? (
         <div
           style={{
@@ -428,19 +407,6 @@ function CheckoutLeft({ cartItems, form, setForm }) {
             value={form.note}
             onChange={handleChange}
           ></textarea>
-
-          <div style={{ margin: "12px 0", fontWeight: 600, color: "#0154b9" }}>
-            Phí vận chuyển dự kiến: {shippingFee.toLocaleString()}₫
-          </div>
-
-          <div className="terms-box">
-            <p>Chính Sách & Điều Khoản</p>
-            <small>
-              Tôi đã đọc và đồng ý với{" "}
-              <a href="/#">Điều khoản Sử Dụng</a> &{" "}
-              <a href="/#">Chính Sách Bảo Mật</a>.
-            </small>
-          </div>
 
           <div className="checkout-links">
             <a href="/" className="back-link">

@@ -39,16 +39,17 @@ const SectionHeading = ({ title, subtitle }) => {
           fontSize: 48,
           fontWeight: 900,
           letterSpacing: 2.5,
-          textTransform: "uppercase",
-          background:
-            "linear-gradient(90deg, #0154b9 0%, #3bb2ff 60%, #ffd700 100%)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
+          // textTransform: "uppercase",
+          // background:
+          //   "linear-gradient(90deg, #0154b9 0%, #3bb2ff 60%, #ffd700 100%)",
+          // WebkitBackgroundClip: "text",
+          // WebkitTextFillColor: "transparent",
+          // backgroundClip: "text",
           marginBottom: 18,
-          textShadow:
-            "0 8px 32px rgba(1,84,185,0.13), 0 2px 8px #ffd70044",
-          fontFamily: "Montserrat, Arial, sans-serif",
+          marginTop: 100,
+          // textShadow:
+          //   "0 8px 32px rgba(1,84,185,0.13), 0 2px 8px #ffd70044",
+          // fontFamily: "Montserrat, Arial, sans-serif",
           position: "relative",
           zIndex: 1,
           lineHeight: 1.08,
@@ -74,7 +75,7 @@ const SectionHeading = ({ title, subtitle }) => {
       <p
         style={{
           fontSize: "1.22rem",
-          color: "#0154b9",
+          // color: "#0154b9",
           fontWeight: 600,
           marginBottom: 0,
           letterSpacing: "0.35px",

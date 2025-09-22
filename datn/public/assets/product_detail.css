@@ -126,7 +126,7 @@
 
 .product-details h1 {
   font-size: 2rem;
-  color: #0154b9;
+  /* color: #0154b9; */
   margin-bottom: 8px;
   font-weight: bold;
 }
@@ -312,7 +312,7 @@
 
 .product-description h2 {
   font-size: 1.5rem;
-  color: #0154b9;
+  /* color: #0154b9; */
   font-weight: bold;
   margin-bottom: 18px;
 }

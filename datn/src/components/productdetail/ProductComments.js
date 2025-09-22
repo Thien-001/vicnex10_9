@@ -21,7 +21,7 @@ function ProductComments({ productId, user }) {
     },
     title: {
       marginBottom: 20,
-      color: "#0154b9",
+      color: "#000",
       fontSize: "1.4rem",
       fontWeight: 700,
       letterSpacing: "0.5px",

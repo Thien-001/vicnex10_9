@@ -316,7 +316,7 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
   }, [form, subtotal]);
 
   return (
-    <div className="checkout-right">
+    <div className="checkout-right" style={{ marginTop: "20px", marginBottom: "20px" }}>
       <h3>Tóm Tắt Đơn Hàng</h3>
       <div className="summary-row">
         <span>Tổng tiền sản phẩm:</span>
