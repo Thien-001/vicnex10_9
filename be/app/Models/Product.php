@@ -26,6 +26,7 @@ class Product extends Model
         'SKU',
         'Brand',
         'Categories_ID',
+        'product_line_id', // THÊM DÒNG NÀY
         'Image',
         'Description',
         'Price',
@@ -110,6 +111,18 @@ class Product extends Model
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class, 'brand_id', 'id');
+    }
+
+    // Quan hệ: Sản phẩm thuộc về dòng sản phẩm
+    public function productLine(): BelongsTo
+    {
+        return $this->belongsTo(ProductLine::class, 'product_line_id', 'id');
+    }
+
+    // Quan hệ: Sản phẩm có nhiều đánh giá từ users
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(ProductRating::class, 'Product_ID', 'Product_ID');
     }
 
     // Override để tìm sản phẩm theo slug thay vì ID

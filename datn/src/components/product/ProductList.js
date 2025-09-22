@@ -77,6 +77,30 @@ function getStockInfo(product) {
   }
 }
 
+// THÊM HÀM TÍNH RATING TỪ PRODUCT_RATINGS
+function calculateRating(product) {
+  if (!product.ratings || !Array.isArray(product.ratings) || product.ratings.length === 0) {
+    return {
+      averageRating: 0,
+      totalRatings: 0,
+      displayText: "Chưa có đánh giá"
+    };
+  }
+
+  // Tính trung bình rating
+  const totalRating = product.ratings.reduce((sum, rating) => {
+    return sum + (parseInt(rating.Rating || 0, 10));
+  }, 0);
+  
+  const averageRating = totalRating / product.ratings.length;
+  
+  return {
+    averageRating: averageRating,
+    totalRatings: product.ratings.length,
+    displayText: `${averageRating.toFixed(1)} (${product.ratings.length} đánh giá)`
+  };
+}
+
 function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }) {
   const [products, setProducts] = useState([]);
   const [showVariantPopup, setShowVariantPopup] = useState(false);
@@ -97,23 +121,31 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("🚀 Fetching products with params:", { page, filters });
         const res = await fetchProducts(page, filters);
         
-        console.log("📦 API Response:", res.data);
         let data = res.data.data;
         
-        // Enhanced debug log
-        console.log("🔍 Products received:", data.length);
+        // ENHANCED DEBUG LOG - KIỂM TRA RATINGS CHI TIẾT
         if (data.length > 0) {
-          console.log("📋 First product sample:", {
-            name: data[0].Name,
-            id: data[0].Product_ID,
-            mainQuantity: data[0].Quantity,
-            variants: data[0].variants,
-            variantsType: typeof data[0].variants,
-            variantsLength: data[0].variants?.length,
-            stockInfo: getStockInfo(data[0])
+          // Log tất cả products để tìm products có ratings
+          data.forEach((product, index) => {
+            if (product.ratings && product.ratings.length > 0) {
+              console.log(`📊 Product ${index + 1} HAS RATINGS:`, {
+                productId: product.Product_ID,
+                productName: product.Name,
+                ratingsCount: product.ratings.length,
+                ratingsData: product.ratings,
+                ratingValues: product.ratings.map(r => r.Rating),
+                calculatedRating: calculateRating(product)
+              });
+            } else {
+              console.log(`❌ Product ${index + 1} NO RATINGS:`, {
+                productId: product.Product_ID,
+                productName: product.Name,
+                ratingsField: product.ratings,
+                ratingsType: typeof product.ratings
+              });
+            }
           });
         }
         
@@ -124,8 +156,6 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         
         setProducts(data);
       } catch (err) {
-        console.error("❌ Lỗi gọi API:", err);
-        // Fallback - set empty array nếu có lỗi
         setProducts([]);
       }
     };
@@ -247,6 +277,13 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
         return bestB - bestA;
       });
       break;
+    case "rating": // THÊM SORT BY RATING
+      sortedProducts.sort((a, b) => {
+        const ratingA = calculateRating(a).averageRating;
+        const ratingB = calculateRating(b).averageRating;
+        return ratingB - ratingA;
+      });
+      break;
     default:
       // Giữ nguyên thứ tự mặc định
       break;
@@ -272,7 +309,6 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     }
 
     const stockInfo = getStockInfo(product);
-    console.log("🛒 Add to cart - Stock info:", stockInfo);
     
     // SỬA LẠI: Nếu có variants, kiểm tra xem có variant nào còn hàng không
     if (stockInfo.hasVariants) {
@@ -374,7 +410,6 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
       alert("✅ Đã thêm vào giỏ hàng!");
       
     } catch (error) {
-      console.error("❌ Lỗi thêm vào giỏ hàng:", error);
       alert("Có lỗi xảy ra khi thêm vào giỏ hàng!");
     }
   };
@@ -390,6 +425,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
     <main className="product-list-main">
       {sortedProducts.map((product) => {
         const stockInfo = getStockInfo(product);
+        const ratingInfo = calculateRating(product); // THÊM RATING INFO
         const isInCompare = compareProducts.some(p => p.Product_ID === product.Product_ID);
         const canAddToCompare = !isInCompare && compareProducts.length < 2;
         
@@ -418,13 +454,122 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
               )}
             </div>
             
-            {/* Ảnh sản phẩm */}
+            {/* Ảnh sản phẩm - THÊM KEY VÀ FORCE RELOAD */}
             <img
-              src={`/${product.Image}`}
+              key={`product-image-${product.Product_ID}-${Date.now()}`} // THÊM KEY UNIQUE
+              src={`/${product.Image}?v=${Date.now()}`} // THÊM VERSION PARAM
               alt={product.Name}
               className="product-list-image"
+              loading="lazy" // THÊM LAZY LOADING
+              onLoad={(e) => {
+                // THÊM: Reset error state khi load thành công
+                e.target.style.display = 'block';
+                e.target.style.opacity = '1';
+              }}
               onError={(e) => {
-                e.target.src = '/images/placeholder.png'; // Fallback image
+                console.log(`❌ Image load failed for product ${product.Product_ID}:`, product.Image);
+                
+                // LẤY KÍCH THƯỚC CHÍNH XÁC CỦA IMG ELEMENT
+                const imgElement = e.target;
+                const computedStyle = window.getComputedStyle(imgElement);
+                const imgWidth = imgElement.offsetWidth || imgElement.clientWidth;
+                const imgHeight = imgElement.offsetHeight || imgElement.clientHeight;
+                
+                // FALLBACK NẾU KHÔNG LẤY ĐƯỢC KÍCH THƯỚC
+                const finalWidth = imgWidth > 0 ? imgWidth : 240;
+                const finalHeight = imgHeight > 0 ? imgHeight : 200;
+                
+                console.log(`📐 Image dimensions: ${finalWidth}x${finalHeight}`);
+                
+                // Ẩn img gốc
+                imgElement.style.display = 'none';
+                
+                // Kiểm tra đã có placeholder chưa
+                const existingPlaceholder = imgElement.parentNode.querySelector('.image-placeholder');
+                if (existingPlaceholder) {
+                  return;
+                }
+                
+                // Tạo placeholder với KÍCH THƯỚC CHÍNH XÁC
+                const placeholder = document.createElement('div');
+                placeholder.className = 'image-placeholder';
+                placeholder.style.cssText = `
+                  width: ${finalWidth}px;
+                  height: ${finalHeight}px;
+                  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 12px;
+                  border: 2px dashed #cbd5e0;
+                  color: #64748b;
+                  font-size: 14px;
+                  font-weight: 500;
+                  text-align: center;
+                  line-height: 1.4;
+                  transition: all 0.3s ease;
+                  cursor: default;
+                  position: relative;
+                  object-fit: cover;
+                  flex-shrink: 0;
+                `;
+                
+                // TÍNH TOÁN ICON SIZE THEO TỶ LỆ
+                const iconSize = Math.min(finalWidth, finalHeight) * 0.25; // 25% của kích thước nhỏ nhất
+                const fontSize = Math.max(12, finalWidth * 0.05); // Font size responsive
+                
+                placeholder.innerHTML = `
+                  <div style="
+                    font-size: ${iconSize}px; 
+                    margin-bottom: ${iconSize * 0.2}px; 
+                    opacity: 0.6;
+                    filter: grayscale(0.3);
+                    line-height: 1;
+                  ">🏸</div>
+                  <div style="
+                    font-weight: 600; 
+                    margin-bottom: 4px;
+                    font-size: ${fontSize}px;
+                    max-width: 90%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  ">
+                    Hình ảnh sản phẩm
+                  </div>
+                  <div style="
+                    font-size: ${fontSize * 0.85}px; 
+                    opacity: 0.7;
+                    background: rgba(100,116,139,0.1);
+                    padding: 4px 12px;
+                    border-radius: 12px;
+                    white-space: nowrap;
+                  ">
+                    Đang cập nhật...
+                  </div>
+                `;
+                
+                // Hover effect với kích thước cố định
+                placeholder.addEventListener('mouseenter', function() {
+                  this.style.background = 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%)';
+                  this.style.transform = 'scale(1.02)';
+                });
+                
+                placeholder.addEventListener('mouseleave', function() {
+                  this.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)';
+                  this.style.transform = 'scale(1)';
+                });
+                
+                // Thêm placeholder VÀO ĐÚNG VỊ TRÍ
+                imgElement.parentNode.insertBefore(placeholder, imgElement);
+              }}
+              style={{
+                transition: 'opacity 0.3s ease', // THÊM TRANSITION
+                opacity: 0 // BẮT ĐẦU VỚI OPACITY 0
+              }}
+              onLoadStart={(e) => {
+                // THÊM: Bắt đầu load
+                e.target.style.opacity = '0';
               }}
             />
             
@@ -473,10 +618,10 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                 )}
               </div>
               
-              {/* Rating */}
+              {/* SỬA LẠI RATING - SỬ DỤNG DỮ LIỆU TỪ PRODUCT_RATINGS */}
               <div className="product-list-rating">
                 {Array.from({ length: 5 }).map((_, i) => {
-                  const rating = Number(product.rating || 0);
+                  const rating = ratingInfo.averageRating;
                   if (rating >= i + 1) {
                     return <span key={i} style={{color:'#FFD700'}}>★</span>;
                   } else if (rating > i) {
@@ -486,7 +631,7 @@ function ProductList({ page, filters, onAddCompare, compareProducts = [], sort }
                   }
                 })}
                 <span style={{marginLeft: 4, color: "#888", fontSize: "0.95em"}}>
-                  ({product.rating ? Number(product.rating).toFixed(1) : "0"})
+                  ({ratingInfo.displayText})
                 </span>
               </div>
               

@@ -211,7 +211,7 @@
                         <td>
                             <button type="button" class="btn btn-danger" onclick="this.closest('tr').remove();">Xóa</button>
                         </td>
-                    </tr>
+                    </tr>x`
                 @endforeach
             </tbody>
         </table>

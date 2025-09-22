@@ -10,14 +10,17 @@ use App\Models\ProductAttribute;
 use App\Models\ProductValue;
 use App\Models\ProductVariant;
 use App\Models\Brand;
+use App\Models\ProductLine;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log; // Added Log facade
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'variants.values.attribute']);
+        // THÊM EAGER LOADING PRODUCTLINE
+        $query = Product::with(['category', 'productLine', 'variants.values.attribute']);
 
         // Debug: Log các tham số request
         Log::info('Filter parameters:', $request->all());
@@ -189,19 +192,33 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
+        
+        // SỬA: ĐẢM BẢO CÓ BRANDS DATA
         $brands = Brand::all();
-        $weightAttribute = ProductAttribute::firstOrCreate(
-            ['Name' => 'Trọng lượng'],
-            ['Description' => 'Trọng lượng tiêu chuẩn của vợt cầu lông']
-        );
-
-        foreach (['5U', '4U', '3U'] as $value) {
-            $weightAttribute->values()->firstOrCreate(['Value' => $value]);
+        
+        // NẾU CHƯA CÓ BẢNG BRANDS, TẠO TẠM TỪ PRODUCTS
+        if ($brands->isEmpty()) {
+            $brands = collect(\DB::table('products')
+                ->select('Brand as name')
+                ->distinct()
+                ->whereNotNull('Brand')
+                ->where('Brand', '!=', '')
+                ->get()
+                ->map(function($item, $index) {
+                    return (object)[
+                        'id' => $index + 1,
+                        'name' => $item->name
+                    ];
+                }));
         }
-
+        
         $attributes = ProductAttribute::with('values')->get();
-
-        return view('admin.products.create', compact('categories', 'brands', 'attributes'));
+        
+        // THÊM DÒNG NÀY:
+        $productLines = ProductLine::all();
+        
+        // CẬP NHẬT COMPACT:
+        return view('admin.products.create', compact('categories', 'brands', 'attributes', 'productLines'));
     }
 
     public function store(Request $request)
@@ -215,6 +232,8 @@ class ProductController extends Controller
                 'Name' => 'required|string|max:255',
                 'SKU' => 'nullable|string|max:100|unique:products,SKU',
                 'Brand' => 'nullable|string|max:255',
+                'brand_id' => 'nullable|exists:brands,id', // THÊM VALIDATION
+                'product_line_id' => 'nullable|exists:product_lines,id', // THÊM VALIDATION
                 'Description' => 'nullable|string',
                 'Image' => 'nullable|image|max:2048',
                 'Images.*' => 'nullable|image|max:2048',
@@ -226,10 +245,15 @@ class ProductController extends Controller
 
             Log::info('Validation passed successfully');
 
-            // Sau khi validate và trước khi lưu
+            // XỬ LÝ BRAND NAME TỪ BRAND_ID
             if ($request->filled('brand_id')) {
-                $brand = \App\Models\Brand::find($request->brand_id);
+                $brand = Brand::find($request->brand_id);
                 $validated['Brand'] = $brand ? $brand->name : null;
+            }
+
+            // XỬ LÝ PRODUCT_LINE_ID
+            if ($request->filled('product_line_id')) {
+                $validated['product_line_id'] = $request->product_line_id;
             }
 
             if ($request->hasFile('Image')) {
@@ -337,6 +361,12 @@ class ProductController extends Controller
 
             $successMessage = "Thêm sản phẩm thành công!";
             $successMessage .= " Sản phẩm: " . $product->Name;
+            
+            // THÊM THÔNG TIN PRODUCT LINE VÀO SUCCESS MESSAGE
+            if ($product->productLine) {
+                $successMessage .= " (Dòng: " . $product->productLine->name . ")";
+            }
+            
             $successMessage .= " (ID: " . $product->Product_ID . ")";
 
             if ($request->has('variants')) {
@@ -349,30 +379,6 @@ class ProductController extends Controller
             }
 
             return redirect()->route('admin.products.index')->with('success', $successMessage);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation error creating product', ['errors' => $e->errors()]);
-
-            return redirect()->back()
-                ->withInput()
-                ->withErrors($e->errors())
-                ->with('error', 'Có lỗi validation khi tạo sản phẩm. Vui lòng kiểm tra lại thông tin.');
-
-        } catch (\Illuminate\Database\QueryException $e) {
-            Log::error('Database error creating product', ['error' => $e->getMessage()]);
-
-            $errorMessage = 'Lỗi database khi tạo sản phẩm: ';
-            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
-                $errorMessage .= 'SKU đã tồn tại trong hệ thống. Vui lòng sử dụng SKU khác.';
-            } elseif (strpos($e->getMessage(), 'foreign key constraint') !== false) {
-                $errorMessage .= 'Danh mục hoặc thương hiệu không tồn tại.';
-            } else {
-                $errorMessage .= $e->getMessage();
-            }
-
-            return redirect()->back()
-                ->withInput()
-                ->with('error', $errorMessage);
 
         } catch (\Exception $e) {
             Log::error('Error creating product', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
@@ -394,19 +400,58 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
+        // THÊM EAGER LOADING PRODUCTLINE
+        $product = Product::with(['variants', 'images', 'productLine'])->findOrFail($id);
         $categories = Category::all();
+        
+        // ĐẢM BẢO CÓ BRANDS DATA
         $brands = Brand::all();
+        if ($brands->isEmpty()) {
+            $brands = collect(\DB::table('products')
+                ->select('Brand as name')
+                ->distinct()
+                ->whereNotNull('Brand')
+                ->where('Brand', '!=', '')
+                ->get()
+                ->map(function($item, $index) {
+                    return (object)[
+                        'id' => $index + 1,
+                        'name' => $item->name
+                    ];
+                }));
+        }
+        
         $attributes = ProductAttribute::with('values')->get();
+        
+        // THÊM DÒNG NÀY:
+        $productLines = ProductLine::all();
+        
         $variantSKU = optional($product->variant)->SKU;
 
-        return view('admin.products.edit', compact('product', 'categories', 'brands', 'attributes', 'variantSKU'));
+        // LẤY SELECTED ATTRIBUTE VALUES
+        $selectedValues = [];
+        foreach ($product->variants as $variant) {
+            $parts = explode(' - ', $variant->Variant_name);
+            foreach ($attributes as $index => $attribute) {
+                if (isset($parts[$index])) {
+                    $selectedValues[$attribute->Name][] = $parts[$index];
+                }
+            }
+        }
+
+        // Remove duplicates
+        foreach ($selectedValues as $key => $values) {
+            $selectedValues[$key] = array_unique($values);
+        }
+
+        // CẬP NHẬT COMPACT:
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'attributes', 'productLines', 'variantSKU', 'selectedValues'));
     }
 
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-        $quantityRule = $product->variants()->exists() ? 'nullable|integer|min:0' : 'required|integer|min:0';
+        
         $validated = $request->validate([
             'Categories_ID' => 'required|exists:categories,Categories_ID',
             'Name' => 'required|string|max:255',
@@ -423,11 +468,19 @@ class ProductController extends Controller
             'is_hot' => 'nullable|boolean',
             'is_best_seller' => 'nullable|boolean',
             'brand_id' => 'required|exists:brands,id',
+            'product_line_id' => 'nullable|exists:product_lines,id', // VALIDATION CHO PRODUCT LINE
         ]);
 
+        // XỬ LÝ BRAND
         $brand = Brand::find($request->brand_id);
         $validated['Brand'] = $brand ? $brand->name : null;
-        $validated['brand_id'] = $brand ? $brand->id : null;
+
+        // XỬ LÝ PRODUCT LINE
+        if ($request->filled('product_line_id')) {
+            $validated['product_line_id'] = $request->product_line_id;
+        } else {
+            $validated['product_line_id'] = null;
+        }
 
         if ($request->hasFile('Image')) {
             $file = $request->file('Image');
@@ -443,17 +496,12 @@ class ProductController extends Controller
         $validated['Updated_at'] = now();
         $validated['details'] = $request->input('details');
 
-        $product->update($validated);
-
-        if ($request->hasFile('Images')) {
-            foreach ($request->file('Images') as $img) {
-                $fileName = time() . '_' . $img->getClientOriginalName();
-                $img->move(public_path('uploads/products/gallery'), $fileName);
-                $product->images()->create([
-                    'Image_path' => 'uploads/products/gallery/' . $fileName
-                ]);
-            }
+        // Cập nhật slug nếu tên thay đổi
+        if ($product->Name !== $validated['Name']) {
+            $validated['slug'] = Str::slug($validated['Name']);
         }
+
+        $product->update($validated);
 
         // --- Xử lý biến thể: update, tạo mới, xóa biến thể cũ không còn trong form ---
         $oldVariantIds = $product->variants->pluck('Variant_ID')->toArray();
@@ -535,6 +583,12 @@ class ProductController extends Controller
 
         $successMessage = "Cập nhật sản phẩm thành công!";
         $successMessage .= " Sản phẩm: " . $product->Name;
+        
+        // THÊM THÔNG TIN PRODUCT LINE VÀO SUCCESS MESSAGE
+        if ($product->productLine) {
+            $successMessage .= " (Dòng: " . $product->productLine->name . ")";
+        }
+        
         $successMessage .= " (ID: " . $product->Product_ID . ")";
 
         if ($request->has('variants')) {
@@ -598,7 +652,8 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with(['category', 'variants.values.attribute', 'images'])->findOrFail($id);
+        // THÊM EAGER LOADING PRODUCTLINE
+        $product = Product::with(['category', 'productLine', 'variants.values.attribute', 'images'])->findOrFail($id);
 
         // Tăng lượt xem mỗi lần xem chi tiết (nếu muốn)
         $product->increment('View');
@@ -606,4 +661,41 @@ class ProductController extends Controller
         return view('admin.products.show', compact('product'));
     }
 
+    /**
+     * Lấy product lines theo brand ID
+     */
+    public function getProductLinesByBrand($brandId)
+    {
+        try {
+            // Tìm brand theo ID từ bảng brands
+            $brand = \DB::table('brands')->where('id', $brandId)->first();
+            
+            if (!$brand) {
+                return response()->json(['error' => 'Brand not found'], 404);
+            }
+            
+            // Log để debug
+            \Log::info("Getting product lines for brand:", ['brand_id' => $brandId, 'brand_name' => $brand->name]);
+            
+            // Lấy product lines theo brand name
+            $productLines = \DB::table('product_lines')
+                ->where('brand', $brand->name)
+                ->where('is_active', 1)
+                ->orderBy('name')
+                ->select('id', 'name', 'description')
+                ->get();
+            
+            \Log::info("Found product lines:", ['count' => $productLines->count(), 'lines' => $productLines->toArray()]);
+            
+            return response()->json($productLines);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error getting product lines by brand:', [
+                'error' => $e->getMessage(), 
+                'brand_id' => $brandId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

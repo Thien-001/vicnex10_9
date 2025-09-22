@@ -2,192 +2,6 @@
 
 @section('content')
 <style>
-    /* Form thêm sản phẩm */
-    .form-add {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-        padding: 32px 28px 24px 28px;
-        /* max-width: 900px; */
-        margin: 32px auto 0 auto;
-    }
-    .form-add h2 {
-        /* color: #0154b9; */
-        font-weight: 700;
-        margin-bottom: 24px;
-        font-size: 1.5rem;
-        text-align: center;
-    }
-    .form-add .form-group {
-        margin-bottom: 18px;
-    }
-    .form-add label {
-        font-weight: 600;
-        /* color: #0154b9; */
-        margin-bottom: 6px;
-        display: block;
-    }
-    .form-add input[type="text"],
-    .form-add input[type="number"],
-    .form-add input[type="file"],
-    .form-add select,
-    .form-add textarea {
-        width: 100%;
-        padding: 8px 12px;
-        border: 1.5px solid #e0e7ef;
-        border-radius: 8px;
-        background: #f8fafc;
-        font-size: 15px;
-        transition: border-color 0.2s;
-        margin-bottom: 2px;
-    }
-    .form-add input:focus,
-    .form-add select:focus,
-    .form-add textarea:focus {
-        border-color: #2563eb;
-        outline: none;
-    }
-    .form-add textarea {
-        min-height: 80px;
-        resize: vertical;
-    }
-    .form-add .form-actions {
-        text-align: center;
-        margin-top: 28px;
-    }
-    .form-add .form-actions button {
-        background: #2ecc71;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 32px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        transition: background 0.18s;
-        cursor: pointer;
-    }
-    .form-add .form-actions button:hover {
-        background: #27ae60;
-    }
-    .form-add .vnd-format {
-        margin-left: 8px;
-        color: #d70018;
-        font-weight: 600;
-        font-size: 15px;
-    }
-    .form-add .form-group input[type="file"] {
-        background: #fff;
-        padding: 6px 8px;
-    }
-    .form-add select:invalid {
-        color: #888;
-    }
-    .form-add select option[value=""] {
-        color: #888;
-    }
-    .form-add .form-group-attribute {
-        margin-bottom: 10px;
-    }
-    .form-add .attribute-name {
-        font-size: 18px;
-        font-weight: 700;
-        /* color: #0154b9; */
-        margin-bottom: 6px;
-    }
-    .form-add .checkbox-group label {
-        margin-right: 18px;
-        margin-bottom: 6px;
-        font-weight: 500;
-        color: #222;
-    }
-    .form-add .product-flags {
-        display: flex;
-        gap: 32px;
-        margin: 18px 0 24px 0;
-        align-items: center;
-        justify-content: center;
-    }
-    .form-add .flag-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background: #f7faff;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 18px 26px 14px 26px;
-        min-width: 160px;
-        transition: border 0.18s, box-shadow 0.18s;
-        box-shadow: 0 2px 8px #e0e0e0;
-        cursor: pointer;
-        position: relative;
-    }
-    .form-add .flag-block input[type="checkbox"] {
-        width: 26px;
-        height: 26px;
-        accent-color: #0154b9;
-        margin-bottom: 10px;
-        cursor: pointer;
-    }
-    .form-add .flag-block .flag-title {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 4px;
-        color: #0154b9;
-        text-align: center;
-        letter-spacing: 0.5px;
-    }
-    .form-add .flag-block .flag-desc {
-        font-size: 14px;
-        color: #888;
-        text-align: center;
-        margin-bottom: 0;
-    }
-    .form-add .flag-block.hot {
-        border-color: #d70018;
-    }
-    .form-add .flag-block.hot .flag-title {
-        color: #d70018;
-    }
-    .form-add .flag-block.featured {
-        border-color: #ffb300;
-    }
-    .form-add .flag-block.featured .flag-title {
-        color: #ffb300;
-    }
-    .form-add .flag-block.best {
-        border-color: #0154b9;
-    }
-    .form-add .flag-block.best .flag-title {
-        color: #0154b9;
-    }
-    .form-add .flag-block input[type="checkbox"]:checked + .flag-title {
-        text-decoration: underline;
-    }
-    .form-add .flag-block:hover {
-        border-color: #0154b9;
-        box-shadow: 0 6px 24px #b3d2ff;
-    }
-    @media (max-width: 900px) {
-        .form-add {
-            padding: 16px 6px;
-        }
-        .form-add .product-flags {
-            flex-direction: column;
-            gap: 18px;
-            align-items: stretch;
-        }
-        .form-add .flag-block {
-            min-width: unset;
-            width: 100%;
-            padding: 12px 10px;
-        }
-    }
-    .product-attributes h4{
-        font-size: 30px;
-        font-weight: 700;
-        margin-bottom: 12px;
-        /* color: #0154b9; */
-    }
     .variant-table {
         margin-top: 20px;
         background: #fff;
@@ -225,14 +39,14 @@
         margin: 12px 0 18px 0;
     }
     .bulk-inputs input[type="number"] {
-        width: 250px;
+        width: 110px;
         padding: 4px 6px;
         border: 1px solid #bdbdbd;
         border-radius: 4px;
         font-size: 14px;
     }
     .bulk-inputs button {
-        background: #2ecc71;
+        background: #0154b9;
         color: #fff;
         border: none;
         border-radius: 6px;
@@ -243,7 +57,7 @@
         transition: background 0.18s;
     }
     .bulk-inputs button:hover {
-        background: #27ae60;
+        background: #d70018;
     }
     .form-group-attribute {
         margin-bottom: 14px;
@@ -251,7 +65,7 @@
     .attribute-name {
         font-size: 15px;
         font-weight: 600;
-        /* color: #0154b9; */
+        color: #0154b9;
         margin-bottom: 6px;
     }
     .checkbox-group label {
@@ -361,6 +175,12 @@
         border: 1.5px solid #bdbdbd;
         border-radius: 5px;
     }
+    .vnd-format {
+        margin-left: 12px;
+        color: #d70018;
+        font-weight: 600;
+        font-size: 15px;
+    }
 </style>
 
 <!-- =========================
@@ -409,8 +229,8 @@
             <span class="vnd-format" id="DiscountPriceVND"></span>
         </div>
         <div class="form-group">
-            <label for="Quantity">Số lượng</label>
-            <input type="number" id="Quantity" name="Quantity" value="{{ old('Quantity', 0) }}" min="0" value="0" required>
+            <label for="Quantity">Số lượng mặc định</label>
+            <input type="number" id="Quantity" name="Quantity" min="0" value="0" required>
         </div>
         <div class="form-group">
             <label for="brand_id">Thương hiệu</label>
@@ -422,6 +242,21 @@
             </select>
         </div>
         <div class="form-group">
+    <label for="product_line_id">Dòng sản phẩm</label>
+    <select id="product_line_id" name="product_line_id">
+        <option value="">-- Không chọn dòng (tùy chọn) --</option>
+        @foreach($productLines as $line)
+            <option value="{{ $line->id }}" data-brand="{{ $line->brand_id }}">
+                {{ $line->brand_name }} - {{ $line->name }}
+            </option>
+        @endforeach
+    </select>
+    <small style="color: #666; font-size: 13px; display: block; margin-top: 4px;">
+        💡 Dòng sản phẩm sẽ được lọc theo thương hiệu đã chọn
+    </small>
+</div>
+        
+        <div class="form-group">
             <label for="Description">Mô tả</label>
             <textarea id="Description" name="Description" rows="4"></textarea>
         </div>
@@ -429,13 +264,7 @@
             <label for="details">Chi tiết sản phẩm</label>
             <textarea id="details" name="details" rows="6" class="form-control">{{ old('details') }}</textarea>
         </div>
-        <!-- CKEditor CDN -->
-        <script src="https://cdn.ckeditor.com/ckeditor5/40.0.1/classic/ckeditor.js"></script>
-        <script>
-            ClassicEditor
-                .create(document.querySelector('#details'))
-                .catch(error => console.error(error));
-        </script>
+        
         <div class="form-group">
             <label for="Image">Ảnh đại diện</label>
             <input type="file" id="Image" name="Image" accept="image/*">
@@ -708,7 +537,54 @@ document.addEventListener('DOMContentLoaded', function() {
     window.submitForm = function() {
         document.querySelector('.form-add form').submit();
     }
+
+    // Khởi tạo bộ lọc dòng sản phẩm theo thương hiệu
+    function initProductLineFilter() {
+        const brandSelect = document.getElementById('brand_id');
+        const productLineSelect = document.getElementById('product_line_id');
+        
+        if (!brandSelect || !productLineSelect) {
+            console.log('❌ Brand hoặc Product Line select không tìm thấy!');
+            return;
+        }
+        
+        console.log('✅ Product Line filter initialized');
+        
+        // Lưu HTML gốc
+        const originalHTML = productLineSelect.innerHTML;
+        
+        brandSelect.addEventListener('change', function() {
+            const selectedBrandId = this.value;
+            console.log('🏷️ Brand selected ID:', selectedBrandId);
+            
+            // Reset về HTML gốc
+            productLineSelect.innerHTML = originalHTML;
+            
+            if (selectedBrandId) {
+                // Ẩn các option không thuộc brand được chọn
+                Array.from(productLineSelect.options).forEach(option => {
+                    if (option.value !== '' && option.dataset.brand !== selectedBrandId) {
+                        option.style.display = 'none';
+                        option.disabled = true;
+                    } else {
+                        option.style.display = '';
+                        option.disabled = false;
+                    }
+                });
+            } else {
+                // Hiện tất cả nếu không chọn brand
+                Array.from(productLineSelect.options).forEach(option => {
+                    option.style.display = '';
+                    option.disabled = false;
+                });
+            }
+        });
+    }
+
+    initProductLineFilter();
 });
+
+
 </script>
 
 <script>
@@ -722,6 +598,14 @@ function showConfirm() {
     let catText = cat.options[cat.selectedIndex].text;
     let brand = document.getElementById('brand_id');
     let brandText = brand.options[brand.selectedIndex].text;
+
+    
+    // THÊM PHẦN NÀY:
+    let productLine = document.getElementById('product_line_id');
+    let productLineText = 'Không chọn';
+    if (productLine.value) {
+        productLineText = productLine.options[productLine.selectedIndex].text;
+    }
 
     // Lấy thông tin biến thể (nếu có)
     let variantsTable = document.getElementById('variant-table');
@@ -747,18 +631,20 @@ function showConfirm() {
         variantsHtml += `</table>`;
     }
 
-    let info = `
-        <div style="margin-bottom:12px;">
-            <div style="font-size:17px;font-weight:700;color:#d70018;margin-bottom:4px;">Sản phẩm gốc</div>
-            <div><b>Tên:</b> ${name}</div>
-            <div><b>SKU:</b> <span style="color:#0154b9;">${sku}</span></div>
-            <div><b>Giá:</b> ${Number(price).toLocaleString('vi-VN')} ₫</div>
-            <div><b>Số lượng:</b> ${qty}</div>
-            <div><b>Thương hiệu:</b> ${brandText}</div>
-            <div><b>Danh mục:</b> ${catText}</div>
-        </div>
-        ${variantsHtml ? '<div style="font-size:17px;font-weight:700;color:#0154b9;margin:12px 0 6px 0;">Các biến thể</div>' + variantsHtml : ''}
-    `;
+    // Tìm phần hiển thị info và sửa:
+let info = `
+    <div style="margin-bottom:12px;">
+        <div style="font-size:17px;font-weight:700;color:#d70018;margin-bottom:4px;">Sản phẩm gốc</div>
+        <div><b>Tên:</b> ${name}</div>
+        <div><b>SKU:</b> <span style="color:#0154b9;">${sku}</span></div>
+        <div><b>Giá:</b> <span style="color:#d70018;font-weight:600;">${Number(price).toLocaleString('vi-VN')} ₫</span></div>
+        <div><b>Số lượng:</b> <span style="color:#0154b9;font-weight:600;">${qty}</span></div>
+        <div><b>Thương hiệu:</b> ${brandText}</div>
+        <div><b>Dòng sản phẩm:</b> <span style="color:#0154b9;">${productLineText}</span></div>
+        <div><b>Danh mục:</b> ${catText}</div>
+    </div>
+    ${variantsHtml ? '<div style="font-size:17px;font-weight:700;color:#0154b9;margin:12px 0 6px 0;">Các biến thể được chọn tạo</div>' + variantsHtml : ''}
+`;
     document.getElementById('confirmInfo').innerHTML = info;
     document.getElementById('confirmModal').style.display = 'flex';
 }
@@ -769,4 +655,11 @@ function submitForm() {
     document.querySelector('.form-add form').submit();
 }
 </script>
+<!-- CKEditor CDN -->
+        <script src="https://cdn.ckeditor.com/ckeditor5/40.0.1/classic/ckeditor.js"></script>
+        <script>
+            ClassicEditor
+                .create(document.querySelector('#details'))
+                .catch(error => console.error(error));
+        </script>
 @endsection

@@ -165,5 +165,8 @@ Route::post('/admin/login', [App\Http\Controllers\Admin\AdminLoginController::cl
 // Route xử lý đăng nhập cho user (React gọi)
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
+// THÊM ROUTE NÀY VÀO CUỐI FILE:
+Route::get('/admin/products/product-lines/brand/{brandId}', [App\Http\Controllers\Admin\ProductController::class, 'getProductLinesByBrand']);
+
 
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import LeafletMapPicker from "./LeafletMapPicker";
+import "./Checkout.css";
 
 function CheckoutLeft({ cartItems, form, setForm }) {
   // Lấy user từ API (giống UserProfile)
@@ -98,7 +98,7 @@ function CheckoutLeft({ cartItems, form, setForm }) {
         address: user.address || "",
       }));
     }
-  }, [user]);
+  }, [user, form.full_name, setForm]);
 
   // Tự động điền province_code nếu có
   useEffect(() => {
@@ -125,7 +125,7 @@ function CheckoutLeft({ cartItems, form, setForm }) {
         province_code: user.province_code,
       }));
     }
-  }, [user, provinces]);
+  }, [user, provinces, form.province_code, setForm]);
 
   // Tự động điền district_code nếu có
   useEffect(() => {
@@ -151,7 +151,7 @@ function CheckoutLeft({ cartItems, form, setForm }) {
         district_code: user.district_code,
       }));
     }
-  }, [user, districts]);
+  }, [user, districts, form.district_code, setForm]);
 
   // Tự động điền ward_code nếu có
   useEffect(() => {
@@ -177,7 +177,7 @@ function CheckoutLeft({ cartItems, form, setForm }) {
         ward_code: user.ward_code,
       }));
     }
-  }, [user, wards]);
+  }, [user, wards, form.ward_code, setForm]);
 
   // Xử lý thay đổi form
   const handleChange = (e) => {
@@ -236,66 +236,6 @@ function CheckoutLeft({ cartItems, form, setForm }) {
       }
     } catch (err) {
       alert("Lỗi kết nối: " + err.message);
-    }
-  };
-
-  // Lấy vị trí hiện tại, zoom bản đồ, tự động điền địa chỉ
-  const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          setForm({ ...form, latitude: lat, longitude: lng });
-
-          // Gọi hàm zoom bản đồ nếu LeafletMapPicker hỗ trợ
-          if (window.zoomToMapLocation) {
-            window.zoomToMapLocation(lat, lng);
-          }
-
-          // Gọi Nominatim để lấy địa chỉ
-          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-          const res = await fetch(url);
-          const data = await res.json();
-
-          // Tìm tỉnh/huyện/xã trong danh sách dropdown
-          let provinceId = "";
-          let districtId = "";
-          let wardId = "";
-
-          if (data.address?.state) {
-            const foundProvince = provinces.find(
-              (p) => p.full_name === data.address.state
-            );
-            if (foundProvince) provinceId = foundProvince.id;
-          }
-          if (data.address?.county) {
-            const foundDistrict = districts.find(
-              (d) => d.full_name === data.address.county
-            );
-            if (foundDistrict) districtId = foundDistrict.id;
-          }
-          if (data.address?.suburb) {
-            const foundWard = wards.find(
-              (w) => w.full_name === data.address.suburb
-            );
-            if (foundWard) wardId = foundWard.id;
-          }
-
-          setForm((prev) => ({
-            ...prev,
-            address: data.display_name || "",
-            province_code: provinceId || prev.province_code,
-            district_code: districtId || prev.district_code,
-            ward_code: wardId || prev.ward_code,
-          }));
-        },
-        (err) => {
-          alert("Không thể lấy vị trí: " + err.message);
-        }
-      );
-    } else {
-      alert("Trình duyệt không hỗ trợ định vị!");
     }
   };
 
@@ -488,37 +428,6 @@ function CheckoutLeft({ cartItems, form, setForm }) {
             value={form.note}
             onChange={handleChange}
           ></textarea>
-
-          {/* <div style={{ margin: "18px 0" }}>
-            <label style={{ fontWeight: 600, marginBottom: 8, display: "block" }}>
-              Chọn vị trí giao hàng trên bản đồ:
-            </label>
-            <LeafletMapPicker
-              latitude={form.latitude}
-              longitude={form.longitude}
-              setLocation={({ latitude, longitude }) =>
-                setForm({ ...form, latitude, longitude })
-              }
-              zoomToLocation={true} // Thêm props này
-            />
-          </div>
-
-          <button
-            type="button"
-            style={{
-              marginBottom: 12,
-              background: "#0154b9",
-              color: "#fff",
-              borderRadius: 8,
-              padding: "8px 22px",
-              fontWeight: 600,
-              border: "none",
-              cursor: "pointer"
-            }}
-            onClick={handleGetLocation}
-          >
-            📍 Lấy vị trí hiện tại
-          </button> */}
 
           <div style={{ margin: "12px 0", fontWeight: 600, color: "#0154b9" }}>
             Phí vận chuyển dự kiến: {shippingFee.toLocaleString()}₫

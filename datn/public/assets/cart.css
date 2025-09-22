@@ -408,3 +408,266 @@ tbody tr:hover {
   padding-right: 8px;
   margin-bottom: 0;
 }
+
+/* =========================
+   SKU Column Styles 
+========================= */
+
+/* Container chính của cột SKU */
+.sku-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+/* SKU Badge khi có dữ liệu */
+.sku-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #0154b9 0%, #1e88e5 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(1, 84, 185, 0.25);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.sku-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.sku-badge:hover::before {
+  left: 100%;
+}
+
+.sku-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(1, 84, 185, 0.35);
+}
+
+/* Icon barcode */
+.sku-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+}
+
+/* Nội dung SKU */
+.sku-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sku-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sku-value {
+  font-size: 13px;
+  color: #fff;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
+/* SKU Empty khi không có dữ liệu */
+.sku-empty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border: 1px dashed #d0d0d0;
+  border-radius: 8px;
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.sku-empty i {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Cột SKU trong table */
+.cart-table th:nth-child(2),
+.cart-table td:nth-child(2) {
+  width: 160px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 12px 8px;
+}
+
+/* Header cột SKU */
+.cart-table th:nth-child(2) {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+  color: #0154b9;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.cart-table th:nth-child(2)::before {
+  content: '🔖';
+  margin-right: 6px;
+  font-size: 12px;
+}
+
+/* Hover effect cho row */
+tbody tr:hover .sku-badge {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(1, 84, 185, 0.4);
+}
+
+tbody tr:hover .sku-empty {
+  background: #f0f0f0;
+  border-color: #bbb;
+}
+
+/* =========================
+   Responsive Design
+========================= */
+
+@media (max-width: 1200px) {
+  .cart-table th:nth-child(2),
+  .cart-table td:nth-child(2) {
+    width: 140px;
+  }
+  
+  .sku-badge {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  
+  .sku-value {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .cart-table th:nth-child(2),
+  .cart-table td:nth-child(2) {
+    width: 120px;
+  }
+  
+  .sku-badge {
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+  }
+  
+  .sku-content {
+    gap: 1px;
+  }
+  
+  .sku-label {
+    font-size: 9px;
+  }
+  
+  .sku-value {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Giữ cột SKU nhưng thu nhỏ */
+  .cart-table th:nth-child(2),
+  .cart-table td:nth-child(2) {
+    width: 80px;
+    padding: 8px 4px;
+  }
+  
+  .sku-badge {
+    padding: 4px 6px;
+    border-radius: 8px;
+  }
+  
+  .sku-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+  
+  .sku-label {
+    display: none; /* Ẩn label trên mobile */
+  }
+  
+  .sku-value {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+  
+  .sku-empty {
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+  
+  .sku-empty span {
+    display: none; /* Chỉ hiện icon */
+  }
+}
+
+/* =========================
+   Animation Effects
+========================= */
+
+@keyframes skuGlow {
+  0% { box-shadow: 0 4px 12px rgba(1, 84, 185, 0.25); }
+  50% { box-shadow: 0 6px 20px rgba(1, 84, 185, 0.4); }
+  100% { box-shadow: 0 4px 12px rgba(1, 84, 185, 0.25); }
+}
+
+.sku-badge:hover {
+  animation: skuGlow 2s ease-in-out infinite;
+}
+
+/* Tooltip cho SKU */
+.sku-badge {
+  position: relative;
+}
+
+.sku-badge::after {
+  content: 'Mã sản phẩm định danh';
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.sku-badge:hover::after {
+  opacity: 1;
+}

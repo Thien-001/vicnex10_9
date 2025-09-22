@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-
-const BANK_CODE = "MBB";
-const ACCOUNT_NUMBER = "0352514876";
-const ACCOUNT_NAME = "DANG HOANG TAN";
+import "./Checkout.css";
 
 const CheckoutRight = ({ cartItems, setCartItems, form }) => {
   const navigate = useNavigate();
@@ -16,9 +13,7 @@ const CheckoutRight = ({ cartItems, setCartItems, form }) => {
   const [loading, setLoading] = useState(false);
   const [shippingFee, setShippingFee] = useState(30000);
   const [showWarning, setShowWarning] = useState(false);
-const [warningMsg, setWarningMsg] = useState("");
-const [orderInfo, setOrderInfo] = useState(null);
-const [showQRModal, setShowQRModal] = useState(false);
+  const [warningMsg, setWarningMsg] = useState("");
 
   const hasProduct = cartItems && cartItems.length > 0;
 
@@ -208,7 +203,7 @@ const [showQRModal, setShowQRModal] = useState(false);
 
     try {
       // Gửi đơn hàng lên backend
-      const res = await axios.post("http://localhost:8000/api/orders", orderData, {
+      await axios.post("http://localhost:8000/api/orders", orderData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       // XÓA GIỎ HÀNG khi đặt hàng thành công
@@ -220,16 +215,7 @@ const [showQRModal, setShowQRModal] = useState(false);
         window.dispatchEvent(new Event("notificationUpdated"));
       }
 
-      // Nếu chọn chuyển khoản ngân hàng, show modal QR
-      if (paymentMethod === "bank") {
-        setOrderInfo({
-          ...orderData,
-          id: res.data.id || Math.floor(Math.random() * 100000),
-        });
-        setShowQRModal(true);
-      } else {
-        navigate("/thankyou", { state: { products: cartItems } });
-      }
+      navigate("/thankyou", { state: { products: cartItems } });
     } catch (err) {
       alert("Có lỗi xảy ra. Vui lòng thử lại!");
     }
@@ -444,7 +430,17 @@ const [showQRModal, setShowQRModal] = useState(false);
       >
         {loading ? "Đang xử lý..." : "Thanh Toán"}
       </button>
-      {/* ...Các modal giữ nguyên... */}
+
+      {/* Warning Modal */}
+      {showWarning && (
+        <div className="modal-overlay" onClick={() => setShowWarning(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3>⚠️ Thông báo</h3>
+            <p>{warningMsg}</p>
+            <button onClick={() => setShowWarning(false)}>Đóng</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,7 +7,14 @@ function CartRight({ cartItems }) {
   const [voucher, setVoucher] = useState("");
   const [voucherInfo, setVoucherInfo] = useState(null);
   const [voucherMsg, setVoucherMsg] = useState("");
-  const shippingFee = 30000;
+  
+  const subtotalForShipping = cartItems.reduce((sum, item) => {
+    const price = Number(item.Discount_price) > 0 ? Number(item.Discount_price) : Number(item.Price) || 0;
+    const qty = Number(item.quantity) || 1;
+    return sum + price * qty;
+  }, 0);
+  
+  const shippingFee = subtotalForShipping >= 500000 ? 0 : 30000;
 
   const subtotal = cartItems.reduce((sum, item) => {
     const price = Number(item.Discount_price) > 0 ? Number(item.Discount_price) : Number(item.Price) || 0;
@@ -103,6 +110,11 @@ function CartRight({ cartItems }) {
         <span>Phí vận chuyển:</span>
         <strong>₫{shippingFee.toLocaleString()}</strong>
       </div>
+      {shippingFee === 0 && (
+        <div style={{ color: "#10b981", fontSize: 13, marginTop: 2 }}>
+          Đơn hàng trên 500.000đ được <b>miễn phí vận chuyển</b>
+        </div>
+      )}
       <div className="summary-row total-row">
         <span>Tổng thanh toán:</span>
         <strong>₫{total.toLocaleString()}</strong>

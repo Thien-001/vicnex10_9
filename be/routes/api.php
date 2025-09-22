@@ -193,3 +193,10 @@ Route::get('/contacts', [ContactMessageController::class, 'index']); // (tuỳ c
 
 // Expert Reviews
 Route::get('/expert-reviews', [\App\Http\Controllers\Api\ExpertReviewApiController::class, 'index']);
+
+
+Route::prefix('product-lines')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\ProductLineApiController::class, 'index']);
+    Route::get('/brand/{brand}', [App\Http\Controllers\Api\ProductLineApiController::class, 'getByBrand']);
+    Route::get('/{id}', [App\Http\Controllers\Api\ProductLineApiController::class, 'show']);
+});

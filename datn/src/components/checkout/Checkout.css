@@ -1,0 +1,275 @@
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.modal-content p {
+  margin-bottom: 15px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.modal-content button {
+  background: #0154b9;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0 5px;
+}
+
+.modal-content button:hover {
+  background: #013d87;
+}
+
+.modal-content button:last-child {
+  background: #6c757d;
+}
+
+.modal-content button:last-child:hover {
+  background: #5a6268;
+}
+
+/* QR Modal Specific Styles - REMOVED */
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Checkout Form Styles */
+.checkout-container {
+  display: flex;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.checkout-left {
+  flex: 1;
+}
+
+.checkout-right {
+  width: 400px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.shipping-form input,
+.shipping-form select,
+.shipping-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.shipping-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 8px 0;
+}
+
+.total-row {
+  border-top: 2px solid #ddd;
+  font-size: 18px;
+  font-weight: bold;
+  color: #0154b9;
+  margin-top: 15px;
+  padding-top: 15px;
+}
+
+.voucher {
+  margin: 20px 0;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.voucher input {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.voucher button {
+  width: 25%;
+  padding: 10px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.voucher button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.payment-method {
+  margin: 20px 0;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.payment-method p {
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.payment-method label {
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.payment-method label:hover {
+  background: #f0f0f0;
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 15px;
+  background: #0154b9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.checkout-btn:hover {
+  background: #013d87;
+}
+
+.checkout-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.terms-box {
+  margin: 20px 0;
+  padding: 15px;
+  background: #e8f4fd;
+  border-radius: 8px;
+  border-left: 4px solid #0154b9;
+}
+
+.terms-box p {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0154b9;
+}
+
+.terms-box small {
+  color: #666;
+  line-height: 1.4;
+}
+
+.terms-box a {
+  color: #0154b9;
+  text-decoration: none;
+}
+
+.terms-box a:hover {
+  text-decoration: underline;
+}
+
+.checkout-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.back-link,
+.continue-link {
+  color: #0154b9;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.back-link:hover,
+.continue-link:hover {
+  background: #e8f4fd;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .checkout-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .checkout-right {
+    width: 100%;
+    position: static;
+  }
+  
+  .voucher input {
+    width: 60%;
+  }
+  
+  .voucher button {
+    width: 35%;
+  }
+}

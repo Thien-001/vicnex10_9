@@ -60,23 +60,27 @@ function ArticleList({ articles }) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-        gap: 32,
+        gridTemplateColumns: "repeat(4, 1fr)",
+        columnGap: 24, // SỬA: riêng biệt column gap
+        rowGap: 85, // SỬA: riêng biệt row gap - TĂNG LÊN
         marginBottom: 40,
         padding: "0 12px",
         maxWidth: 1640,
         marginLeft: "auto",
         marginRight: "auto",
-        justifyItems: "start", // THAY ĐỔI: Align về bên trái thay vì center
+        alignItems: "start", // SỬA: align items to start
+        // REMOVE: gridAutoRows và overflow
       }}
     >
-      {articles.map((article) => (
+      {articles.map((article, index) => (
         <div
-          key={article.Post_ID || article.id} // SỬA: Dùng Post_ID thay vì id
+          key={article.Post_ID || article.id || index}
           style={{
             display: "flex",
-            justifyContent: "flex-start", // THAY ĐỔI: Align về bên trái
-            width: "100%"
+            flexDirection: "column", // THÊM: column direction
+            width: "100%",
+            height: "fit-content", // THÊM: height fit content
+            // REMOVE: justifyContent và gridColumn
           }}
         >
           <ArticleCard article={article} />

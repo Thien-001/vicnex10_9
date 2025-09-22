@@ -1979,3 +1979,41 @@ body {
     border-radius: 6px;
   }
 }
+
+/* Thêm vào file CSS chính */
+.product-list-image,
+.image-placeholder {
+  width: 100% !important;
+  height: 200px !important; /* Cố định chiều cao */
+  object-fit: cover;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Container cho image để đảm bảo aspect ratio */
+.product-image-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.product-image-container .product-list-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-image-container .image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
